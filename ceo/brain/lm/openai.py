@@ -1,7 +1,8 @@
 import langchain_openai
+from langchain_core.language_models import BaseChatModel
 
 
-def get_lm(key: str, name: str, temp: int, top_p: int, stream: bool = True):
+def get_lm(key: str, name: str, temp: float, top_p: float, stream: bool = False) -> BaseChatModel:
     return langchain_openai.ChatOpenAI(
         api_key=key,
         model=name,
