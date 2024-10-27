@@ -1,17 +1,16 @@
 import json
 from typing import Callable
 
-from ceo.prompt import generate_action_prompt, generate_result_prompt
+from ceo.prompt import generate_result_prompt
 
 
 class Action:
     def __init__(
             self,
-            description: str,
             function: Callable
     ):
         self.name: str = function.__name__
-        self.description: str = description
+        self.description: str = function.__doc__
         self.function: Callable = function
         self.parameters: dict = dict()
         for key, clazz in function.__annotations__.items():
@@ -26,7 +25,7 @@ class Action:
         }, ensure_ascii=False)
 
     def __str__(self):
-        return generate_action_prompt(self)
+        return self.__repr__()
 
     def invoke(self, **kwargs):
         return self.function(**kwargs)
