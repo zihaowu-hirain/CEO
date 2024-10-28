@@ -26,21 +26,3 @@ class Action:
 
     def __str__(self):
         return self.__repr__()
-
-    def invoke(self, **kwargs):
-        return self.function(**kwargs)
-
-    def invoke_formatted(self, **kwargs):
-        return generate_result_prompt(
-            function_name=self.name,
-            result=self.invoke(**kwargs),
-            **kwargs
-        )
-
-    def invoke_from_string(self, param_str: str):
-        kwargs = json.loads(param_str)
-        return self.invoke(**kwargs)
-
-    def invoke_from_string_formatted(self, param_str: str):
-        kwargs = json.loads(param_str)
-        return self.invoke_formatted(**kwargs)
