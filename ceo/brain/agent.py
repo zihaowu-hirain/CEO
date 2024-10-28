@@ -1,26 +1,52 @@
+from typing import Callable
+
 from langchain_core.language_models import BaseChatModel
-from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 
 from ceo.action.action import Action
-from ceo.prompt import generate_decision_prompt, generate_response_prompt
+from ceo.prompt import SchedulerPrompt, AnalyserPrompt, ExecutorPrompt
 
 
 class Agent:
-    def __init__(self, query: str, action: Action, model: BaseChatModel):
-        self.query: str = query
-        self.action: Action = action
-        self.model: BaseChatModel = model
-        self.chain_to_decide = self.model | JsonOutputParser()
-        self.chain_to_respond = self.model | StrOutputParser()
+    def __init__(self, functions: list[Callable], model: BaseChatModel):
+        self.actions = list()
+        self.prev_results = list()
+        self.schedule = list()
+        self.act_count = 0
+        self.model = model
+        for function in functions:
+            self.actions.append(Action(function))
 
-    def decide(self):
-        prompt = generate_decision_prompt(self.query, self.action)
-        param = self.chain_to_decide.invoke(prompt)
-        if param != {}:
-            return True, self.action.invoke_formatted(**param)
-        else:
-            return False, None
+    def plan(self, query: str) -> list:
+        scheduling = SchedulerPrompt(query=query, actions=self.actions)
+        self.schedule = scheduling.invoke(self.model)
+        return self.schedule
 
-    def respond(self):
-        prompt = generate_response_prompt(self.query, self.decide()[1])
-        return self.chain_to_respond.invoke(prompt)
+    def renew(self):
+        self.prev_results = list()
+        self.schedule = list()
+        self.act_count = 0
+
+    def step_quiet(self, query: str) -> list:
+        if self.act_count < len(self.schedule):
+            analysing = AnalyserPrompt(
+                query=query,
+                prev_results=self.prev_results,
+                action=self.schedule[self.act_count]
+            )
+            action, params = analysing.invoke(self.model)
+            executing = ExecutorPrompt(params=params, action=action)
+            self.prev_results.append(executing.invoke(model=self.model))
+            self.act_count += 1
+            return self.prev_results
+        self.renew()
+        return self.prev_results
+
+    def just_do_it(self, query: str) -> str:
+        response = str()
+        self.plan(query=query)
+        for act_count in range(len(self.schedule)):
+            self.step_quiet(query=query)
+        for result in self.prev_results:
+            response += result
+        self.renew()
+        return response
