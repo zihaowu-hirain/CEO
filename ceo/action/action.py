@@ -1,8 +1,6 @@
 import json
 from typing import Callable
 
-from ceo.prompt import generate_result_prompt
-
 
 class Action:
     def __init__(self, function: Callable):
