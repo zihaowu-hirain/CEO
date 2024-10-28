@@ -1,5 +1,9 @@
+import os
+
 from ceo.brain.agent import Agent
 from ceo.brain.lm import get_openai_model
+
+os.environ['OPENAI_API_KEY'] = ''
 
 
 def open_file(filename: str) -> str:
@@ -27,7 +31,7 @@ def write_file(filename: str, content: str) -> bool:
     return True
 
 
-model = get_openai_model(key="", name="gpt-3.5-turbo-1106")
+model = get_openai_model()
 
 agent = Agent([open_file, write_file], model)
 
