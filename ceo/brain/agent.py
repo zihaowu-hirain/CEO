@@ -3,7 +3,7 @@ from typing import Callable
 from langchain_core.language_models import BaseChatModel
 
 from ceo.action.action import Action
-from ceo.prompt import SchedulerPrompt, AnalyserPrompt, ExecutorPrompt
+from ceo.prompt import SchedulerPrompt, AnalyserPrompt, ExecutorPrompt, IntrospectionPrompt
 
 
 class Agent:
@@ -42,11 +42,10 @@ class Agent:
         return self.prev_results
 
     def just_do_it(self, query: str) -> str:
-        response = str()
+
         self.plan(query=query)
         for act_count in range(len(self.schedule)):
             self.step_quiet(query=query)
-        for result in self.prev_results:
-            response += result
+        response = IntrospectionPrompt(query=query, prev_results=self.prev_results).invoke(self.model)
         self.renew()
         return response
