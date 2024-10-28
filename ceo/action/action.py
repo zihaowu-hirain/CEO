@@ -5,10 +5,7 @@ from ceo.prompt import generate_result_prompt
 
 
 class Action:
-    def __init__(
-            self,
-            function: Callable
-    ):
+    def __init__(self, function: Callable):
         self.name: str = function.__name__
         self.description: str = function.__doc__
         self.function: Callable = function
