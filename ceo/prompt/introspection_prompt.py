@@ -18,7 +18,6 @@ class IntrospectionPrompt(Prompt):
                   'But i failed because i did not have that ability to open calculator. '
                   'I have not achieve your intention.\n'
                   f'Actions Performed: {prev_results}\n')
-        print(prompt)
         super().__init__(prompt)
 
     def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
