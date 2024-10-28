@@ -25,7 +25,6 @@ class AnalyserPrompt(Prompt):
                        f'Previous actions: {prev_results_str}\n')
         super().__init__(prompt)
 
-
     def invoke(self, model: BaseChatModel) -> tuple[Action, dict]:
         result = model.invoke(self.prompt).content
         param = json.loads(result)
