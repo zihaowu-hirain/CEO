@@ -22,10 +22,13 @@
 
 ```python
 # demo.py
+import logging
 import os
 
 from ceo.brain.agent import Agent
 from ceo.brain.lm import get_openai_model
+
+logging.getLogger('ceo').setLevel(logging.DEBUG)
 
 os.environ['OPENAI_API_KEY'] = 'sk-...'
 
@@ -38,7 +41,6 @@ def open_file(filename: str) -> str:
     """
     with open(filename, 'r', encoding='utf-8') as f:
         content = f.read()
-        print('file content:', content)
         return content
 
 
@@ -51,28 +53,24 @@ def write_file(filename: str, content: str) -> bool:
     """
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(content)
-        print('new content:', content)
     return True
 
 
 model = get_openai_model()
 
-agent = Agent([open_file, write_file], model)
-
 task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
 
-result = agent.just_do_it(task)
-
-print(f'Agent: {result}')
+Agent([open_file, write_file], model).just_do_it(task)
 ```
 
 ```
-new content: hello world
-file content: hello world
-new content: world hello
-
-Agent: Your intention is to create a file named "test_file.txt", write "hello world" into it, 
-then read it and write "world hello" into it. Based on the actions performed, 
-I have successfully created the file "test_file.txt" with the content "hello world" and then overwritten it with the content "world hello". 
-Therefore, I have achieved your query.
+[DEBUG] 2024-10-29 21:59:13,415 ceo : Schedule: ['write_file', 'open_file', 'write_file']. Query: "create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it".
+[DEBUG] 2024-10-29 21:59:15,196 ceo : Action 1/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'hello world'}. I successfully wrote the content "hello world" to a file named "test_file.txt".
+[DEBUG] 2024-10-29 21:59:17,130 ceo : Action 2/3: I chose to use the tool "open_file" with the parameter {'filename': 'test_file.txt'}. 
+I opened and read the file "test_file.txt" and the content of the file is "hello world".
+[DEBUG] 2024-10-29 21:59:19,602 ceo : Action 3/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'world hello'}. 
+I have successfully written the content "world hello" to a file named "test_file.txt".
+[DEBUG] 2024-10-29 21:59:21,811 ceo : Conclusion: Your intention was to create a file called "test_file.txt", write "hello world" into it, then read it and write "world hello" into it. 
+Based on the actions I have performed, I have successfully achieved your query. 
+I created the file "test_file.txt" and wrote "hello world" into it, then read it to confirm the content, and finally wrote "world hello" into the same file. Your query has been successfully completed.
 ```
