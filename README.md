@@ -1,6 +1,6 @@
 # CEO
 
-An easy-to-use ai agent framework.
+`CEO` is an easy-to-use AI agent framework. Now, as you take on the role of the Chairman of the Board, instruct your `CEO` to carry out the task for you.
 
 ## Demo
 
