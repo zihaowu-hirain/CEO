@@ -15,13 +15,13 @@ class IntrospectionPrompt(Prompt):
                   'and you are the assistant.\n'
                   f'User query: "{query}"\n'
                   "Task: tell user's intention first, "
-                  "then think seriously whether you have achieve user's query based on actions performed. "
+                  "then think seriously whether you have achieve user's query based on actions you have performed. "
                   '(If you did not achieve, explain why?)\n'
                   'Output format: text.\n'
                   'Example output: Your intention is to calculate math, and I was trying to open calculator. '
                   'But i failed because i did not have that ability to open calculator. '
                   'I have not achieve your intention.\n'
-                  f'Actions Performed: {prev_results}\n')
+                  f'Actions You Have Performed (from left to right): {prev_results}\n')
         super().__init__(prompt, ext_context)
         log.debug(f'IntrospectionPrompt: {self.prompt}')
 
