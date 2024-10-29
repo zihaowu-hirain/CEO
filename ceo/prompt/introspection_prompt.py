@@ -8,7 +8,8 @@ from ceo.prompt.prompt import Prompt
 class IntrospectionPrompt(Prompt):
     def __init__(self, query: str, prev_results: list):
         prompt = ('Precondition: Below are actions you have performed to achieve the user query. '
-                  'You are talking to the user, use "you" instead of "user".\n'
+                  'You are talking to the user, use "you" instead of the "user", '
+                  'and you are the assistant.\n'
                   f'User query: "{query}"\n'
                   "Task: tell user's intention first, "
                   "then think seriously whether you have achieve user's query based on actions performed. "
