@@ -41,9 +41,9 @@ class Agent:
         self.renew()
         return self.prev_results
 
-    def just_do_it(self, query: str) -> str:
-
-        self.plan(query=query)
+    def just_do_it(self, query: str) -> str | None:
+        if not self.plan(query=query):
+            return None
         for act_count in range(len(self.schedule)):
             self.step_quiet(query=query)
         response = IntrospectionPrompt(query=query, prev_results=self.prev_results).invoke(self.model)
