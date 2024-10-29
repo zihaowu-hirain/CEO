@@ -15,7 +15,7 @@
     Download .whl first then run
 
     ```shell
-    pip install ./ceo_py-0.0.1b0-py3-none-any.whl
+    pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
 ## Demo
