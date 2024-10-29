@@ -1,9 +1,12 @@
+import logging
 from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
 from ceo.action.action import Action
 from ceo.prompt.prompt import Prompt
+
+log = logging.getLogger('ceo.prompt')
 
 
 class ExecutorPrompt(Prompt):
@@ -16,6 +19,7 @@ class ExecutorPrompt(Prompt):
                   'Example output: I am trying to open calculator.\n'
                   f'Tool: {action}\n'
                   f'Params(choice): {params}\n')
+        log.debug(f'Executor prompt(before): {prompt}')
         super().__init__(prompt)
 
     def explain(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
@@ -32,8 +36,9 @@ class ExecutorPrompt(Prompt):
                   'Output contains: [The choice you made], [What have you done]\n'
                   'Output example: I wrote a wechat message which says "Bonjour".\n'
                   f'Tool: {self.action}\n'
-                  f'Params(choice): {self.params}\n:'
+                  f'Params(choice): {self.params}\n'
                   f'Result: {result}\n')
+        log.debug(f'Executor prompt(after): {prompt}')
         if stream:
             return model.stream(prompt)
         return model.invoke(prompt).content

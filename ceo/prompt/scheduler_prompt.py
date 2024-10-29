@@ -1,7 +1,11 @@
+import logging
+
 from langchain_core.language_models import BaseChatModel
 
 from ceo.action.action import Action
 from ceo.prompt.prompt import Prompt
+
+log = logging.getLogger('ceo.prompt')
 
 
 class SchedulerPrompt(Prompt):
@@ -17,6 +21,7 @@ class SchedulerPrompt(Prompt):
                   'Output format: [{tool1.name}, {tool2.name}, ...] sequential and well-organized with no additional redundant information\n'
                   'Example output: [do_step_one, do_step_two, do_step_three]\n'
                   f'Tools: {prompt}\n')
+        log.debug(f'SchedulerPrompt: {prompt}')
         super().__init__(prompt)
 
     def invoke(self, model: BaseChatModel) -> list[Action]:

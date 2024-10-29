@@ -1,9 +1,12 @@
 import json
+import logging
 
 from langchain_core.language_models import BaseChatModel
 
 from ceo.action.action import Action
 from ceo.prompt.prompt import Prompt
+
+log = logging.getLogger('ceo.prompt')
 
 
 class AnalyserPrompt(Prompt):
@@ -25,6 +28,7 @@ class AnalyserPrompt(Prompt):
         if len(prev_results_str) != 0:
             prompt += (f'Generate response according to previous actions performed by you.\n'
                        f'Previous actions: {prev_results_str}\n')
+        log.debug(f'AnalyserPrompt: {prompt}')
         super().__init__(prompt)
 
     def invoke(self, model: BaseChatModel) -> tuple[Action, dict]:

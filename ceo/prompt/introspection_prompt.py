@@ -1,8 +1,11 @@
+import logging
 from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
 from ceo.prompt.prompt import Prompt
+
+log = logging.getLogger('ceo.prompt')
 
 
 class IntrospectionPrompt(Prompt):
@@ -19,6 +22,7 @@ class IntrospectionPrompt(Prompt):
                   'But i failed because i did not have that ability to open calculator. '
                   'I have not achieve your intention.\n'
                   f'Actions Performed: {prev_results}\n')
+        log.debug(f'IntrospectionPrompt: {prompt}')
         super().__init__(prompt)
 
     def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:

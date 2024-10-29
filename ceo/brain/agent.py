@@ -1,9 +1,12 @@
+import logging
 from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
 
 from ceo.action.action import Action
 from ceo.prompt import SchedulerPrompt, AnalyserPrompt, ExecutorPrompt, IntrospectionPrompt
+
+log = logging.getLogger('ceo')
 
 
 class Agent:
@@ -19,6 +22,7 @@ class Agent:
     def plan(self, query: str) -> list:
         scheduling = SchedulerPrompt(query=query, actions=self.actions)
         self.schedule = scheduling.invoke(self.model)
+        log.debug(f'Schedule: {[_.name for _ in self.schedule]}. Query: "{query}".')
         return self.schedule
 
     def renew(self):
@@ -37,6 +41,7 @@ class Agent:
             executing = ExecutorPrompt(params=params, action=action)
             self.prev_results.append(executing.invoke(model=self.model))
             self.act_count += 1
+            log.debug(f'Action {self.act_count}/{len(self.schedule)}: {self.prev_results[-1]}')
             return self.prev_results
         self.renew()
         return self.prev_results
@@ -47,5 +52,6 @@ class Agent:
         for act_count in range(len(self.schedule)):
             self.step_quiet(query=query)
         response = IntrospectionPrompt(query=query, prev_results=self.prev_results).invoke(self.model)
+        log.debug(f'Conclusion: {response}')
         self.renew()
         return response

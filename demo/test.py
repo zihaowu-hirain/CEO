@@ -1,9 +1,12 @@
+import logging
 import os
 
 from ceo.brain.agent import Agent
 from ceo.brain.lm import get_openai_model
 
-os.environ['OPENAI_API_KEY'] = ''
+logging.getLogger('ceo').setLevel(logging.DEBUG)
+
+os.environ['OPENAI_API_KEY'] = 'sk-...'
 
 
 def open_file(filename: str) -> str:
@@ -14,7 +17,6 @@ def open_file(filename: str) -> str:
     """
     with open(filename, 'r', encoding='utf-8') as f:
         content = f.read()
-        print('file content:', content)
         return content
 
 
@@ -27,16 +29,11 @@ def write_file(filename: str, content: str) -> bool:
     """
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(content)
-        print('new content:', content)
     return True
 
 
 model = get_openai_model()
 
-agent = Agent([open_file, write_file], model)
-
 task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
 
-result = agent.just_do_it(task)
-
-print(result)
+Agent([open_file, write_file], model).just_do_it(task)
