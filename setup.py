@@ -7,11 +7,11 @@ with open("LICENSE", "r", encoding="utf-8") as fh:
     license_content = fh.read()
 
 setuptools.setup(
-    name="ceo",
+    name="ceo-py",
     version='0.0.1-beta',
     author="vortezwohl",
     author_email="vortez.wohl@gmail.com",
-    description="An easy-to-use ai agent framework.",
+    description="CEO is an easy-to-use AI agent framework. Now, you have taken on the role of the chairman of the board, instruct your CEO to carry out the task for you.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license=license_content,

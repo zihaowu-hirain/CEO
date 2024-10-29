@@ -2,6 +2,22 @@
 
 `CEO` is an easy-to-use AI agent framework. Now, you have taken on the role of the chairman of the board, instruct your `CEO` to carry out the task for you.
 
+## Installation
+
+- From [PYPI](https://pypi.org/project/ceo-py/)
+
+    ```shell
+    pip install ceo-py
+    ```
+
+- From [Github](https://github.com/vortezwohl/CEO/releases)
+
+    Download .whl first then run
+
+    ```shell
+    pip install ./ceo_py-0.0.1b0-py3-none-any.whl
+    ```
+
 ## Demo
 
 ```python
