@@ -9,7 +9,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class SchedulerPrompt(Prompt):
-    def __init__(self, query: str, actions: list[Action]):
+    def __init__(self, query: str, actions: list[Action], ext_context: str = ''):
         self.actions = actions
         prompt = dict()
         for action in self.actions:
@@ -21,8 +21,8 @@ class SchedulerPrompt(Prompt):
                   'Output format: [{tool1.name}, {tool2.name}, ...] sequential and well-organized with no additional redundant information\n'
                   'Example output: [do_step_one, do_step_two, do_step_three]\n'
                   f'Tools: {prompt}\n')
-        log.debug(f'SchedulerPrompt: {prompt}')
-        super().__init__(prompt)
+        super().__init__(prompt, ext_context)
+        log.debug(f'SchedulerPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> list[Action]:
         results = model.invoke(self.prompt)

@@ -10,7 +10,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class AnalyserPrompt(Prompt):
-    def __init__(self, query: str, prev_results: list, action: Action):
+    def __init__(self, query: str, prev_results: list, action: Action, ext_context: str = ''):
         self.action = action
         prev_results_str = str()
         prompt = str()
@@ -28,8 +28,8 @@ class AnalyserPrompt(Prompt):
         if len(prev_results_str) != 0:
             prompt += (f'Generate response according to previous actions performed by you.\n'
                        f'Previous actions: {prev_results_str}\n')
-        log.debug(f'AnalyserPrompt: {prompt}')
-        super().__init__(prompt)
+        super().__init__(prompt, ext_context)
+        log.debug(f'AnalyserPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> tuple[Action, dict]:
         result = model.invoke(self.prompt).content

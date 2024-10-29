@@ -9,7 +9,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class IntrospectionPrompt(Prompt):
-    def __init__(self, query: str, prev_results: list):
+    def __init__(self, query: str, prev_results: list, ext_context: str = ''):
         prompt = ('Precondition: Below are actions you(the bot/assistant) have performed to achieve the user query. '
                   'You are talking to the user, use "you" instead of the "user", '
                   'and you are the assistant.\n'
@@ -22,8 +22,8 @@ class IntrospectionPrompt(Prompt):
                   'But i failed because i did not have that ability to open calculator. '
                   'I have not achieve your intention.\n'
                   f'Actions Performed: {prev_results}\n')
-        log.debug(f'IntrospectionPrompt: {prompt}')
-        super().__init__(prompt)
+        super().__init__(prompt, ext_context)
+        log.debug(f'IntrospectionPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
         if stream:

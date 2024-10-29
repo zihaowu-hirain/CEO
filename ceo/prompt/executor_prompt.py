@@ -10,7 +10,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class ExecutorPrompt(Prompt):
-    def __init__(self, params: dict, action: Action):
+    def __init__(self, params: dict, action: Action, ext_context: str = ''):
         self.action = action
         self.params = params
         prompt = ('Precondition: Below is a tool and your choice(params) for the tool.\n'
@@ -19,8 +19,8 @@ class ExecutorPrompt(Prompt):
                   'Example output: I am trying to open calculator.\n'
                   f'Tool: {action}\n'
                   f'Params(choice): {params}\n')
-        log.debug(f'Executor prompt(before): {prompt}')
-        super().__init__(prompt)
+        super().__init__(prompt, ext_context)
+        log.debug(f'Executor prompt(before): {self.prompt}')
 
     def explain(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
         if stream:
@@ -38,6 +38,7 @@ class ExecutorPrompt(Prompt):
                   f'Tool: {self.action}\n'
                   f'Params(choice): {self.params}\n'
                   f'Result: {result}\n')
+        prompt = self.ext_context + prompt
         log.debug(f'Executor prompt(after): {prompt}')
         if stream:
             return model.stream(prompt)
