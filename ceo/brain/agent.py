@@ -34,15 +34,17 @@ class Agent:
         log.debug(f'Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
         return self.schedule
 
-    def renew(self):
+    def reposition(self):
         self.prev_results = list()
         self.schedule = list()
         self.act_count = 0
+        return self
 
     def reassign(self, query: str):
         self.query_high_level, self.query_by_step = (
             QueryResolverPrompt(query=query, ext_context=self.ext_context).invoke(self.model))
-        self.renew()
+        self.reposition()
+        return self
 
     def step_quiet(self) -> list:
         if self.act_count < len(self.schedule):
@@ -58,7 +60,7 @@ class Agent:
             self.act_count += 1
             log.debug(f'Action {self.act_count}/{len(self.schedule)}: {self.prev_results[-1]}')
             return self.prev_results
-        self.renew()
+        self.reposition()
         return self.prev_results
 
     def just_do_it(self) -> str | None:
@@ -71,5 +73,5 @@ class Agent:
             prev_results=self.prev_results,
             ext_context=self.ext_context).invoke(self.model))
         log.debug(f'Conclusion: {response}')
-        self.renew()
+        self.reposition()
         return response
