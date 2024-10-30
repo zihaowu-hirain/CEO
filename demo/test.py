@@ -36,4 +36,4 @@ model = get_openai_model()
 
 task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
 
-Agent([open_file, write_file], model).just_do_it(task)
+Agent([open_file, write_file], model, task).just_do_it()
