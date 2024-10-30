@@ -1,3 +1,4 @@
+# demo.py
 import logging
 import os
 
@@ -10,9 +11,10 @@ os.environ['OPENAI_API_KEY'] = 'sk-...'
 
 def open_file(filename: str) -> str:
     """
-    open and read a file
-    :param filename:
-    :return file content:
+    Read the content of a file.
+
+    :param filename: The path to the file to be read.
+    :return: The content of the file as a string.
     """
     with open(filename, 'r', encoding='utf-8') as f:
         content = f.read()
@@ -21,10 +23,11 @@ def open_file(filename: str) -> str:
 
 def write_file(filename: str, content: str) -> bool:
     """
-    write a file, if file not exists, will create it
-    :param filename:
-    :param content:
-    :return success or not:
+    Write content to a file, creating the file if it does not exist.
+
+    :param filename: The path to the file to be written.
+    :param content: The content to be written to the file.
+    :return: True if the write operation is successful.
     """
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(content)
