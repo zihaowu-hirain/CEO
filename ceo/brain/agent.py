@@ -40,10 +40,13 @@ class Agent:
         self.act_count = 0
         return self
 
-    def reassign(self, query: str):
+    def assign(self, query: str):
         self.query_high_level, self.query_by_step = (
             QueryResolverPrompt(query=query, ext_context=self.ext_context).invoke(self.model))
         return self.reposition()
+
+    def reassign(self, query: str):
+        return self.assign(query=query)
 
     def step_quiet(self) -> str:
         if self.act_count < len(self.schedule):
