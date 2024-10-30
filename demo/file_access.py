@@ -1,4 +1,3 @@
-# demo.py
 import logging
 import os
 
