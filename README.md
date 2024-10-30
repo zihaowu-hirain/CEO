@@ -25,8 +25,7 @@
 import logging
 import os
 
-from ceo.brain.agent import Agent
-from ceo.brain.lm import get_openai_model
+from ceo import Agent, get_openai_model
 
 logging.getLogger('ceo').setLevel(logging.DEBUG)
 
@@ -60,17 +59,18 @@ model = get_openai_model()
 
 task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
 
-Agent([open_file, write_file], model).just_do_it(task)
+ceo = Agent([open_file, write_file], model)
+
+ceo.assign(task).just_do_it()
 ```
 
 ```
-[DEBUG] 2024-10-29 21:59:13,415 ceo : Schedule: ['write_file', 'open_file', 'write_file']. Query: "create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it".
-[DEBUG] 2024-10-29 21:59:15,196 ceo : Action 1/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'hello world'}. I successfully wrote the content "hello world" to a file named "test_file.txt".
-[DEBUG] 2024-10-29 21:59:17,130 ceo : Action 2/3: I chose to use the tool "open_file" with the parameter {'filename': 'test_file.txt'}. 
+[DEBUG] 2024-10-30 15:24:25,789 ceo : Schedule: ['write_file', 'open_file', 'write_file']. Query: "User's intention: Create a file named "test_file.txt" in the work directory, write "hello world" into the file, read the content of the file, and write "world hello" into the file.".
+[DEBUG] 2024-10-30 15:24:27,563 ceo : Action 1/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'hello world'}. I successfully wrote the content "hello world" to a file named "test_file.txt".
+[DEBUG] 2024-10-30 15:24:29,345 ceo : Action 2/3: I chose to use the tool "open_file" with the parameter {'filename': 'test_file.txt'}. 
 I opened and read the file "test_file.txt" and the content of the file is "hello world".
-[DEBUG] 2024-10-29 21:59:19,602 ceo : Action 3/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'world hello'}. 
+[DEBUG] 2024-10-30 15:24:35,374 ceo : Action 3/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'world hello'}. 
 I have successfully written the content "world hello" to a file named "test_file.txt".
-[DEBUG] 2024-10-29 21:59:21,811 ceo : Conclusion: Your intention was to create a file called "test_file.txt", write "hello world" into it, then read it and write "world hello" into it. 
-Based on the actions I have performed, I have successfully achieved your query. 
-I created the file "test_file.txt" and wrote "hello world" into it, then read it to confirm the content, and finally wrote "world hello" into the same file. Your query has been successfully completed.
+[DEBUG] 2024-10-30 15:24:36,949 ceo : Conclusion: Your intention was to create a file named "test_file.txt" in the work directory, write "hello world" into the file, read the content of the file, and write "world hello" into the file.
+Based on the actions I have performed, I have successfully achieved your intention. I created the file "test_file.txt", wrote "hello world" into it, read the content of the file which was "hello world", and then wrote "world hello" into the file. So, I have successfully completed all the steps you requested.
 ```
