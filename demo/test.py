@@ -1,8 +1,7 @@
 import logging
 import os
 
-from ceo.brain.agent import Agent
-from ceo.brain.lm import get_openai_model
+from ceo import Agent, get_openai_model
 
 logging.getLogger('ceo').setLevel(logging.DEBUG)
 
@@ -36,4 +35,6 @@ model = get_openai_model()
 
 task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
 
-Agent([open_file, write_file], model, task).just_do_it()
+ceo = Agent([open_file, write_file], model)
+
+ceo.assign(task).just_do_it()
