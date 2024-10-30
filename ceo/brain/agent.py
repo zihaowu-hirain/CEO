@@ -16,7 +16,7 @@ log = logging.getLogger('ceo')
 
 
 class Agent:
-    def __init__(self, functions: list[Callable], model: BaseChatModel, query: str, ext_context: str = ''):
+    def __init__(self, functions: list[Callable], model: BaseChatModel, query: str = '', ext_context: str = ''):
         self.actions = list()
         self.prev_results = list()
         self.schedule = list()
@@ -24,7 +24,8 @@ class Agent:
         self.model = model
         self.ext_context = ext_context
         self.query_high_level, self.query_by_step = (
-            QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model))
+            QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
+        )
         for function in functions:
             self.actions.append(Action(function))
 
