@@ -18,59 +18,106 @@
     pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
-## Demo
+## Examples
 
-```python
-# demo.py
-import logging
-import os
+1. Precise Calculation: Find the surface area and volume of a sphere.
 
-from ceo import Agent, get_openai_model
+    ```python
+    import logging
+    import os
 
-logging.getLogger('ceo').setLevel(logging.DEBUG)
+    from ceo import Agent, get_openai_model
+    from sympy import simplify
 
-os.environ['OPENAI_API_KEY'] = 'sk-...'
+    logging.getLogger('ceo').setLevel(logging.DEBUG)
 
-
-def open_file(filename: str) -> str:
-    """
-    open and read a file
-    :param filename:
-    :return file content:
-    """
-    with open(filename, 'r', encoding='utf-8') as f:
-        content = f.read()
-        return content
+    os.environ['OPENAI_API_KEY'] = 'sk-...'
 
 
-def write_file(filename: str, content: str) -> bool:
-    """
-    write a file, if file not exists, will create it
-    :param filename:
-    :param content:
-    :return success or not:
-    """
-    with open(filename, 'w', encoding='utf-8') as f:
-        f.write(content)
-    return True
+    def constant_calculate(expr: str) -> float:
+        """
+        calculate the result of a math expression of constant numbers.
+        :param:
+            expr (str): a math expression of constant numbers.
+        :return:
+            float: the result of the expression.
+        :example:
+            constant_calculate("1 + 3 + 2") -> 6.0
+        """
+        return simplify(expr)
 
 
-model = get_openai_model()
+    agent = Agent(functions=[constant_calculate], model=get_openai_model())
 
-task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
+    result = agent.assign("Here is a sphere with radius 4.5 and pi here is 3.14159, find the area and volume respectively.").just_do_it()
 
-ceo = Agent([open_file, write_file], model)
+    print(result)
+    ```
 
-ceo.assign(task).just_do_it()
-```
+    ```
+    [DEBUG] 2024-10-30 18:08:55,522 ceo : Schedule: ['constant_calculate', 'constant_calculate']. Query: "User's intention: Calculate the surface area and volume of a sphere with a radius of 4.5 using pi value 3.14159.".
+    [DEBUG] 2024-10-30 18:08:57,389 ceo : Action 1/2: I chose to calculate the expression "4 * 3.14159 * (4.5 ** 2)", which represents the area of a circle with a radius of 4.5. The result of this calculation is 254.468790000000.
+    [DEBUG] 2024-10-30 18:08:59,723 ceo : Action 2/2: I chose to calculate the expression "(4/3) * 3.14159 * (4.5 ** 3)", which represents the volume of a sphere with a radius of 4.5. The result of this calculation is 381.703185.
+    [DEBUG] 2024-10-30 18:09:01,781 ceo : Conclusion: Your intention is to calculate the surface area and volume of a sphere with a radius of 4.5 using the value of pi as 3.14159. I performed the calculations for both the surface area and the volume. 
+    I calculated the surface area as 254.468790000000 and the volume as 381.703185. Therefore, I have achieved your intention successfully. Your intention is to calculate the surface area and volume of a sphere with a radius of 4.5 using the value of pi as 3.14159. I performed the calculations for both the surface area and the volume. I calculated the surface area as 254.468790000000 and the volume as 381.703185. Therefore, I have achieved your intention successfully.
+    ```
 
-```
-[DEBUG] 2024-10-30 15:24:25,789 ceo : Schedule: ['write_file', 'open_file', 'write_file']. Query: "User's intention: Create a file named "test_file.txt" in the work directory, write "hello world" into the file, read the content of the file, and write "world hello" into the file.".
-[DEBUG] 2024-10-30 15:24:27,563 ceo : Action 1/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'hello world'}. I successfully wrote the content "hello world" to a file named "test_file.txt".
-[DEBUG] 2024-10-30 15:24:29,345 ceo : Action 2/3: I chose to use the tool "open_file" with the parameter {'filename': 'test_file.txt'}. 
-I opened and read the file "test_file.txt" and the content of the file is "hello world".
-[DEBUG] 2024-10-30 15:24:35,374 ceo : Action 3/3: I chose to use the tool "write_file" with the parameters {'filename': 'test_file.txt', 'content': 'world hello'}. 
-I have successfully written the content "world hello" to a file named "test_file.txt".
-[DEBUG] 2024-10-30 15:24:36,949 ceo : Conclusion: Your intention was to create a file named "test_file.txt" in the work directory, write "hello world" into the file, read the content of the file, and write "world hello" into the file.
-Based on the actions I have performed, I have successfully achieved your intention. I created the file "test_file.txt", wrote "hello world" into it, read the content of the file which was "hello world", and then wrote "world hello" into the file. So, I have successfully completed all the steps you requested.
-```
+2. File Access: File Creation, Writing, and Reading
+
+    ```python
+    import logging
+    import os
+
+    from ceo import Agent, get_openai_model
+
+    logging.getLogger('ceo').setLevel(logging.DEBUG)
+
+    os.environ['OPENAI_API_KEY'] = 'sk-...'
+
+
+    def open_file(filename: str) -> str:
+        """
+        Read the content of a file.
+
+        :param filename: The path to the file to be read.
+        :return: The content of the file as a string.
+        """
+        with open(filename, 'r', encoding='utf-8') as f:
+            content = f.read()
+            return content
+
+
+    def write_file(filename: str, content: str) -> bool:
+        """
+        Write content to a file, creating the file if it does not exist.
+
+        :param filename: The path to the file to be written.
+        :param content: The content to be written to the file.
+        :return: True if the write operation is successful.
+        """
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return True
+
+
+    model = get_openai_model()
+
+    task = 'create a file in work dir called "test_file.txt" and write "hello world" into it, then read it and write "world hello" into it'
+
+    ceo = Agent([open_file, write_file], model)
+
+    ceo.assign(task).just_do_it()
+    ```
+
+    ```
+    # test_file.txt
+    world hello
+    ```
+
+    ```
+    [DEBUG] 2024-10-30 18:32:37,044 ceo : Schedule: ['write_file', 'open_file', 'write_file']. Query: "User's intention: Create a file named "test_file.txt", write "hello world" into it, read its contents, and then write "world hello" into the same file.".
+    [DEBUG] 2024-10-30 18:32:38,770 ceo : Action 1/3: I chose to write content to a file, specifically creating a file named "test_file.txt" and writing the text "hello world" into it.
+    [DEBUG] 2024-10-30 18:32:40,348 ceo : Action 2/3: I chose to read the content of a file named "test_file.txt". After executing this action, I retrieved the content of the file, which is "hello world".
+    [DEBUG] 2024-10-30 18:32:41,970 ceo : Action 3/3: I chose to write content to a file, specifically creating or updating the file named "test_file.txt" with the content "world hello".
+    [DEBUG] 2024-10-30 18:32:43,792 ceo : Conclusion: Your intention is to create a file named "test_file.txt", write "hello world" into it, read its contents, and then write "world hello" into the same file. I have successfully achieved your intention. I created the file and wrote "hello world" into it, then I read the contents and confirmed it was "hello world", and finally, I updated the file with "world hello". Everything you wanted has been accomplished.
+    ```
