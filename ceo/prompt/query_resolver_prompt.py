@@ -10,7 +10,9 @@ log = logging.getLogger('ceo.prompt')
 class QueryResolverPrompt(Prompt):
     def __init__(self, query: str, ext_context: str = ''):
         prompt = (f'Precondition: There is a user query: "{query}"\n'
-                  "Task: What you need to do is to tell user's intention based on user query. "
+                  "Task: What you need to do is to tell user's intention based on [user query]. \n"
+                  "Task Redeclare: To tell user's intention based on [user query]. "
+                  "Not your (you are the assistant) intention.\n"
                   "(Break user's intention down into several minimum steps)\n"
                   'Output format: Step[n]:[Action of the step]\n'
                   'Example output: Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;\n')
