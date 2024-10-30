@@ -14,10 +14,13 @@ class QueryResolverPrompt(Prompt):
                   "(Break user's intention down into several minimum steps)\n"
                   'Output format: Step[n]:[Action of the step]\n'
                   'Example output: Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;\n')
+        self.__query = query
         super().__init__(prompt, ext_context)
         log.debug(f'QueryResolverPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> tuple[str, str]:
+        if self.__query == '':
+            return f"User's intention: Don't do anything.", f"User's query(Step by step): Don't do anything."
         user_query_by_step = model.invoke(self.prompt).content
         summary_prompt = ("Task: Summarize user's query into a sentence (Which includes all the key information)\n"
                           f"User's query by step: \"{user_query_by_step}\"\n"
