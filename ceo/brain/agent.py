@@ -43,10 +43,9 @@ class Agent:
     def reassign(self, query: str):
         self.query_high_level, self.query_by_step = (
             QueryResolverPrompt(query=query, ext_context=self.ext_context).invoke(self.model))
-        self.reposition()
-        return self
+        return self.reposition()
 
-    def step_quiet(self) -> list:
+    def step_quiet(self) -> str:
         if self.act_count < len(self.schedule):
             analysing = AnalyserPrompt(
                 query=self.query_by_step,
@@ -56,12 +55,13 @@ class Agent:
             )
             action, params = analysing.invoke(self.model)
             executing = ExecutorPrompt(params=params, action=action, ext_context=self.ext_context)
-            self.prev_results.append(executing.invoke(model=self.model))
+            action_str = f'Action {self.act_count + 1}/{len(self.schedule)}: {executing.invoke(model=self.model)}'
+            self.prev_results.append(action_str)
             self.act_count += 1
-            log.debug(f'Action {self.act_count}/{len(self.schedule)}: {self.prev_results[-1]}')
-            return self.prev_results
+            log.debug(action_str)
+            return action_str
         self.reposition()
-        return self.prev_results
+        return ''
 
     def just_do_it(self) -> str | None:
         if not self.plan():
