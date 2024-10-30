@@ -22,9 +22,11 @@ class QueryResolverPrompt(Prompt):
         if self.__query == '':
             return f"User's intention: Don't do anything.", f"User's query(Step by step): Don't do anything."
         user_query_by_step = model.invoke(self.prompt).content
-        summary_prompt = ("Task: Summarize user's query into a sentence (Which includes all the key information)\n"
-                          f"User's query by step: \"{user_query_by_step}\"\n"
-                          "Output format: string\n"
+        summary_prompt = ("Task: Summarize user's query into a short sentence "
+                          "which includes all the key information from user's query"
+                          "(User's query is provided below at [User's query])\n"
+                          f"User's query: \"{user_query_by_step}\"\n"
+                          "Output format: string(summarization of [User's query])\n"
                           "Output example: To find toys for you in the room.\n")
         summary = model.invoke(summary_prompt).content
         return f"User's intention: {summary}", f"User's query(Step by step): {user_query_by_step}"
