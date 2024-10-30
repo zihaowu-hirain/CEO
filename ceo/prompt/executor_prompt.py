@@ -38,7 +38,7 @@ class ExecutorPrompt(Prompt):
                   f'Tool: {self.action}\n'
                   f'Params(choice): {self.params}\n'
                   f'Result: {result}\n')
-        prompt = f'{self.ext_context}\n{'-'*5}You are my assistant{'-'*5}\n{prompt}'
+        prompt = f'{self.ext_context}{self.seperator}{prompt}'
         log.debug(f'Executor prompt(after): {prompt}')
         if stream:
             return model.stream(prompt)
