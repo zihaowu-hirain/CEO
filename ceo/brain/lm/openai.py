@@ -1,9 +1,9 @@
 import langchain_openai
 from langchain_core.language_models import BaseChatModel
 
-DEFAULT_TMP = 0.3
-DEFAULT_TOP_P = 0.3
-DEFAULT_GPT = 'gpt-3.5-turbo'
+DEFAULT_TMP = 0.5
+DEFAULT_TOP_P = 0.5
+DEFAULT_GPT = 'gpt-4o-mini'
 
 
 def get_lm(key: str = None, name: str = DEFAULT_GPT, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P,
