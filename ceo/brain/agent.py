@@ -39,7 +39,12 @@ class Agent:
         self.schedule = list()
         self.act_count = 0
 
-    def step_quiet(self, query: str) -> list:
+    def reassign(self, query: str):
+        self.query_high_level, self.query_by_step = (
+            QueryResolverPrompt(query=query, ext_context=self.ext_context).invoke(self.model))
+        self.renew()
+
+    def step_quiet(self) -> list:
         if self.act_count < len(self.schedule):
             analysing = AnalyserPrompt(
                 query=self.query_by_step,
