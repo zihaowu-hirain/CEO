@@ -16,7 +16,12 @@ class SchedulerPrompt(Prompt):
             prompt[action.name] = str(action)
         prompt = ('Precondition: Below are the tools you can use (you can only use the following tools). '
                   f'Now there is a user query: "{query}"\n'
-                  'Task: What you need to do is to plan your workflow based on the tools you have to accomplish the user query '
+                  'Task: What you need to do is to plan your workflow based on the tools and user query.\n'
+                  '(User query might contains many steps, '
+                  'think carefully about every step and plan your workflow based on your tools)\n'
+                  "(User's query might need to use one tool more than once, "
+                  'but think carefully about how many times a tool needs to be used based on practical query, '
+                  'do not abuse or overuse!)\n'
                   "(Sometimes some of the tools are irrelevant to user's query. Make sure to use tools properly.)\n"
                   'Output format: [{tool1.name}, {tool2.name}, ...] sequential and well-organized with no additional redundant information\n'
                   'Example output: [do_step_one, do_step_two, do_step_three]\n'
