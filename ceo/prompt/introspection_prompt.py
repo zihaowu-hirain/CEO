@@ -17,11 +17,12 @@ class IntrospectionPrompt(Prompt):
                   "Task: tell user's intention first, "
                   "then think seriously whether you have achieve user's query based on actions you have performed. "
                   "Finally, provide the results wanted by user according to [user query]. "
-                  '(If you did not achieve, explain why?)\n'
+                  "(If you did not achieve user's query, explain why?)\n"
                   'Output format: text.\n'
                   'Example output: Your intention is to calculate math, and I was trying to open calculator. '
                   'But i failed because i did not have that ability to open calculator. '
-                  'I have not achieve your intention.\n'
+                  'I have not achieve your intention. '
+                  '(Your output should be concise and comprehensive)\n'
                   f'Actions You Have Performed (from left to right): {prev_results}\n')
         super().__init__(prompt, ext_context)
         log.debug(f'IntrospectionPrompt: {self.prompt}')
