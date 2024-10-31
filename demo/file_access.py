@@ -1,11 +1,12 @@
 import logging
-import os
+
+from dotenv import load_dotenv
 
 from ceo import Agent, get_openai_model
 
 logging.getLogger('ceo').setLevel(logging.DEBUG)
 
-os.environ['OPENAI_API_KEY'] = 'sk-...'
+load_dotenv()
 
 
 def open_file(filename: str) -> str:

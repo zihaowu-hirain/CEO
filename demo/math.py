@@ -1,10 +1,11 @@
 import logging
-import os
+
+from dotenv import load_dotenv
 
 from ceo import Agent, get_openai_model
 from sympy import simplify
 
-os.environ['OPENAI_API_KEY'] = 'sk-...'
+load_dotenv()
 log = logging.getLogger("ceo")
 log.setLevel(logging.DEBUG)
 

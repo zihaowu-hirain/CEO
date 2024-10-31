@@ -1,10 +1,10 @@
 import logging
-import os
 
 from ceo import Agent, get_openai_model
 from sympy import simplify
+from dotenv import load_dotenv
 
-os.environ['OPENAI_API_KEY'] = 'sk-...'
+load_dotenv()
 log = logging.getLogger("ceo")
 log.setLevel(logging.DEBUG)
 
@@ -37,7 +37,7 @@ def write_file(filename: str, content: str) -> bool:
 
 ceo = Agent(functions=[constant_calculate, write_file], model=get_openai_model())
 
-ceo.assign("Here is a sphere with radius (4.5) and pi here is (3.14159), find the area and volume respectively then write the results into a file called 'result.txt'.")
+ceo.assign("Here is a sphere with radius 3.1121 and pi here is (3.14159), find the area and volume respectively then write the results into a file called 'result.txt'.")
 
 result = ceo.just_do_it()
 
