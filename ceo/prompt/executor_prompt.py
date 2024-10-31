@@ -31,7 +31,8 @@ class ExecutorPrompt(Prompt):
         result = self.action.function(**self.params)
         prompt = ('Precondition: Below is a tool, your choice(params) for the tool, '
                   'and the result of your using the tool.\n'
-                  'Task: Explain what you have done, and what the result is.\n'
+                  'Task: Explain what you have done, and write down the result detailed. '
+                  '(The result is shown below at [Result])\n'
                   'Output format: text.\n'
                   'Output contains: {the_choice_you_made}, {what_you_have_done}\n'
                   'Output example: I wrote a wechat message which says "Bonjour". The result is "success"\n'
