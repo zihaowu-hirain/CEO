@@ -16,7 +16,7 @@ class IntrospectionPrompt(Prompt):
                   f'User query: "{query}"\n'
                   "Task: tell user's intention first, "
                   "then think seriously whether you have achieve user's query based on actions you have performed. "
-                  "Finally, show all the results you have got from your choices of actions. "
+                  "Finally, provide the results wanted by user according to [user query]. "
                   '(If you did not achieve, explain why?)\n'
                   'Output format: text.\n'
                   'Example output: Your intention is to calculate math, and I was trying to open calculator. '
