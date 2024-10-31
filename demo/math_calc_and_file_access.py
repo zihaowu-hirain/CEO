@@ -35,10 +35,16 @@ def write_file(filename: str, content: str) -> bool:
     return True
 
 
-ceo = Agent(functions=[constant_calculate, write_file], model=get_openai_model())
+ceo = Agent(abilities=[constant_calculate, write_file], brain=get_openai_model())
 
 ceo.assign("Here is a sphere with radius 3.1121 and pi here is (3.14159), find the area and volume respectively then write the results into a file called 'result.txt'.")
 
+print(ceo)
+
+# ceo.deprive_abilities([write_file, constant_calculate])
+
 result = ceo.just_do_it()
+
+print(ceo)
 
 print(result)

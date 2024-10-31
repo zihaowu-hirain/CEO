@@ -23,7 +23,7 @@ def constant_calculate(expr: str) -> float:
     return simplify(expr)
 
 
-ceo = Agent(functions=[constant_calculate], model=get_openai_model())
+ceo = Agent(abilities=[constant_calculate], brain=get_openai_model())
 
 result = ceo.assign("Here is a sphere with radius 4.5 and pi here is 3.14159, find the area and volume respectively.").just_do_it()
 

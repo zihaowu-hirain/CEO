@@ -49,7 +49,7 @@
             return simplify(expr)
 
 
-        agent = Agent(functions=[constant_calculate], model=get_openai_model())
+        agent = Agent(abilities=[constant_calculate], brain=get_openai_model())
 
         result = agent.assign("Here is a sphere with radius 4.5 and pi here is 3.14159, find the area and volume respectively.").just_do_it()
 
@@ -166,7 +166,7 @@
             return True
 
 
-        ceo = Agent(functions=[constant_calculate, write_file], model=get_openai_model())
+        ceo = Agent(abilities=[constant_calculate, write_file], brain=get_openai_model())
 
         ceo.assign("Here is a sphere with radius 4.5 and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
 
