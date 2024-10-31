@@ -123,4 +123,4 @@ class Agent:
             ext_context=self.ext_context).invoke(self.model))
         log.debug(f'Conclusion: {response}')
         self.reposition()
-        return f'{self.name}: response'
+        return f'{self.name}: {response}'
