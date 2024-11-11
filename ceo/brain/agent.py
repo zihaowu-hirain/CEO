@@ -9,7 +9,8 @@ from ceo.prompt import (
     AnalyserPrompt,
     ExecutorPrompt,
     IntrospectionPrompt,
-    QueryResolverPrompt
+    QueryResolverPrompt,
+    SelfIntroducePrompt
 )
 
 log = logging.getLogger('ceo')
@@ -30,6 +31,8 @@ class Agent:
         )
         for ability in abilities:
             self.actions.append(Action(ability))
+        self.introduction = str()
+        self.introduce()
 
     def __repr__(self):
         actions_str = '['
@@ -57,22 +60,31 @@ class Agent:
     def __str__(self):
         return self.__repr__()
 
-    def grant_ability(self, ability: Callable):
+    def introduce(self, update: bool = False) -> str:
+        if self.introduction == '' or update:
+            self.introduction = SelfIntroducePrompt(agent=self).invoke(self.model)
+        return self.introduction
+
+    def grant_ability(self, ability: Callable, update_introduction: bool = True):
         self.actions.append(Action(ability))
+        self.introduce(update_introduction)
 
     def grant_abilities(self, abilities: list[Callable]):
         for ability in abilities:
-            self.grant_ability(ability)
+            self.grant_ability(ability, update_introduction=False)
+        self.introduce(update=True)
 
-    def deprive_ability(self, ability: Callable):
+    def deprive_ability(self, ability: Callable, update_introduction: bool = True):
         action = Action(ability)
         for _action in self.actions:
             if _action.name == action.name:
                 self.actions.remove(_action)
+        self.introduce(update_introduction)
 
     def deprive_abilities(self, abilities: list[Callable]):
         for ability in abilities:
-            self.deprive_ability(ability)
+            self.deprive_ability(ability, update_introduction=False)
+        self.introduce(update=True)
 
     def plan(self) -> list:
         scheduling = SchedulerPrompt(query=self.query_by_step, actions=self.actions, ext_context=self.ext_context)
