@@ -18,7 +18,7 @@
     pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
-## These Projects Are Build With `ceo-py`
+## These Projects Are Built With `ceo-py`
 
 - [CEO-Alfred-TheProcessManager](https://github.com/vortezwohl/CEO-Alfred-TheProcessManager)
 
