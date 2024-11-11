@@ -18,6 +18,14 @@
     pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
+## These Projects Are Build With `ceo-py`
+
+- [CEO-Alfred-TheProcessManager](https://github.com/vortezwohl/CEO-Alfred-TheProcessManager)
+
+- [CEO-Tomohiro](https://github.com/vortezwohl/CEO-Tomohiro)
+
+- [CEO-Captain](https://github.com/vortezwohl/CEO-Captain)
+
 ## Examples
 
 - ### Simple Task
