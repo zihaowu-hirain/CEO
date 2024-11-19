@@ -10,7 +10,8 @@ log = logging.getLogger('ceo.prompt')
 
 class SelfIntroducePrompt(Prompt):
     def __init__(self, agent: any, ext_context: str = ''):
-        prompt = ('Task: Introduce yourself briefly base on below information.\n'
+        prompt = ('Task: Introduce yourself briefly base on below information.(Only tell what you exactly '
+                  'can do base on your abilities)\n'
                   f'Information: {agent.__repr__()}\n'
                   f'Output format: My name is <name>. What can i do: ...\n')
         super().__init__(prompt, ext_context)

@@ -5,6 +5,7 @@ import sympy
 from dotenv import load_dotenv
 
 from ceo import Agent, get_openai_model
+from ceo.util import agentic
 
 load_dotenv()
 log = logging.getLogger("ceo")
@@ -56,37 +57,18 @@ def write_file(filename: str, content: str) -> bool:
     return True
 
 
-def talk_to_jack(query: str) -> str:
-    """
-        Initiates a conversation with 'Jack', an AI agent with mathematical calculation abilities.
-        Just initiates only a single conversation with Jack, you can solve any math problem.
-
-        Args:
-            query (str): The input query to be processed by Jack.
-
-        Returns:
-            str: Jack's response to the query.
-    """
-    _agent = Agent(abilities=[calculator], brain=model, name='Jack')
-    return _agent.assign(query).just_do_it()
+@agentic(Agent(abilities=[calculator], brain=model, name='Jack'))
+def agent1():
+    return
 
 
-def talk_to_tylor(query: str) -> str:
-    """
-        Initiates a conversation with 'Tylor', an AI agent with file access abilities.
-
-        Args:
-            query (str): The input query to be processed by Tylor.
-
-        Returns:
-            str: Tylor's response to the query.
-    """
-    _agent = Agent(abilities=[write_file], brain=model, name='Tylor')
-    return _agent.assign(query).just_do_it()
+@agentic(Agent(abilities=[write_file], brain=model, name='Tylor'))
+def agent2():
+    return
 
 
 if __name__ == '__main__':
-    agent = Agent(abilities=[talk_to_jack, talk_to_tylor], brain=model)
-    agent.assign("Here is a sphere with radius 9 and pi here is 3.14159, "
+    agent = Agent(abilities=[agent1, agent2], brain=model)
+    agent.assign("Here is a sphere with radius 9 meters and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()
