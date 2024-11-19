@@ -43,6 +43,19 @@ def calculator(expr: str) -> float | str:
         return se.__repr__()
 
 
+def write_file(filename: str, content: str) -> bool:
+    """
+    Write content to a file, creating the file if it does not exist.
+
+    :param filename: The path to the file to be written.
+    :param content: The content to be written to the file.
+    :return: True if the write operation is successful.
+    """
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(content)
+    return True
+
+
 def talk_to_jack(query: str) -> str:
     """
         Initiates a conversation with 'Jack', an AI agent with mathematical calculation abilities.
@@ -61,7 +74,7 @@ def talk_to_jack(query: str) -> str:
 
 def talk_to_tylor(query: str) -> str:
     """
-        Initiates a conversation with 'Tylor', an AI agent without specific abilities.
+        Initiates a conversation with 'Tylor', an AI agent with file access abilities.
 
         Args:
             query (str): The input query to be processed by Tylor.
@@ -69,11 +82,12 @@ def talk_to_tylor(query: str) -> str:
         Returns:
             str: Tylor's response to the query.
     """
-    _agent = Agent(abilities=[], brain=model, name='Tylor')
+    _agent = Agent(abilities=[write_file], brain=model, name='Tylor')
     return _agent.assign(query).just_do_it()
 
 
 if __name__ == '__main__':
     agent = Agent(abilities=[talk_to_jack, talk_to_tylor], brain=model)
-    agent.assign("Here is a sphere with radius 4.5 and pi here is 3.14159, "
-                 "find the area and volume respectively.").just_do_it()
+    agent.assign("Here is a sphere with radius 9 and pi here is 3.14159, "
+                 "find the area and volume respectively, "
+                 "then write the results into a file called 'result.txt'.").just_do_it()
