@@ -2,7 +2,7 @@ import json
 from typing import Callable
 
 
-class Action:
+class Ability:
     def __init__(self, function: Callable):
         self.name: str = function.__name__
         self.description: str = function.__doc__

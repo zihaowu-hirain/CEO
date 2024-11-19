@@ -3,7 +3,7 @@ from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.action.action import Action
+from ceo.ability.ability import Ability
 from ceo.prompt import (
     SchedulerPrompt,
     AnalyserPrompt,
@@ -19,7 +19,7 @@ DEFAULT_NAME = 'CEO (Default)'
 
 class Agent:
     def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str = DEFAULT_NAME, query: str = '', ext_context: str = ''):
-        self.actions = list()
+        self.abilities = list()
         self.prev_results = list()
         self.schedule = list()
         self.act_count = 0
@@ -30,20 +30,20 @@ class Agent:
             QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
         )
         for ability in abilities:
-            self.actions.append(Action(ability))
+            self.abilities.append(Ability(ability))
         self.introduction = str()
         self.introduce()
 
     def __repr__(self):
-        actions_str = '['
-        for action in self.actions:
-            actions_str += f'{action.name}, '
-        actions_str = actions_str[:-2] + ']'
-        if actions_str == ']':
-            actions_str = '[]'
+        ability_str = '['
+        for ability in self.abilities:
+            ability_str += f'{ability.name}, '
+        ability_str = ability_str[:-2] + ']'
+        if ability_str == ']':
+            ability_str = '[]'
         schedule_str = '['
-        for action in self.schedule:
-            schedule_str += f'{action.name}, '
+        for ability in self.schedule:
+            schedule_str += f'{ability.name}, '
         schedule_str = schedule_str[:-2] + ']'
         if schedule_str == ']':
             schedule_str = '[]'
@@ -53,7 +53,7 @@ class Agent:
         return (f'Agent: \n'
                 f'- Name: {self.name}\n'
                 f'- Brain: {self.model.dict()['model_name']}\n'
-                f'- Abilities: {actions_str}\n'
+                f'- Abilities: {ability_str}\n'
                 f'- Schedule: {schedule_str}\n'
                 f'- ExternalContext: {ext_context}')
 
@@ -66,7 +66,7 @@ class Agent:
         return self.introduction
 
     def grant_ability(self, ability: Callable, update_introduction: bool = True):
-        self.actions.append(Action(ability))
+        self.abilities.append(Ability(ability))
         self.introduce(update_introduction)
 
     def grant_abilities(self, abilities: list[Callable]):
@@ -75,10 +75,10 @@ class Agent:
         self.introduce(update=True)
 
     def deprive_ability(self, ability: Callable, update_introduction: bool = True):
-        action = Action(ability)
-        for _action in self.actions:
-            if _action.name == action.name:
-                self.actions.remove(_action)
+        ability = Ability(ability)
+        for _ability in self.abilities:
+            if _ability.name == ability.name:
+                self.abilities.remove(_ability)
         self.introduce(update_introduction)
 
     def deprive_abilities(self, abilities: list[Callable]):
@@ -87,7 +87,7 @@ class Agent:
         self.introduce(update=True)
 
     def plan(self) -> list:
-        scheduling = SchedulerPrompt(query=self.query_by_step, actions=self.actions, ext_context=self.ext_context)
+        scheduling = SchedulerPrompt(query=self.query_by_step, actions=self.abilities, ext_context=self.ext_context)
         self.schedule = scheduling.invoke(self.model)
         log.debug(f'Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
         return self.schedule

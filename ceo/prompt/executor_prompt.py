@@ -3,14 +3,14 @@ from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.action.action import Action
+from ceo.ability.ability import Ability
 from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
 
 class ExecutorPrompt(Prompt):
-    def __init__(self, params: dict, action: Action, ext_context: str = ''):
+    def __init__(self, params: dict, action: Ability, ext_context: str = ''):
         self.action = action
         self.params = params
         prompt = ('Precondition: Below is a tool and your choice(params) for the tool.\n'

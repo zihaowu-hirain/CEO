@@ -3,14 +3,14 @@ import logging
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.action.action import Action
+from ceo.ability.ability import Ability
 from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
 
 class AnalyserPrompt(Prompt):
-    def __init__(self, query: str, prev_results: list, action: Action, ext_context: str = ''):
+    def __init__(self, query: str, prev_results: list, action: Ability, ext_context: str = ''):
         self.action = action
         prev_results_str = str()
         prompt = str()
@@ -45,7 +45,7 @@ class AnalyserPrompt(Prompt):
         super().__init__(prompt, ext_context)
         log.debug(f'AnalyserPrompt: {self.prompt}')
 
-    def invoke(self, model: BaseChatModel) -> tuple[Action, dict]:
+    def invoke(self, model: BaseChatModel) -> tuple[Ability, dict]:
         result = model.invoke(self.prompt).content
         param = json.loads(result)
         return self.action, param

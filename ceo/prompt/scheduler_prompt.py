@@ -2,14 +2,14 @@ import logging
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.action.action import Action
+from ceo.ability.ability import Ability
 from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
 
 class SchedulerPrompt(Prompt):
-    def __init__(self, query: str, actions: list[Action], ext_context: str = ''):
+    def __init__(self, query: str, actions: list[Ability], ext_context: str = ''):
         self.actions = actions
         prompt = dict()
         for action in self.actions:
@@ -29,7 +29,7 @@ class SchedulerPrompt(Prompt):
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
 
-    def invoke(self, model: BaseChatModel) -> list[Action]:
+    def invoke(self, model: BaseChatModel) -> list[Ability]:
         results = model.invoke(self.prompt)
         results = results.content[1:-1].split(',')
         _fin_results = list()
