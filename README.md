@@ -172,7 +172,6 @@
             return _agent.assign(query).just_do_it()
         
         
-        
         def talk_to_tylor(query: str) -> str:
             """
                 Initiates a conversation with 'Tylor', an AI agent with file access abilities.
