@@ -44,7 +44,7 @@ class DocstringPrompt(Prompt):
         '''
         prompt = ('Task: Generate docstring for this function.\n'
                   f'Function: {function_repr}\n'
-                  f'Output format: {docstring_format}\n')
+                  f'Output format (docstring format): {docstring_format}\n')
         super().__init__(prompt, ext_context)
         log.debug(f'DocstringPrompt: {self.prompt}')
 
