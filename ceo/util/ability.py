@@ -1,9 +1,11 @@
+from typing import Callable
+
 from langchain_core.language_models import BaseChatModel
 
 from ceo import get_openai_model
 
 
-def docstring_generator(func: callable, brain: BaseChatModel):
+def docstring_generator(func: Callable, brain: BaseChatModel):
     docstring = func.__doc__
     if docstring in ('', None):
         docstring = brain
