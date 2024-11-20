@@ -7,14 +7,9 @@ from ceo.prompt import DocstringPrompt
 
 
 def docstring_generator(func: Callable, brain: BaseChatModel):
-    docstring = func.__doc__
-    if docstring in ('', None):
-        docstring = DocstringPrompt(func).invoke(brain)
-
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-    wrapper.__doc__ = docstring
-    return wrapper
+    if func.__doc__ in ('', None):
+        func.__doc__ = DocstringPrompt(func).invoke(brain)
+    return func
 
 
 def ability(brain: BaseChatModel):
