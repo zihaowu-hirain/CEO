@@ -14,11 +14,10 @@ from ceo.prompt import (
 )
 
 log = logging.getLogger('ceo')
-DEFAULT_NAME = 'CEO (Default)'
 
 
 class Agent:
-    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str = DEFAULT_NAME, query: str = '', ext_context: str = ''):
+    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str, query: str = '', ext_context: str = ''):
         self.abilities = list()
         self.prev_results = list()
         self.schedule = list()
