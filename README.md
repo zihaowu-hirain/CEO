@@ -34,64 +34,49 @@
 
         ```python
         import logging
-        import os
 
         from ceo import Agent, get_openai_model
+        from ceo.util import ability
         from sympy import simplify
+        from dotenv import load_dotenv
 
-        os.environ['OPENAI_API_KEY'] = 'sk-...'
+        load_dotenv()
         log = logging.getLogger("ceo")
         log.setLevel(logging.DEBUG)
 
-
+        @ability
         def constant_calculate(expr: str) -> float:
-            """
-            calculate the result of a math expression of constant numbers.
-            :param:
-                expr (str): a math expression of constant numbers.
-            :return:
-                float: the result of the expression.
-            :example:
-                constant_calculate("1 + 3 + 2") -> 6.0
-            """
             return simplify(expr)
 
-
+        @ability
         def write_file(filename: str, content: str) -> bool:
-            """
-            Write content to a file, creating the file if it does not exist.
-
-            :param filename: The path to the file to be written.
-            :param content: The content to be written to the file.
-            :return: True if the write operation is successful.
-            """
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
             return True
 
-
-        ceo = Agent(abilities=[constant_calculate, write_file], brain=get_openai_model())
-
-        ceo.assign("Here is a sphere with radius 4.5 and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
-
-        result = ceo.just_do_it()
-
-        print(result)
+        ceo = Agent(abilities=[constant_calculate, write_file], brain=get_openai_model(), name='test')
+        ceo.assign("Here is a sphere with radius 3.1121 and pi here is (3.14159), find the area and volume respectively then write the results into a file called 'result.txt'.")
+        ceo.just_do_it()
         ```
 
         ```
         # result.txt
-        Surface Area: 254.468790000000
-        Volume: 381.703185
+        Surface Area: 121.707287767968
+        Volume: 126.255083420897
         ```
 
         ```
-        [DEBUG] 2024-10-30 18:42:27,566 ceo : Schedule: ['constant_calculate', 'constant_calculate', 'write_file']. Query: "User's intention: Calculate the surface area and volume of a sphere with radius 4.5 using the formulas \( A = 4 \pi r^2 \) and \( V = \frac{4}{3} \pi r^3 \), then write the results to 'result.txt'.".
-        [DEBUG] 2024-10-30 18:42:29,571 ceo : Action 1/3: I chose to calculate the expression "4 * 3.14159 * (4.5 ** 2)", which represents the area of a circle with a radius of 4.5. The result of this calculation is 254.468790000000.
-        [DEBUG] 2024-10-30 18:42:31,550 ceo : Action 2/3: I chose to calculate the expression "(4/3) * 3.14159 * (4.5 ** 3)", which represents the volume of a sphere with a radius of 4.5. The result of this calculation is 381.703185.
-        [DEBUG] 2024-10-30 18:42:33,607 ceo : Action 3/3: I chose to write a file, and I have written the content "Surface Area: 254.468790000000\nVolume: 381.703185" to a file named "result.txt".
-        [DEBUG] 2024-10-30 18:42:35,317 ceo : Conclusion: Your intention is to calculate the surface area and volume of a sphere with a radius of 4.5 using the specified formulas, and then write the results to 'result.txt'. I have successfully achieved your intention. I calculated the surface area as 254.468790000000 and the volume as 381.703185, and I wrote these results to the file 'result.txt'.
-        Your intention is to calculate the surface area and volume of a sphere with a radius of 4.5 using the specified formulas, and then write the results to 'result.txt'. I have successfully achieved your intention. I calculated the surface area as 254.468790000000 and the volume as 381.703185, and I wrote these results to the file 'result.txt'.
+        [DEBUG] 2024-11-21 00:34:34,348 ceo : Agent: test, Schedule: ['constant_calculate', 'constant_calculate', 'write_file']. Query: "User's intention: Calculate the surface area and volume of a sphere with radius 3.1121 using specified formulas and write the results to 'result.txt'.".
+        [DEBUG] 2024-11-21 00:34:37,017 ceo : Agent: test, Action 1/3: I chose to use the tool to evaluate a mathematical expression. Specifically, I input the expression '4*3.14159*3.1121**2' into the function designed to compute the result of mathematical expressions. The result of this calculation was 121.707287767968.
+        [DEBUG] 2024-11-21 00:34:39,399 ceo : Agent: test, Action 2/3: I chose to use the tool to evaluate a mathematical expression. Specifically, I input the expression '4/3*3.14159*3.1121**3' into the function designed to compute the result of mathematical expressions. The result of this calculation is 126.255083420897.
+        [DEBUG] 2024-11-21 00:34:41,764 ceo : Agent: test, Action 3/3: I chose to use the tool to write a file. Specifically, I provided the filename "result.txt" and the content "Surface Area: 121.707287767968\nVolume: 126.255083420897". The operation was successful, and the result indicates that the content was successfully written to the file. The result is "True".
+        [DEBUG] 2024-11-21 00:34:47,074 ceo : Agent: test, Conclusion: Your intention is to calculate the surface area and volume of a sphere with a radius of 3.1121 and write the results to 'result.txt'. I have successfully achieved your intention. 
+
+        The calculations I performed are as follows:
+        - Surface Area: 121.707287767968
+        - Volume: 126.255083420897
+
+        These results have been written to 'result.txt' as requested.
         ```
 
 - ### Multi-agent Task
@@ -104,36 +89,17 @@
 
         import sympy
         from dotenv import load_dotenv
-
         from ceo import Agent, get_openai_model
-        from ceo.util import agentic
+        from ceo.util import agentic, ability
 
         load_dotenv()
         log = logging.getLogger("ceo")
         log.setLevel(logging.DEBUG)
-
+        sys.set_int_max_str_digits(10**8)
         model = get_openai_model()
 
-        sys.set_int_max_str_digits(10**8)
-
-
+        @ability
         def calculator(expr: str) -> float | str:
-            """
-            What does this function do: Evaluates a mathematical expression and returns the result or an error message.
-
-            When to use this function: Don't calculate any math problems by yourself, you are not good at math,
-            you must use this function to calculate **all** the math calculations, this is the rule you must follow seriously.
-
-            Args:
-                expr (str): A string representing the mathematical expression to be evaluated (Which only contains const numbers).
-                The expression can be simplified and should not contain commas or underscores.
-
-            Returns:
-                float | str: The result of the evaluated expression as a float, or an error message as a string.
-
-            Examples:
-                calculator('2.2+7*10') => 72.2
-            """
             expr = expr.replace(',', '')
             expr = expr.replace('_', '')
             try:
@@ -144,36 +110,25 @@
             except sympy.SympifyError as se:
                 return se.__repr__()
 
-
+        @ability
         def write_file(filename: str, content: str) -> bool:
-            """
-            Write content to a file, creating the file if it does not exist.
-
-            :param filename: The path to the file to be written.
-            :param content: The content to be written to the file.
-            :return: True if the write operation is successful.
-            """
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
             return True
-
 
         @agentic(Agent(abilities=[calculator], brain=model, name='Jack'))
         def agent1():
             return
 
-
         @agentic(Agent(abilities=[write_file], brain=model, name='Tylor'))
         def agent2():
             return
 
-
-        if __name__ == '__main__':
-            agent = Agent(abilities=[agent1, agent2], brain=model)
-            agent.assign("Here is a sphere with radius 9 meters and pi here is 3.14159, "
-                        "find the area and volume respectively, "
-                        "then write the results into a file called 'result.txt'.").just_do_it()
-
+        
+        agent = Agent(abilities=[agent1, agent2], brain=model, name='test')
+        agent.assign("Here is a sphere with radius 5 meters and pi here is 3.14159, "
+                    "find the area and volume respectively, "
+                    "then write the results into a file called 'result.txt'.").just_do_it()
         ```
 
         ```
