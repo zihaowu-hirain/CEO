@@ -36,7 +36,7 @@ class Agent:
     def __repr__(self):
         ability_str = '['
         for ability in self.abilities:
-            ability_str += f'{ability.name}, '
+            ability_str += f'{ability}, '
         ability_str = ability_str[:-2] + ']'
         if ability_str == ']':
             ability_str = '[]'
