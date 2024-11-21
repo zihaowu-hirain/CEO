@@ -30,8 +30,12 @@ class SchedulerPrompt(Prompt):
         log.debug(f'SchedulerPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> list[Ability]:
-        results = model.invoke(self.prompt)
-        results = results.content[1:-1].split(',')
+        results = model.invoke(self.prompt).content
+        if not results.startswith('['):
+            results = results[results.find('['):]
+        if not results.endswith(']'):
+            results = results[:results.find(']') + 1]
+        results = results[1:-1].split(',')
         _fin_results = list()
         for _a_result in results:
             for action in self.actions:
