@@ -41,18 +41,15 @@
 
         load_dotenv()
 
-
         @ability
         def constant_calculate(expr: str) -> float:
             return simplify(expr)
-
 
         @ability
         def write_file(filename: str, content: str) -> bool:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
             return True
-
 
         if __name__ == '__main__':
             ceo = Agent(abilities=[constant_calculate, write_file], brain=get_openai_model(), name='test')
@@ -96,7 +93,6 @@
 
         model = get_openai_model()
 
-
         @ability
         def calculator(expr: str) -> float | str:
             expr = expr.replace(',', '')
@@ -109,23 +105,19 @@
             except sympy.SympifyError as se:
                 return se.__repr__()
 
-
         @ability
         def write_file(filename: str, content: str) -> bool:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
             return True
 
-
         @agentic(Agent(abilities=[calculator], brain=model, name='Jack'))
         def agent1():
             return
 
-
         @agentic(Agent(abilities=[write_file], brain=model, name='Tylor'))
         def agent2():
             return
-
 
         if __name__ == '__main__':
             agent = Agent(abilities=[agent1, agent2], brain=model, name='test')
