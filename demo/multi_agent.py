@@ -1,4 +1,3 @@
-import logging
 import sys
 
 import sympy
@@ -8,16 +7,9 @@ from ceo import Agent, get_openai_model
 from ceo.util import agentic, ability
 
 load_dotenv()
-log = logging.getLogger("ceo")
-log.setLevel(logging.DEBUG)
-# log = logging.getLogger("ceo.ability")
-# log.setLevel(logging.DEBUG)
-# log = logging.getLogger('ceo.agent')
-# log.setLevel(logging.DEBUG)
+sys.set_int_max_str_digits(10**8)
 
 model = get_openai_model()
-
-sys.set_int_max_str_digits(10**8)
 
 
 @ability
@@ -51,7 +43,8 @@ def agent2():
 
 
 if __name__ == '__main__':
-    agent = Agent(abilities=[agent1, agent2], brain=get_openai_model(), name='test')
-    agent.assign("Here is a sphere with a radius of 9.987 cm and pi here is 3.14159, "
+    agent = Agent(abilities=[agent1, agent2], brain=model, name='test')
+    result = agent.assign("Here is a sphere with a radius of 9.987 cm and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()
+    print(result)
