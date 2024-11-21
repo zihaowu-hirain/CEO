@@ -1,4 +1,8 @@
+import logging
+
 from ceo import Agent
+
+log = logging.getLogger('ceo.ability')
 
 
 def agentic(agent: Agent):
@@ -15,5 +19,6 @@ def agentic(agent: Agent):
                         f'query (str): The input query to be processed by {agent.name}.\n'
                         f'\nReturns:\n'
                         f'str: {agent.name}\'s response to the query.\n')
+        log.debug(f'Agent dispatcher generated. {wrapper.__name__}: {wrapper.__doc__}')
         return wrapper
     return decorator
