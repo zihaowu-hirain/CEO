@@ -10,6 +10,10 @@ from ceo.util import agentic, ability
 load_dotenv()
 log = logging.getLogger("ceo")
 log.setLevel(logging.DEBUG)
+log = logging.getLogger("ceo.ability")
+log.setLevel(logging.DEBUG)
+log = logging.getLogger('ceo.agent')
+log.setLevel(logging.DEBUG)
 
 model = get_openai_model()
 
