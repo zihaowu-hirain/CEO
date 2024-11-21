@@ -11,7 +11,8 @@ def agentic(agent: Agent):
             return agent.assign(query).just_do_it()
         wrapper.__name__ = f'talk_to_{agent.name}'
         wrapper.__doc__ = (f'Initiates a conversation with "{agent.name}" to use its abilities.\n'
-                        f'You must tell detailed and exactly what you need "{agent.name}" to do.\n'
+                        f'First, carefully consider and explore {agent.name}\'s potential abilities in solving your tasks, '
+                        f'then, if you need {agent.name}\'s help, you must tell detailed and exactly what you need {agent.name} to do.\n'
                         f'\nSelf introduction from {agent.name}: "{agent.introduction}".\n'
                         f'\nBelow is detailed information about {agent.name}:\n'
                         f'{"-"*6}\n{agent}\n{"-"*6}\n'
