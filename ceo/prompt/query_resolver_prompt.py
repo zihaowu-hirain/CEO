@@ -13,8 +13,10 @@ class QueryResolverPrompt(Prompt):
                   "Task: What you need to do is to tell user's intention based on [user query]. \n"
                   "Task Redeclare: To tell user's intention based on [user query]. "
                   "Not your (you are the assistant) intention.\n"
-                  "(Firstly, deduce the user's query step by step; "
-                  "Secondly break user's intention down into several minimum steps;)\n"
+                  "Additional: For any details mentioned by the user, you should preserve them in full, "
+                  "especially specific information with accuracy requirements such as numbers, dates, etc.\n"
+                  "Firstly, deduce the user's query step by step; "
+                  "Secondly break user's intention down into several minimum steps;\n"
                   'Output format: Step[n]:[Action of the step]\n'
                   'Example output: Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;\n')
         self.__query = query
