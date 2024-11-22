@@ -29,9 +29,11 @@ To start building your own agent, follow the steps listed.
     OPENAI_API_KEY=sk-...
     ```
 
-2. import `Agent`, `@ability`, and `get_openai_model`
+2. bring in `Agent`, `@ability`, and `get_openai_model`
 
-    `Agent` lets you instantiate an agent; `@ability(brain: BaseChatModel)` lets you declare a function as an ability.
+    - `Agent` lets you instantiate an agent 
+    
+    - `@ability(brain: BaseChatModel)` lets you declare a function as an ability
 
     ```python
     from ceo import Agent, get_openai_model
@@ -60,7 +62,7 @@ To start building your own agent, follow the steps listed.
     agent = Agent(abilities=[write_file], brain=model, name='Zihao Wu')
     ```
 
-    You can also grant more abilities to agents after.
+    You can also grant more abilities to agents later:
 
     ```python
     agent.grant_ability(calculator)
@@ -72,7 +74,7 @@ To start building your own agent, follow the steps listed.
     agent.grant_abilities([calculator])
     ```
 
-    To deprive abilities.
+    To deprive abilities:
 
     ```python
     agent.deprive_ability(calculator)
