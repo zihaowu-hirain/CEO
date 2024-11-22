@@ -18,13 +18,88 @@
     pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
-## These Projects Are Built With `ceo-py`
+## Quick Start
 
-- [CEO-Alfred-TheProcessManager](https://github.com/vortezwohl/CEO-Alfred-TheProcessManager)
+To start building your own agent, follow the steps listed.
 
-- [CEO-Tomohiro](https://github.com/vortezwohl/CEO-Tomohiro)
+1. set environmental variable `OPENAI_API_KEY`
 
-- [CEO-Captain](https://github.com/vortezwohl/CEO-Captain)
+    ```
+    # .env
+    OPENAI_API_KEY=sk-...
+    ```
+
+2. import `Agent`, `@ability`, and `get_openai_model`
+
+    `Agent` lets you instantiate an agent; `@ability(brain: BaseChatModel)` lets you declare a function as an ability.
+
+    ```python
+    from ceo import Agent, get_openai_model
+    from ceo.util import ability
+    ```
+
+3. declare functions as abilities
+
+    ```python
+    @ability
+    def calculator(expr: str) -> float:
+        return simplify(expr)
+
+    @ability
+    def write_file(filename: str, content: str) -> bool:
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return True
+    ```
+
+4. instantiate an agent
+
+    You can grant abilities to agents while instantiating them.
+
+    ```python
+    agent = Agent(abilities=[write_file], brain=model, name='Zihao Wu')
+    ```
+
+    You can also grant more abilities to agents after.
+
+    ```python
+    agent.grant_ability(calculator)
+    ```
+
+    or
+
+    ```python
+    agent.grant_abilities([calculator])
+    ```
+
+    To deprive abilities.
+
+    ```python
+    agent.deprive_ability(calculator)
+    ```
+
+    or
+
+    ```python
+    agent.deprive_abilities([calculator])
+    ```
+
+5. assign a query to your agent
+
+    ```python
+    agent.assign("Here is a sphere with radius of 3.1121 cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
+    ```
+
+6. leave the rest to your agent
+
+    ```python
+    response = agent.just_do_it()
+    print(response)
+    ```
+
+> `ceo` also supports multi-agent system, declare a function as agent calling ability with `@agentic(agent: Agent)`, then grant it to an agent. [See example](#multi-agent-task).
+
+
 
 ## Examples
 
