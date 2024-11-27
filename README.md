@@ -18,6 +18,21 @@
     pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
+## Citation
+
+If you are currently using `ceo` in your research, don't forget to cite it.
+
+```latex
+@software {CEO,
+author = {Zihao Wu},
+title = {CEO: An Intuitive and Modular AI Agent Framework for Task Automation},
+publisher = {Github},
+howpublished = {\url{https://github.com/vortezwohl/CEO}},
+year = {2024},
+date = {2024-10-25}
+}
+```
+
 ## Quick Start
 
 To start building your own agent, follow the steps listed.
