@@ -2,7 +2,7 @@
 <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="100">
 </h1>
 
-`CEO` is an easy-to-use AI agent framework. Now, you have taken on the role of the chairman of the board, instruct your `CEO` to carry out the task for you.
+`CEO` is an intuitive and modular AI agent framework for task automation.
 
 ## Installation
 
