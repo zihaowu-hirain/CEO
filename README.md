@@ -1,4 +1,6 @@
-# CEO
+<h1 align="center">
+<img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="100">
+</h1>
 
 `CEO` is an easy-to-use AI agent framework. Now, you have taken on the role of the chairman of the board, instruct your `CEO` to carry out the task for you.
 
@@ -20,13 +22,13 @@
 
 ## Citation
 
-If you are incorporating the `ceo` framework into your research, please remember to properly **cite** it to acknowledge its contribution to your work.
+If you are incorporating the `CEO` framework into your research, please remember to properly **cite** it to acknowledge its contribution to your work.
 
-Если вы интегрируете фреймворк `ceo` в своё исследование, пожалуйста, не забудьте правильно сослаться на него, указывая его вклад в вашу работу.
+Если вы интегрируете фреймворк `CEO` в своё исследование, пожалуйста, не забудьте правильно сослаться на него, указывая его вклад в вашу работу.
 
-もしあなたが研究に `ceo` フレームワークを組み入れているなら、その貢献を認めるために適切に引用することを忘れないでください.
+もしあなたが研究に `CEO` フレームワークを組み入れているなら、その貢献を認めるために適切に引用することを忘れないでください.
 
-如果您正在將 `ceo` 框架整合到您的研究中，請記得正確引用它，以聲明它對您工作的貢獻.
+如果您正在將 `CEO` 框架整合到您的研究中，請記得正確引用它，以聲明它對您工作的貢獻.
 
 ```latex
 @software {CEO,
