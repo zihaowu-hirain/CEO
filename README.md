@@ -20,7 +20,13 @@
 
 ## Citation
 
-If you are currently using `ceo` in your research, don't forget to cite it.
+If you are incorporating the `ceo` framework into your research, please remember to properly **cite** it to acknowledge its contribution to your work.
+
+Если вы интегрируете фреймворк `ceo` в своё исследование, пожалуйста, не забудьте правильно сослаться на него, указывая его вклад в вашу работу.
+
+もしあなたが研究に `ceo` フレームワークを組み入れているなら、その貢献を認めるために適切に引用することを忘れないでください.
+
+如果您正在將 `ceo` 框架整合到您的研究中，請記得正確引用它，以聲明它對您工作的貢獻.
 
 ```latex
 @software {CEO,
