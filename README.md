@@ -1,9 +1,13 @@
 <div align="center">
-    <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="100">
-    <p style="margin-top: 25px; font-weight: 600">
-        <code>CEO</code> is an intuitive and modular AI agent framework for task automation.
+    <p>
+        <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="105">
+    </p>
+    <p style="font-weight: 200; font-size: 19px">
+        An Intuitive and Modular AI Agent Framework for Task Automation
     </p>
 </div>
+
+<h5></br></h5>
 
 ## Installation
 
