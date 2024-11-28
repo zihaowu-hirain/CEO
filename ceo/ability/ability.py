@@ -15,7 +15,7 @@ class Ability:
             self.parameters[name] = str(param.annotation)
 
     def __repr__(self):
-        return json.dumps(obj={
+        return json.dumps({
             'name': self.name,
             'description': self.description,
             'parameters': self.parameters,
