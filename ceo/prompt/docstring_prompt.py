@@ -25,28 +25,28 @@ class DocstringPrompt(Prompt):
             'returns': f_returns
         }, ensure_ascii=False)
         docstring_format = {
-            "docstring_format": {
+            "description": {
                 "brief_description": "{Brief description of the function's purpose.}",
                 "detailed_description": "{Detailed description of the function's behavior, "
                                         "including its main logic, algorithm used, and any other relevant information. "
                                         "This section can include multiple sentences and paragraphs to provide "
                                         "a comprehensive understanding of the function's functionality.}",
                 "args": [{
-                        "param_1": {
+                        "{name of param_1}": {
                             "name": "{name of param_1}",
                             "type": "{data type of param_1}",
                             "description": "{description of param_1, including its role in the function "
                                            "and the constraints for it.}"
                         }
                     }, {
-                        "param_2": {
+                        "{name of param_2}": {
                             "name": "{name of param_2}",
                             "type": "{data type of param_2}",
                             "description": "{description of param_2, including its role in the function "
                                            "and the constraints for it.}"
                         }
                     }, {
-                        "param_...": {
+                        "{name of param_...}": {
                             "name": "{name of param_...}",
                             "type": "{data type of param_...}",
                             "description": "{description of param_..., including its role in the function "
@@ -83,4 +83,4 @@ class DocstringPrompt(Prompt):
             raw_docstring = raw_docstring[raw_docstring.find('{'):]
         if not raw_docstring.endswith('}'):
             raw_docstring = raw_docstring[:raw_docstring.find('}') + 1]
-        return raw_docstring
+        return raw_docstring.replace('\n', '')
