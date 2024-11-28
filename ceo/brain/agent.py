@@ -86,7 +86,7 @@ class Agent:
         self.introduce(update=True)
 
     def plan(self) -> list:
-        scheduling = SchedulerPrompt(query=self.query_by_step, actions=self.abilities, ext_context=self.ext_context)
+        scheduling = SchedulerPrompt(query=self.query_by_step, abilities=self.abilities, ext_context=self.ext_context)
         self.schedule = scheduling.invoke(self.model)
         log.debug(f'Agent: {self.name}, Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
         return self.schedule
