@@ -47,7 +47,7 @@ class ExecutorPrompt(Prompt):
             "output_example": "I wrote a wechat message which says 'Bonjour'. The result is 'success'.",
             "tool": self.action.__repr__(),
             "params (choice)": str(self.params),
-            "result": result
+            "result": str(result)
         }, ensure_ascii=False)
         prompt = f'{self.ext_context}{self.seperator}{prompt}'
         log.debug(f'ExecutorPrompt (after): {prompt}')
