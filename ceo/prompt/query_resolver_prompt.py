@@ -19,7 +19,7 @@ class QueryResolverPrompt(Prompt):
           "firstly": "Deduce the user's query step by step.",
           "secondly": "Break user's intention down into several minimum steps.",
           "output_format": "Step[n]:[Action of the step]",
-          "example_output": "Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;"
+          "output_example": "Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;"
         }, ensure_ascii=False)
         self.__query = query
         super().__init__(prompt, ext_context)

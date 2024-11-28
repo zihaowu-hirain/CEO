@@ -30,7 +30,7 @@ class SchedulerPrompt(Prompt):
             "output_format": "Sequential and well-organized with no additional redundant information",
             "hint_for_output_format": 'Outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
                                       'you should refer to [example_output].',
-            "example_output": "[tool_a.name, tool_b.name, tool_c.name, tool_d.name]",
+            "output_example": "[tool_a.name, tool_b.name, tool_c.name, tool_d.name]",
             "tools": f"{json.dumps(prompt, ensure_ascii=False)}"
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
