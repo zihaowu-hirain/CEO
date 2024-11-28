@@ -20,7 +20,7 @@ class ExecutorPrompt(Prompt):
             "output_format": "text",
             "output_example": "I am trying to open calculator.",
             "tool": action.__repr__(),
-            "params (choice)": params
+            "params (choice)": str(params)
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'ExecutorPrompt (before): {self.prompt}')
@@ -45,8 +45,8 @@ class ExecutorPrompt(Prompt):
             ],
             "hint_for_output": 'When you give the response, say "ability" instead of "tool".',
             "output_example": "I wrote a wechat message which says 'Bonjour'. The result is 'success'.",
-            "tool": self.action,
-            "params (choice)": self.params,
+            "tool": self.action.__repr__(),
+            "params (choice)": str(self.params),
             "result": result
         }, ensure_ascii=False)
         prompt = f'{self.ext_context}{self.seperator}{prompt}'
