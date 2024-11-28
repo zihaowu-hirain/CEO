@@ -25,9 +25,11 @@ class Agent:
         self.name = name
         self.model = brain
         self.ext_context = ext_context
-        self.query_high_level, self.query_by_step = (
-            QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
-        )
+        self.query_high_level = self.query_by_step = str()
+        if query is not None and query != '':
+            self.query_high_level, self.query_by_step = (
+                QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
+            )
         for ability in abilities:
             self.abilities.append(Ability(ability))
         self.introduction = str()
