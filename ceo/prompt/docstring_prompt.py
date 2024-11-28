@@ -27,6 +27,10 @@ class DocstringPrompt(Prompt):
         docstring_format = {
             "description": {
                 "brief_description": "{Brief description of the function's purpose.}",
+                "detailed_description": "{Detailed description of the function's behavior, "
+                                        "including its main logic, algorithm used, and any other relevant information. "
+                                        "This section can include multiple sentences and paragraphs to provide "
+                                        "a comprehensive understanding of the function's functionality.}",
                 "args": [{
                         "{name of param_1}": {
                             "name": "{name of param_1}",
