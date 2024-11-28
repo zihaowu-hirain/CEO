@@ -40,7 +40,7 @@ class SchedulerPrompt(Prompt):
         if not results.startswith('['):
             results = results[results.find('['):]
         if not results.endswith(']'):
-            results = results[:results.find(']') + 1]
+            results = results[:results.rfind(']') + 1]
         results = results[1:-1].split(',')
         _fin_results = list()
         for _a_result in results:

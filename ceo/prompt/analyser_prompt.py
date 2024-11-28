@@ -57,6 +57,6 @@ class AnalyserPrompt(Prompt):
         if not result.startswith('{'):
             result = result[result.find('{'):]
         if not result.endswith('}'):
-            result = result[:result.find('}') + 1]
+            result = result[:result.rfind('}') + 1]
         param = json.loads(result)
         return self.action, param

@@ -74,5 +74,5 @@ class DocstringPrompt(Prompt):
         if not raw_docstring.startswith('{'):
             raw_docstring = raw_docstring[raw_docstring.find('{'):]
         if not raw_docstring.endswith('}'):
-            raw_docstring = raw_docstring[:raw_docstring.find('}') + 1]
+            raw_docstring = raw_docstring[:raw_docstring.rfind('}') + 1]
         return raw_docstring.replace('\n', '')
