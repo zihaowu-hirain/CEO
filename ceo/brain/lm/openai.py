@@ -2,7 +2,7 @@ import langchain_openai
 from langchain_core.language_models import BaseChatModel
 
 DEFAULT_TMP = 0.25
-DEFAULT_TOP_P = 0.35
+DEFAULT_TOP_P = 1.00
 DEFAULT_GPT = 'gpt-4o-mini'
 
 
