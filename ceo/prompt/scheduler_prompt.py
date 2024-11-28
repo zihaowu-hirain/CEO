@@ -18,7 +18,7 @@ class SchedulerPrompt(Prompt):
         prompt = json.dumps({
             "precondition": "Below are the tools you can use (you can only use the following tools). "
                             f'Now there is a user query: "{query}".',
-            "task": "What you need to do is to plan your workflow based on the tools and user query.",
+            "task": "What you need to do is to plan your workflow based on the [tools] and [user query].",
             "description": "User query might contains many steps, "
                            "think carefully about every step and plan your workflow based on your tools.",
             "hint_for_tool_usage": "User's query might need to use one tool more than once, "
