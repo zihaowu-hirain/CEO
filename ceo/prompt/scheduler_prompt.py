@@ -22,9 +22,8 @@ class SchedulerPrompt(Prompt):
             "description": "User query might contains many steps, "
                            "think carefully about every step and plan your workflow based on your tools.",
             "hint_for_tool_usage": "User's query might need to use one tool more than once, "
-                                   "but think carefully about how many times a tool needs to be used "
-                                   "based on the practical user query, "
-                                   "do not abuse or overuse any tool!",
+                                   "but think carefully about how many times a tool needs to be used exactly "
+                                   "based on the practical user query.",
             "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to user's query. "
                                       "Make sure to choose tools properly and wisely.",
             "output_format": "Sequential and well-organized with no additional redundant information",
