@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Callable
 
@@ -51,12 +52,15 @@ class Agent:
         ext_context = self.ext_context
         if ext_context == '':
             ext_context = 'None'
-        return (f'Agent: \n'
-                f'- Name: {self.name}\n'
-                f'- Brain: {self.model.dict()['model_name']}\n'
-                f'- Abilities: {ability_str}\n'
-                f'- Schedule: {schedule_str}\n'
-                f'- ExternalContext: {ext_context}')
+        return json.dumps({
+            self.name: {
+                "name": self.name,
+                "brain": self.model.dict()['model_name'],
+                "abilities": ability_str,
+                "schedule": schedule_str,
+                "external_context": ext_context
+            }
+        }, ensure_ascii=False)
 
     def __str__(self):
         return self.__repr__()
