@@ -11,7 +11,7 @@ setuptools.setup(
     version='0.7.2-preview',
     author="vortezwohl",
     author_email="vortez.wohl@gmail.com",
-    description="CEO is an easy-to-use AI agent framework. Now, you have taken on the role of the chairman of the board, instruct your CEO to carry out the task for you.",
+    description="CEO is an intuitive and modular AI agent framework for task automation.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license=license_content,
