@@ -31,7 +31,7 @@ class SchedulerPrompt(Prompt):
             "hint_for_output_format": 'Outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
                                       'you should refer to [example_output].',
             "output_example": "[tool_a.name, tool_b.name, tool_c.name, tool_d.name]",
-            "tools": f"{json.dumps(prompt, ensure_ascii=False)}"
+            "tools": json.dumps(prompt, ensure_ascii=False)
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
