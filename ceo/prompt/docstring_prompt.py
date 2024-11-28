@@ -24,29 +24,55 @@ class DocstringPrompt(Prompt):
             'parameters': f_parameters,
             'returns': f_returns
         }, ensure_ascii=False)
-        docstring_format = '''
-        {Brief description of the function's purpose.}
-
-        {Detailed description of the function's behavior, including its main logic, algorithm used, 
-        and any other relevant information. This section can include multiple sentences and 
-        paragraphs to provide a comprehensive understanding of the function's functionality.}
-    
-        Args:
-            {param1} {(type)}: {Description of param1, including its role in the function and any constraints.}
-            {param2} {(type)}: {Description of param2, including its role in the function and any constraints.}
-    
-        Returns:
-            {type}: {Description of the return value, including its type and any relevant information.}
-    
-        Raises:
-            {exception_type}: {Description of the circumstances under which the exception is raised.}
-            {exception_type}: {Description of another type of exception that can be raised, if applicable.}
-        '''
-        prompt = ('Task: Generate docstring for this function.\n'
-                  f'Function: {function_repr}\n'
-                  f'Output format (docstring format): {docstring_format}\n')
+        docstring_format = {
+            "description": {
+                "brief_description": "{Brief description of the function's purpose.}",
+                "detailed_description": "{Detailed description of the function's behavior, "
+                                        "including its main logic, algorithm used, and any other relevant information. "
+                                        "This section can include multiple sentences and paragraphs to provide "
+                                        "a comprehensive understanding of the function's functionality.}",
+                "args": [{
+                        "{name of param_1}": {
+                            "name": "{name of param_1}",
+                            "type": "{data type of param_1}",
+                            "description": "{description of param_1, including its role in the function "
+                                           "and the constraints for it.}"
+                        }
+                    }, {
+                        "{name of param_2}": {
+                            "name": "{name of param_2}",
+                            "type": "{data type of param_2}",
+                            "description": "{description of param_2, including its role in the function "
+                                           "and the constraints for it.}"
+                        }
+                    }, {
+                        "{name of param_...}": {
+                            "name": "{name of param_...}",
+                            "type": "{data type of param_...}",
+                            "description": "{description of param_..., including its role in the function "
+                                           "and the constraints for it.}"
+                        }
+                    }
+                ],
+                "returns": {
+                    "type": "{data type of the return value}",
+                    "description": "{description of the return value, including its meaning.}"
+                }
+            }
+        }
+        prompt = json.dumps({
+            "task": "Generate description for the [function].",
+            "function": function_repr,
+            "output_format": "json",
+            "hint_for_output_format": docstring_format
+        }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'DocstringPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> str | Iterator:
-        return model.invoke(self.prompt).content
+        raw_docstring = model.invoke(self.prompt).content
+        if not raw_docstring.startswith('{'):
+            raw_docstring = raw_docstring[raw_docstring.find('{'):]
+        if not raw_docstring.endswith('}'):
+            raw_docstring = raw_docstring[:raw_docstring.rfind('}') + 1]
+        return raw_docstring.replace('\n', '')

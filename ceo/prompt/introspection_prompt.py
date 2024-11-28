@@ -1,3 +1,4 @@
+import json
 import logging
 from collections.abc import Iterator
 
@@ -10,20 +11,22 @@ log = logging.getLogger('ceo.prompt')
 
 class IntrospectionPrompt(Prompt):
     def __init__(self, query: str, prev_results: list, ext_context: str = ''):
-        prompt = ('Precondition: Below are actions you(the bot/assistant) have performed to achieve the user query. '
-                  'You are talking to the user, use "you" instead of the "user", '
-                  'and you are the assistant.\n'
-                  f'User query: "{query}"\n'
-                  "Task: tell user's intention first, "
-                  "then think seriously whether you have achieve user's query based on actions you have performed. "
-                  "Finally, provide the results wanted by user according to [user query]. "
-                  "(If you did not achieve user's query, explain why?)\n"
-                  'Output format: text.\n'
-                  'Example output: Your intention is to calculate math, and I was trying to open calculator. '
-                  'But i failed because i did not have that ability to open calculator. '
-                  'I have not achieve your intention. '
-                  '(Your output should be concise and comprehensive)\n'
-                  f'Actions You Have Performed (from left to right): {prev_results}\n')
+        prompt = json.dumps({
+            "precondition": "Below are actions you (you are the bot/assistant) have performed to achieve the [user_query]. "
+                            "You are talking to the user (I (who now talking to you here) am the user), "
+                            "use 'you' instead of the 'user' when you organize your response (output).",
+            "user_query": f'"{query}"',
+            "task": "Tell user's intention first, "
+                    "then think seriously whether you have achieved the user's query according to actions you have performed. "
+                    "Finally, provide the results wanted by the user based on [user query]. "
+                    "If you did not achieve the user's query, explain why?",
+            "output_format": "text",
+            "output_example": "Your intention is to calculate math, and I was trying to open calculator. "
+                              "But I failed because I did not have that ability to open calculator. "
+                              "I have not achieved your intention.",
+            "hint_for_output": "Your output should be concise and comprehensive",
+            "actions_performed": str(prev_results)
+        }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'IntrospectionPrompt: {self.prompt}')
 

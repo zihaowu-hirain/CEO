@@ -1,3 +1,4 @@
+import json
 import logging
 from collections.abc import Iterator
 
@@ -10,10 +11,12 @@ log = logging.getLogger('ceo.prompt')
 
 class SelfIntroducePrompt(Prompt):
     def __init__(self, agent: any, ext_context: str = ''):
-        prompt = ('Task: Introduce yourself briefly base on below information.(Only tell what you exactly '
-                  'can do base on your abilities)\n'
-                  f'Information: {agent.__repr__()}\n'
-                  f'Output format: My name is <name>. What can i do: ...\n')
+        prompt = json.dumps({
+            "task": "Introduce yourself briefly based on the information provided. "
+                    "Only tell what you exactly can do based on your abilities.",
+            "information": agent.__repr__(),
+            "output_format": "My name is <name>. What can I do: ..."
+        }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SelfIntroducePrompt: {self.prompt}')
 

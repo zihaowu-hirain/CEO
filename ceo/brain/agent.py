@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Callable
 
@@ -25,9 +26,11 @@ class Agent:
         self.name = name
         self.model = brain
         self.ext_context = ext_context
-        self.query_high_level, self.query_by_step = (
-            QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
-        )
+        self.query_high_level = self.query_by_step = str()
+        if query is not None and query != '':
+            self.query_high_level, self.query_by_step = (
+                QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
+            )
         for ability in abilities:
             self.abilities.append(Ability(ability))
         self.introduction = str()
@@ -49,12 +52,15 @@ class Agent:
         ext_context = self.ext_context
         if ext_context == '':
             ext_context = 'None'
-        return (f'Agent: \n'
-                f'- Name: {self.name}\n'
-                f'- Brain: {self.model.dict()['model_name']}\n'
-                f'- Abilities: {ability_str}\n'
-                f'- Schedule: {schedule_str}\n'
-                f'- ExternalContext: {ext_context}')
+        return json.dumps({
+            self.name: {
+                "name": self.name,
+                "brain": self.model.dict()['model_name'],
+                "abilities": ability_str,
+                "schedule": schedule_str,
+                "external_context": ext_context
+            }
+        }, ensure_ascii=False)
 
     def __str__(self):
         return self.__repr__()
@@ -86,7 +92,7 @@ class Agent:
         self.introduce(update=True)
 
     def plan(self) -> list:
-        scheduling = SchedulerPrompt(query=self.query_by_step, actions=self.abilities, ext_context=self.ext_context)
+        scheduling = SchedulerPrompt(query=self.query_by_step, abilities=self.abilities, ext_context=self.ext_context)
         self.schedule = scheduling.invoke(self.model)
         log.debug(f'Agent: {self.name}, Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
         return self.schedule

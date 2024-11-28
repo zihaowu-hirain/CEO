@@ -1,3 +1,4 @@
+import json
 import logging
 
 from langchain_core.language_models import BaseChatModel
@@ -9,23 +10,28 @@ log = logging.getLogger('ceo.prompt')
 
 
 class SchedulerPrompt(Prompt):
-    def __init__(self, query: str, actions: list[Ability], ext_context: str = ''):
-        self.actions = actions
+    def __init__(self, query: str, abilities: list[Ability], ext_context: str = ''):
+        self.abilities = abilities
         prompt = dict()
-        for action in self.actions:
-            prompt[action.name] = str(action)
-        prompt = ('Precondition: Below are the tools you can use (you can only use the following tools). '
-                  f'Now there is a user query: "{query}"\n'
-                  'Task: What you need to do is to plan your workflow based on the tools and user query.\n'
-                  '(User query might contains many steps, '
-                  'think carefully about every step and plan your workflow based on your tools)\n'
-                  "(User's query might need to use one tool more than once, "
-                  'but think carefully about how many times a tool needs to be used based on practical query, '
-                  'do not abuse or overuse!)\n'
-                  "(Sometimes some of the tools are irrelevant to user's query. Make sure to use tools properly.)\n"
-                  'Output format: [{tool1.name}, {tool2.name}, ...] sequential and well-organized with no additional redundant information\n'
-                  'Example output: [do_step_one, do_step_two, do_step_three]\n'
-                  f'Tools: {prompt}\n')
+        for ability in self.abilities:
+            prompt[ability.name] = str(ability)
+        prompt = json.dumps({
+            "precondition": "Below are the tools you can use (you can only use the following tools). "
+                            f'Now there is a user query: "{query}".',
+            "task": "What you need to do is to plan your workflow based on the [tools] and [user query].",
+            "description": "User query might contains many steps, "
+                           "think carefully about every step and plan your workflow based on your tools.",
+            "hint_for_tool_usage": "User's query might need to use one tool more than once, "
+                                   "you should seriously decide how many times a tool needs to be used exactly "
+                                   "according to the practical [user query].",
+            "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to user's query. "
+                                      "Make sure to choose tools properly and wisely.",
+            "output_format": "Sequential and well-organized with no additional redundant information",
+            "hint_for_output_format": 'Outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
+                                      'you should refer to [example_output].',
+            "output_example": "[tool_a.name, tool_b.name, tool_c.name, tool_d.name]",
+            "tools": json.dumps(prompt, ensure_ascii=False)
+        }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
 
@@ -34,11 +40,11 @@ class SchedulerPrompt(Prompt):
         if not results.startswith('['):
             results = results[results.find('['):]
         if not results.endswith(']'):
-            results = results[:results.find(']') + 1]
+            results = results[:results.rfind(']') + 1]
         results = results[1:-1].split(',')
         _fin_results = list()
         for _a_result in results:
-            for action in self.actions:
-                if action.name == _a_result.strip():
-                    _fin_results.append(action)
+            for ability in self.abilities:
+                if ability.name == _a_result.strip():
+                    _fin_results.append(ability)
         return _fin_results
