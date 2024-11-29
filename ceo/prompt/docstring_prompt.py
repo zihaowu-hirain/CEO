@@ -22,7 +22,8 @@ class DocstringPrompt(Prompt):
         function_repr = json.dumps(obj={
             'name': f_name,
             'parameters': f_parameters,
-            'returns': f_returns
+            'returns': f_returns,
+            'source_code': inspect.getsource(function)
         }, ensure_ascii=False)
         docstring_format = {
             "description": {
