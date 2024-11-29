@@ -64,6 +64,8 @@ class DocstringPrompt(Prompt):
         prompt = json.dumps({
             "task": "Generate description for the [function].",
             "function": function_repr,
+            "hint_for_function_understanding": "The [source_code] provides the unabridged definition of the [function]. "
+                                               "You can fully understand the [function] by reading [source_code].",
             "output_format": "json",
             "hint_for_output_format": docstring_format
         }, ensure_ascii=False)
