@@ -16,10 +16,10 @@ class QueryResolverPrompt(Prompt):
             "task_redeclare": "To tell user's intention based on [user query]. Not your (you are the assistant) intention.",
             "additional": "For any details mentioned by the user, you should preserve them in full, "
                           "especially specific information with accuracy requirements such as numbers, dates, etc.",
-            "firstly": "Deduce the user's query step by step.",
-            "secondly": "Break user's intention down into several minimum steps.",
+            "hint_for_thinking": "Deduce and analyse the [user query] step by step.",
             "output_format": "Step[n]:[Action of the step]",
-            "output_example": "Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;"
+            "hint_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible.",
+            "output_example": "Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;step...:..."
         }, ensure_ascii=False)
         self.__query = query
         super().__init__(prompt, ext_context)
