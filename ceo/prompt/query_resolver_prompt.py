@@ -17,9 +17,16 @@ class QueryResolverPrompt(Prompt):
             "additional": "For any details mentioned by the user, you should preserve them in full, "
                           "especially specific information with accuracy requirements such as numbers, dates, etc.",
             "hint_for_thinking": "Deduce and analyse the [user query] step by step.",
-            "output_format": "Step[n]:[Action of the step]",
+            "output_format (json)": {
+                "step_{n}": "{action_of_step_{n}]"
+            },
             "hint_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible.",
-            "output_example": "Step1:Open the door;Step2:Go into the room;Step3:Find the toys in the room;step...:..."
+            "output_example": {
+                "step_1": "Open the door",
+                "step_2": "Go into the room",
+                "step_3": "Find the toys in the room",
+                "step_...": "..."
+            }
         }, ensure_ascii=False)
         self.__query = query
         super().__init__(prompt, ext_context)
