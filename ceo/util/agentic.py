@@ -18,13 +18,13 @@ def agentic(agent: Agent):
                                         f"then, if you need {agent.name}'s help, you must tell comprehensively, precisely "
                                         f"and exactly what you need {agent.name} to do.",
                 f"self_introduction_from_{agent.name}": agent.introduction,
-                "hint": f"By reading [self_introduction_from_{agent.name}], you can learn what {agent.name} can do.",
-                f"metadata_of_{agent.name}": agent.__repr__(),
+                "hint": f"By reading [self_introduction_from_{agent.name}], you can learn what {agent.name} can do, "
+                        f"and then decide whether to initiates a conversation with {agent.name} according to its abilities.",
                 "args": [{
                     "query": {
                       "name": "query",
                       "type": "str",
-                      "description": f"a comprehensively, precisely and exactly instruction to be processed by {agent.name}."
+                      "description": f"A comprehensively, precisely and exactly instruction to be processed by {agent.name}."
                     }
                   }
                 ],
