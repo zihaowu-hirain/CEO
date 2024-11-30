@@ -1,6 +1,5 @@
 import json
 import logging
-from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
@@ -9,7 +8,7 @@ from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
-output_example = """
+OUTPUT_EXAMPLE = """
 Step 1: In the history, I have identified two events related to the current user query. 
         First, "buying two tomatoes" has been completed, and second, "returning home" has also taken place. 
         These two events are listed in the order they occurred, with the purchase of tomatoes first, followed by returning home.
@@ -42,7 +41,7 @@ ability: [do_cook]
 
 class NextMovePrompt(Prompt):
     def __init__(self, query: str,
-                 abilities: list[Ability], memory: str = '',
+                 abilities: list[Ability], history: str = '',
                  ext_context: str = ''):
         self.abilities = abilities
         prompt = json.dumps({
@@ -50,7 +49,7 @@ class NextMovePrompt(Prompt):
                             "[history] shows events happened before you. And there is a [user_query].",
             "user_query": f'"{query}"',
             "abilities": self.abilities,
-            "history": memory,
+            "history": history,
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
                     "action": "Find events in the [history] that are related to the current [user_query], "
@@ -82,17 +81,14 @@ class NextMovePrompt(Prompt):
                     "action": 'Provide a special ability called "-mission-complete-" (which is not a real ability).'
                 }
             ],
-            "output_format": "{step1_thought_process}\n"
-                             "{step2_thought_process}\n"
-                             "{step3_thought_process}\n"
-                             "{step4_thought_process}\n"
-                             "{step5_thought_process}\n"
-                             "{step6_thought_process}\n"
+            "output_format": "{step1_thought_process}\n{step2_thought_process}\n"
+                             "{step3_thought_process}\n{step4_thought_process}\n"
+                             "{step5_thought_process}\n{step6_thought_process}\n"
                              "ability:[ability.name]",
-            "hint_for_ability_choosing": "You can only choose and provide the most relevant ability as your next move.",
+            "hint_for_ability_choosing": "You can only choose and provide the most relevant one ability as your next move.",
             "hint_for_output_format": 'the ability should be after all the thought processes and '
                                       'be surrounded by "[ ]".',
-            "output_example": output_example
+            "output_example": OUTPUT_EXAMPLE
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
