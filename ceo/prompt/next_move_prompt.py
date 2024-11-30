@@ -89,7 +89,11 @@ class NextMovePrompt(Prompt):
             "output_format": "{step1_thought_process}\n{step2_thought_process}\n"
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"
-                             "params:\n```json\n{values_of_params_for_the_chosen_ability}\n```\n"
+                             'params:{'
+                             '"param_1.name":"value_for_param_1",'
+                             '"param_2.name":"value_for_param_2",'
+                             '"param_....name":"value_for_param_..."'
+                             '}\n'
                              "ability:[ability.name]",
             "hint_for_ability_choosing": "You can only choose and provide the most relevant one ability as your next move."
                                          "Only one single ability can be chosen.",
