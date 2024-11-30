@@ -1,3 +1,5 @@
+import json
+import logging
 import random
 import datetime
 from typing import Callable, override
@@ -5,6 +7,13 @@ from typing import Callable, override
 from langchain_core.language_models import BaseChatModel
 
 from ceo.brain.agent import Agent
+from ceo.prompt import (
+    NextMovePrompt,
+    ExecutorPrompt,
+    IntrospectionPrompt
+)
+
+log = logging.getLogger('ceo')
 
 
 class AdaptiveAgent(Agent):
@@ -26,9 +35,11 @@ class AdaptiveAgent(Agent):
 
     def memorize(self, action_performed: str):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        self.memory[f"Agent {self.name} at {now}"] = {
-            'time': now,
-            'action_performed': action_performed
+        agent_name = f'Agent {self.name}'
+        self.memory[agent_name] = {
+            "action_executor": agent_name,
+            f"message_from_{self.name}": action_performed,
+            "date_time": now
         }
 
     def stop(self) -> bool:
@@ -57,12 +68,29 @@ class AdaptiveAgent(Agent):
         return self.assign(query)
 
     @override
-    def step_quiet(self) -> str:
+    def step_quiet(self) -> str | None:
         pass
 
     @override
-    def just_do_it(self) -> str | None:
-        return
+    def just_do_it(self) -> dict:
+        while True:
+            _history = json.dumps(self.memory, ensure_ascii=False)
+            next_move = NextMovePrompt(
+                query=self.query_by_step,
+                abilities=self.abilities,
+                history=_history
+            ).invoke(self.model)
+            if not isinstance(next_move, bool):
+                action, params = next_move
+                executing = ExecutorPrompt(params=params, action=action)
+                self.memorize(executing.invoke(model=self.model))
+            return {
+                "success": next_move,
+                "response": IntrospectionPrompt(
+                    query=self.query_high_level,
+                    prev_results=_history,
+                ).invoke(self.model)
+            }
 
 
 '''
