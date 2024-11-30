@@ -16,16 +16,18 @@ class QueryResolverPrompt(Prompt):
             "task_redeclare": "To tell user's intention based on [user query]. Not your (you are the assistant) intention.",
             "additional": "For any details mentioned by the user, you should preserve them in full, "
                           "especially specific information with accuracy requirements such as numbers, dates, etc.",
-            "hint_for_thinking": "Deduce and analyse the [user query] step by step.",
+            "hint_for_thinking": "Deduce and analyse the [user query] step by step. "
+                                 "Keep track of the steps' interdependence and orderliness.",
             "output_format (json)": {
                 "step_{n}": "{action_of_step_{n}]"
             },
-            "hint_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible.",
+            "hint_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible. "
+                               "Keep track of the steps' interdependence and orderliness again.",
             "output_example": {
                 "step_1": "Open the door",
-                "step_2": "Go into the room",
-                "step_3": "Find the toys in the room",
-                "step_...": "..."
+                "step_2": "(Door opened) Go into the room",
+                "step_3": "(Walked in the room) Find the toys in the room",
+                "step_...": "(Found toys)..."
             }
         }, ensure_ascii=False)
         self.__query = query
