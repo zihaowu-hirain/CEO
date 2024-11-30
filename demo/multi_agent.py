@@ -14,12 +14,10 @@ model = get_openai_model()
 
 @ability
 def calculator(expr: str) -> float | str:
-    # this only accepts a single math expression
-    expr = expr.replace(',', '')
-    expr = expr.replace('_', '')
+    # this function only accepts a single math expression
     try:
         try:
-            return sympy.simplify(expr, rational=None)
+            return f'{expr} equals to {sympy.simplify(expr, rational=None)}'
         except ValueError as ve:
             return ve.__repr__()
     except sympy.SympifyError as se:
@@ -27,10 +25,10 @@ def calculator(expr: str) -> float | str:
 
 
 @ability
-def write_file(filename: str, content: str) -> bool:
+def write_file(filename: str, content: str) -> str:
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(content)
-    return True
+    return f'{content} written to {filename}.'
 
 
 @agentic(Agent(abilities=[calculator], brain=model, name='Jack'))
@@ -45,7 +43,7 @@ def agent2():
 
 if __name__ == '__main__':
     agent = Agent(abilities=[agent1, agent2], brain=model, name='test')
-    result = agent.assign("Here is a sphere with a radius of 5.1121 cm and pi here is 3.14159, "
+    result = agent.assign("Here is a sphere with a radius of (5.1121 * 2 / 3) cm and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()
     print(result)

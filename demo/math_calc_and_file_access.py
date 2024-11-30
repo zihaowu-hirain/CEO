@@ -9,7 +9,7 @@ load_dotenv()
 
 @ability
 def calculator(expr: str) -> float:
-    # this only accepts a single math expression
+    # this function only accepts a single math expression
     return simplify(expr)
 
 
