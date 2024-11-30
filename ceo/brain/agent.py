@@ -27,9 +27,7 @@ class Agent:
         self.model = brain
         self.query_high_level = self.query_by_step = str()
         if query is not None and query != '':
-            self.query_high_level, self.query_by_step = (
-                QueryResolverPrompt(query).invoke(self.model)
-            )
+            self.query_high_level, self.query_by_step = QueryResolverPrompt(query).invoke(self.model)
         for ability in abilities:
             self.abilities.append(Ability(ability))
         self.introduction = str()
