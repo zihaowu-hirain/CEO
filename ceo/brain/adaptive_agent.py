@@ -18,10 +18,6 @@ class AdaptiveAgent(Agent):
         self.beta = beta  # (0, MAX)
         self.__origin_p = p
 
-    def react(self):
-
-        return
-
     @override
     def reposition(self):
         super().reposition()
@@ -60,6 +56,10 @@ class AdaptiveAgent(Agent):
 
     def punish(self):
         self.p = (self.beta * self.p) % 1.0
+
+    @override
+    def step_quiet(self) -> str:
+        pass
 
     @override
     def just_do_it(self) -> str | None:
