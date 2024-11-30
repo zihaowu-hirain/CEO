@@ -44,6 +44,8 @@ class NextMovePrompt(Prompt):
                  abilities: list[Ability], history: str = '',
                  ext_context: str = ''):
         self.abilities = abilities
+        if history == '':
+            history = "Nothing happened before you."
         prompt = json.dumps({
             "precondition": "Below are the abilities you have(you can only use the following abilities)."
                             "[history] shows events happened before you. And there is a [user_query].",
