@@ -18,18 +18,17 @@ log = logging.getLogger('ceo')
 
 
 class Agent:
-    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str, query: str = '', ext_context: str = ''):
+    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str, query: str = ''):
         self.abilities = list()
         self.prev_results = list()
         self.schedule = list()
         self.act_count = 0
         self.name = name
         self.model = brain
-        self.ext_context = ext_context
         self.query_high_level = self.query_by_step = str()
         if query is not None and query != '':
             self.query_high_level, self.query_by_step = (
-                QueryResolverPrompt(query=query, ext_context=ext_context).invoke(self.model)
+                QueryResolverPrompt(query).invoke(self.model)
             )
         for ability in abilities:
             self.abilities.append(Ability(ability))
@@ -49,16 +48,12 @@ class Agent:
         schedule_str = schedule_str[:-2] + ']'
         if schedule_str == ']':
             schedule_str = '[]'
-        ext_context = self.ext_context
-        if ext_context == '':
-            ext_context = 'None'
         return json.dumps({
             self.name: {
                 "name": self.name,
                 "brain": self.model.dict()['model_name'],
                 "abilities": ability_str,
-                "schedule": schedule_str,
-                "external_context": ext_context
+                "schedule": schedule_str
             }
         }, ensure_ascii=False)
 
@@ -92,7 +87,7 @@ class Agent:
         self.introduce(update=True)
 
     def plan(self) -> list:
-        scheduling = SchedulerPrompt(query=self.query_by_step, abilities=self.abilities, ext_context=self.ext_context)
+        scheduling = SchedulerPrompt(query=self.query_by_step, abilities=self.abilities)
         self.schedule = scheduling.invoke(self.model)
         log.debug(f'Agent: {self.name}, Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
         return self.schedule
@@ -105,22 +100,21 @@ class Agent:
 
     def assign(self, query: str):
         self.query_high_level, self.query_by_step = (
-            QueryResolverPrompt(query=query, ext_context=self.ext_context).invoke(self.model))
+            QueryResolverPrompt(query=query).invoke(self.model))
         return self.reposition()
 
     def reassign(self, query: str):
-        return self.assign(query=query)
+        return self.assign(query)
 
     def step_quiet(self) -> str:
         if self.act_count < len(self.schedule):
             analysing = AnalyserPrompt(
                 query=self.query_by_step,
                 prev_results=self.prev_results,
-                action=self.schedule[self.act_count],
-                ext_context=self.ext_context
+                action=self.schedule[self.act_count]
             )
             action, params = analysing.invoke(self.model)
-            executing = ExecutorPrompt(params=params, action=action, ext_context=self.ext_context)
+            executing = ExecutorPrompt(params=params, action=action)
             action_str = f'Agent: {self.name}, Action {self.act_count + 1}/{len(self.schedule)}: {executing.invoke(model=self.model)}'
             self.prev_results.append(action_str)
             self.act_count += 1
@@ -134,10 +128,10 @@ class Agent:
             return None
         for act_count in range(len(self.schedule)):
             self.step_quiet()
-        response = (IntrospectionPrompt(
+        response = IntrospectionPrompt(
             query=self.query_high_level,
             prev_results=self.prev_results,
-            ext_context=self.ext_context).invoke(self.model))
+        ).invoke(self.model)
         log.debug(f'Agent: {self.name}, Conclusion: {response}')
         self.reposition()
         return f'{self.name}: {response}'
