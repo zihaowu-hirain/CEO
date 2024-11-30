@@ -22,9 +22,13 @@ def agentic(agent: Agent):
                         f"and then decide whether to initiates a conversation with {agent.name} according to its abilities.",
                 "args": [{
                     "query": {
-                      "name": "query",
-                      "type": "str",
-                      "description": f"A comprehensively, precisely and exactly instruction to be processed by {agent.name}."
+                        "name": "query",
+                        "type": "str",
+                        "description": f"A comprehensively, precisely and exactly instruction to be processed by {agent.name}.",
+                        "hint_for_query_input": "you must tell comprehensively and precisely about "
+                                                "{what_have_you_already_done} and {"
+                                                f"what_you_currently_need_{agent.name}_to_do_for_you"
+                                                "}",
                     }
                   }
                 ],
