@@ -22,9 +22,10 @@ class SchedulerPrompt(Prompt):
             "task": "What you need to do is to plan your workflow based on the [tools] and [user_query].",
             "description": "[user_query] might contains many steps, "
                            "think carefully about every step and plan your workflow based on your tools.",
-            "hint_for_tool_usage": "[user_query] might need to use one tool more than once, "
-                                   "you should seriously decide how many times a tool needs to be used exactly "
-                                   "according to the practical [user_query].",
+            "hint_for_tool_usage": "[user_query] sometimes need to use one specific tool(s) more than once, "
+                                   "you need to estimate as accurately as possible "
+                                   "the number of times specific tools need to be used "
+                                   "to properly achieve the [user_query]!",
             "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to [user_query]. "
                                       "Make sure to choose tools properly and wisely.",
             "output_format": "Sequential and well-organized with no additional redundant information",
