@@ -9,33 +9,33 @@ from ceo.prompt.prompt import Prompt
 log = logging.getLogger('ceo.prompt')
 
 OUTPUT_EXAMPLE = """
-Step 1: In the history, I have identified two events related to the current user query. 
-        First, "buying two tomatoes" has been completed, and second, "returning home" has also taken place. 
-        These two events are listed in the order they occurred, with the purchase of tomatoes first, followed by returning home.
-        
-Step 2: Analyzing the user query "Help me buy two tomatoes, 
-        then after returning home, use kitchen utensils to cook the tomatoes, 
-        and finally place the cooked tomatoes on the dining table." According to the history, 
-        we have completed the steps of buying tomatoes and returning home. However, 
-        the steps of cooking the tomatoes and placing the cooked tomatoes on the dining table have not yet been carried out.
-        
-Step 3: Comparing my abilities with the unfinished part of the user query. 
-        I possess the abilities "go_home", "do_cook", and "arrange_dished". 
-        Since "go_home" has already been completed, it is no longer needed. 
-        The "do_cook" ability can be used to cook the tomatoes, 
-        and the "arrange_dished" ability can be used to place the cooked tomatoes on the dining table.
-        
-Step 4: Based on the analysis, I can choose the "do_cook" ability to cook the tomatoes, 
-        and then use the "arrange_dished" ability to place the cooked tomatoes on the dining table. 
-        These two abilities are the most suitable choices to complete the user's request.
-        
-Step 5: As I have found abilities that can complete the user's request,
-        there is no need for the special ability "-mission-failed-".
-        
-Step 6: Since the user's request has not been fully completed, 
-        there is no need for the special ability "-mission-complete-".
+Step 1: In the history, the events that have already occurred include "buying two tomatoes" and "going home." 
+        These two events are prerequisites for the user query, indicating that the user has completed the purchase of tomatoes and has returned home. 
+        The next steps to complete are to cook the tomatoes using a frying pan and to place the cooked tomatoes on the dining table.
 
-ability: [do_cook]
+Step 2: The user query is "Help me buy two tomatoes, then after getting home, cook the tomatoes using a frying pan, 
+        and finally place the cooked tomatoes on the dining table." According to the history, the first two parts have been completed, 
+        but the last two parts (cooking and placing) are still pending. Therefore, the user query has not been fully and properly accomplished.
+
+Step 3: The unfinished parts of the user query are "cook the tomatoes using a frying pan" and "place the cooked tomatoes on the dining table." 
+        The abilities I possess include "go_home()", "do_cook(ingredient: str, cooking_utensils: str) -> bool", and "arrange_dished()". 
+        Among these, "do_cook" can complete the cooking task, 
+        while "arrange_dished" can complete the placing task. Thus, my abilities can fulfill the unfinished parts of the user query.
+
+Step 4: Among my abilities, "do_cook" is the most relevant because it directly pertains to the process of cooking the tomatoes. 
+        After selecting this ability, I will use "tomatoes" and "frying pan" as parameters for cooking.
+
+Step 5: This step is not applicable because the user query has not been fully accomplished, 
+        and I have the ability to continue progressing.
+
+Step 6: This step is not applicable because the user query has not been fully accomplished.
+
+params:{
+  "ingredient": "tomatoes",
+  "cooking_utensils": "frying pan"
+}
+
+ability:[do_cook]
 """
 
 
