@@ -18,6 +18,7 @@ def agentic(agent: Agent):
                                         f"then, if you need {agent.name}'s help, you must tell comprehensively, precisely "
                                         f"and exactly what you need {agent.name} to do.",
                 f"self_introduction_from_{agent.name}": agent.introduction,
+                "hint": f"By reading [self_introduction_from_{agent.name}], you can learn what {agent.name} can do.",
                 f"metadata_of_{agent.name}": agent.__repr__(),
                 "args": [{
                     "query": {
