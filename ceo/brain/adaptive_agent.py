@@ -69,12 +69,14 @@ class AdaptiveAgent(Agent):
                 action, params = next_move
                 executing = ExecutorPrompt(params=params, action=action)
                 self.memorize(executing.invoke(model=self._model))
+            response = IntrospectionPrompt(
+                query=self._query_high_level,
+                prev_results=_history,
+            ).invoke(self._model)
+            log.debug(f'Agent: {self._name}, Conclusion: {response}')
             return {
                 "success": next_move,
-                "response": IntrospectionPrompt(
-                    query=self._query_high_level,
-                    prev_results=_history,
-                ).invoke(self._model)
+                "response": response
             }
 
     def estimate_step(self):
@@ -86,11 +88,13 @@ class AdaptiveAgent(Agent):
     def memorize(self, action_performed: str):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
         agent_name = f'Agent {self._name}'
-        self._memory[agent_name] = {
+        new_memory = {
+            "date_time": now,
             "action_executor": agent_name,
-            f"message_from_{self._name}": action_performed,
-            "date_time": now
+            f"message_from_{self._name}": action_performed
         }
+        self._memory[agent_name] = new_memory
+        log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
 
     def stop(self) -> bool:
         if random.uniform(0, 1) > self._p:
