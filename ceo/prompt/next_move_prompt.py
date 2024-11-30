@@ -97,7 +97,12 @@ class NextMovePrompt(Prompt):
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
 
-    def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
-        if stream:
-            return model.stream(self.prompt)
-        return model.invoke(self.prompt).content
+    def invoke(self, model: BaseChatModel, stream: bool = False) -> Ability | bool:
+        result = model.invoke(self.prompt).content
+        ability_name = result[result.rfind('['):][:result.rfind(']') + 1].strip()
+        if ability_name.__contains__('-mission-complete-'):
+            return True
+        for ability in self.abilities:
+            if ability.name == ability_name:
+                return ability
+        return False
