@@ -84,10 +84,11 @@ class Agent:
             self.deprive_ability(ability, update_introduction=False)
         self.introduce(update=True)
 
-    def plan(self) -> list:
+    def plan(self, _log: bool = True) -> list:
         scheduling = SchedulerPrompt(query=self.query_by_step, abilities=self.abilities)
         self.schedule = scheduling.invoke(self.model)
-        log.debug(f'Agent: {self.name}, Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
+        if _log:
+            log.debug(f'Agent: {self.name}, Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
         return self.schedule
 
     def reposition(self):

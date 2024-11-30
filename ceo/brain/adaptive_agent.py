@@ -22,8 +22,7 @@ class AdaptiveAgent(Agent):
         if self.query_by_step == '':
             self.expected_step = 0
             return
-        self.plan()
-        self.expected_step = len(self.schedule)
+        self.expected_step = len(self.plan(_log=False))
 
     def memorize(self, action_performed: str):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
