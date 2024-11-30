@@ -1,6 +1,6 @@
 import random
 import datetime
-from typing import Callable
+from typing import Callable, override
 
 from langchain_core.language_models import BaseChatModel
 
@@ -22,6 +22,7 @@ class AdaptiveAgent(Agent):
 
         return
 
+    @override
     def reposition(self):
         super().reposition()
         self.memory = dict()
@@ -29,10 +30,12 @@ class AdaptiveAgent(Agent):
         self.p = self.__origin_p
         return self
 
+    @override
     def assign(self, query: str):
         super().assign(query)
-        self.estimate_step()
+        self.reposition()
 
+    @override
     def reassign(self, query: str):
         return self.assign(query)
 
@@ -57,6 +60,10 @@ class AdaptiveAgent(Agent):
 
     def punish(self):
         self.p = (self.beta * self.p) % 1.0
+
+    @override
+    def just_do_it(self) -> str | None:
+        return
 
 
 '''
