@@ -12,6 +12,7 @@ sys.set_int_max_str_digits(10**8)
 model = get_openai_model()
 
 
+
 @ability
 def calculator(expr: str) -> float | str:
     expr = expr.replace(',', '')
@@ -43,8 +44,11 @@ def agent2():
 
 
 if __name__ == '__main__':
+    import logging
+    logging.getLogger('ceo').setLevel(logging.DEBUG)
     agent = Agent(abilities=[agent1, agent2], brain=model, name='test')
     result = agent.assign("Here is a sphere with a radius of 9.987 cm and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()
+    print(agent.query_by_step)
     print(result)
