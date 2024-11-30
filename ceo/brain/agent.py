@@ -33,6 +33,22 @@ class Agent:
         self.__prev_results = list()
         self.__schedule = list()
 
+    @property
+    def abilities(self) -> list[Ability]:
+        return self._abilities
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def introduction(self) -> str:
+        return self._introduction
+
+    @property
+    def brain(self) -> BaseChatModel:
+        return self._model
+
     def __repr__(self):
         ability_str = '['
         for ability in self._abilities:
