@@ -18,23 +18,6 @@ class AdaptiveAgent(Agent):
         self.beta = beta  # (0, MAX)
         self.__origin_p = p
 
-    @override
-    def reposition(self):
-        super().reposition()
-        self.memory = dict()
-        self.expected_step = 0
-        self.p = self.__origin_p
-        return self
-
-    @override
-    def assign(self, query: str):
-        super().assign(query)
-        self.reposition()
-
-    @override
-    def reassign(self, query: str):
-        return self.assign(query)
-
     def estimate_step(self):
         if self.query_by_step == '':
             self.expected_step = 0
@@ -56,6 +39,23 @@ class AdaptiveAgent(Agent):
 
     def punish(self):
         self.p = (self.beta * self.p) % 1.0
+
+    @override
+    def reposition(self):
+        super().reposition()
+        self.memory = dict()
+        self.expected_step = 0
+        self.p = self.__origin_p
+        return self
+
+    @override
+    def assign(self, query: str):
+        super().assign(query)
+        self.reposition()
+
+    @override
+    def reassign(self, query: str):
+        return self.assign(query)
 
     @override
     def step_quiet(self) -> str:
