@@ -9,6 +9,36 @@ from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
+output_example = """
+Step 1: In the history, I have identified two events related to the current user query. 
+        First, "buying two tomatoes" has been completed, and second, "returning home" has also taken place. 
+        These two events are listed in the order they occurred, with the purchase of tomatoes first, followed by returning home.
+        
+Step 2: Analyzing the user query "Help me buy two tomatoes, 
+        then after returning home, use kitchen utensils to cook the tomatoes, 
+        and finally place the cooked tomatoes on the dining table." According to the history, 
+        we have completed the steps of buying tomatoes and returning home. However, 
+        the steps of cooking the tomatoes and placing the cooked tomatoes on the dining table have not yet been carried out.
+        
+Step 3: Comparing my abilities with the unfinished part of the user query. 
+        I possess the abilities "go_home", "do_cook", and "arrange_dished". 
+        Since "go_home" has already been completed, it is no longer needed. 
+        The "do_cook" ability can be used to cook the tomatoes, 
+        and the "arrange_dished" ability can be used to place the cooked tomatoes on the dining table.
+        
+Step 4: Based on the analysis, I can choose the "do_cook" ability to cook the tomatoes, 
+        and then use the "arrange_dished" ability to place the cooked tomatoes on the dining table. 
+        These two abilities are the most suitable choices to complete the user's request.
+        
+Step 5: As I have found abilities that can complete the user's request,
+        there is no need for the special ability "-mission-failed-".
+        
+Step 6: Since the user's request has not been fully completed, 
+        there is no need for the special ability "-mission-complete-".
+
+ability: [do_cook]
+"""
+
 
 class NextMovePrompt(Prompt):
     def __init__(self, query: str,
@@ -62,7 +92,7 @@ class NextMovePrompt(Prompt):
             "hint_for_ability_choosing": "You can only choose and provide the most relevant ability as your next move.",
             "hint_for_output_format": 'the ability should be after all the thought processes and '
                                       'be surrounded by "[ ]".',
-            "output_example": ""
+            "output_example": output_example
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
