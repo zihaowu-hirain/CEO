@@ -73,7 +73,7 @@ class NextMovePrompt(Prompt):
                               "and comprehensively explain your next move.",
                     "after_you_have_chosen_the_one_most_relevant_ability_as_next_move":
                         "Generate values of parameters for the ability(function) to achieve [next move]. "
-                        "Before you generate values of parameters, provide your analysis process and basis first.",
+                        "Before you generate values of parameters, explain why you give these values to params.",
                 }, {
                     "step": 5,
                     "condition": "If the [user_query] has not been fully properly accomplished and "
@@ -90,9 +90,9 @@ class NextMovePrompt(Prompt):
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"
                              'params:{'
-                             '"param_1.name":"value_for_param_1",'
-                             '"param_2.name":"value_for_param_2",'
-                             '"param_....name":"value_for_param_..."'
+                             '{name_of_param_1}:{value_for_param_1},'
+                             '{name_of_param_2}:{value_for_param_2},'
+                             '{name_of_param_...}:{value_for_param_...}'
                              '}\n'
                              "ability:[ability.name]",
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
