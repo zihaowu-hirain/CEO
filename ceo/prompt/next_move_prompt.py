@@ -68,7 +68,12 @@ class NextMovePrompt(Prompt):
                     "condition": "If the [user_query] has not been fully properly accomplished and "
                                  "there is an ability in your [abilities] "
                                  "that can further advance the accomplishment of the [user_query]",
-                    "action": "Choose and provide the most relevant ability as your next move."
+                    "action": "Choose and provide the most relevant ability as your next move"
+                              "(only one single ability can be chosen), "
+                              "and comprehensively explain your next move.",
+                    "after_you_have_chosen_the_one_most_relevant_ability_as_next_move":
+                        "Generate values of parameters for the ability(function) to achieve [next move]. "
+                        "Before you generate values of parameters, provide your analysis process and basis first.",
                 }, {
                     "step": 5,
                     "condition": "If the [user_query] has not been fully properly accomplished and "
@@ -84,10 +89,15 @@ class NextMovePrompt(Prompt):
             "output_format": "{step1_thought_process}\n{step2_thought_process}\n"
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"
+                             "params:\n```json\n{values_of_params_for_the_chosen_ability}\n```\n"
                              "ability:[ability.name]",
-            "hint_for_ability_choosing": "You can only choose and provide the most relevant one ability as your next move.",
-            "hint_for_output_format": 'the ability should be after all the thought processes and '
-                                      'be surrounded by "[ ]".',
+            "hint_for_ability_choosing": "You can only choose and provide the most relevant one ability as your next move."
+                                         "Only one single ability can be chosen.",
+            "hint_for_params_output_format": 'The params should be after all the thought processes and before the ability. '
+                                             'The params should be formatted as json inside a markdown code block.'
+                                             'The params only gives the params for the chosen one ability.',
+            "hint_for_ability_output_format": 'The ability should be after all the thought processes and params. '
+                                              'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
