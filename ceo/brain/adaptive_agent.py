@@ -21,41 +21,53 @@ class AdaptiveAgent(Agent):
                  brain: BaseChatModel, name: str,
                  p: float, beta: float, query: str = ''):
         super().__init__(abilities=abilities, brain=brain, name=name, query=query)
-        self.memory = dict()  # json
-        self.expected_step = 0
-        self.p = p  # (0, 1)
-        self.beta = beta  # (0, MAX)
-        self.__origin_p = p
+        self._memory = dict()  # json
+        self.__expected_step = 0
+        self._p = p  # (0, 1)
+        self._beta = beta  # (0, MAX)
+        self.__base_p = p
+
+    @property
+    def p(self) -> float:
+        return self._p
+
+    @property
+    def base_p(self) -> float:
+        return self.__base_p
+
+    @property
+    def beta(self) -> float:
+        return self._beta
 
     def estimate_step(self):
-        if self.query_by_step == '':
-            self.expected_step = 0
+        if self._query_by_step == '':
+            self.__expected_step = 0
             return
-        self.expected_step = len(self.plan(_log=False))
+        self.__expected_step = len(self.plan(_log=False))
 
     def memorize(self, action_performed: str):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        agent_name = f'Agent {self.name}'
-        self.memory[agent_name] = {
+        agent_name = f'Agent {self._name}'
+        self._memory[agent_name] = {
             "action_executor": agent_name,
-            f"message_from_{self.name}": action_performed,
+            f"message_from_{self._name}": action_performed,
             "date_time": now
         }
 
     def stop(self) -> bool:
-        if random.uniform(0, 1) > self.p:
+        if random.uniform(0, 1) > self._p:
             return False
         return True
 
     def punish(self):
-        self.p = (self.beta * self.p) % 1.0
+        self._p = (self._beta * self._p) % 1.0
 
     @override
     def reposition(self):
         super().reposition()
-        self.memory = dict()
-        self.expected_step = 0
-        self.p = self.__origin_p
+        self._memory = dict()
+        self.__expected_step = 0
+        self._p = self.__base_p
         return self
 
     @override
@@ -68,26 +80,22 @@ class AdaptiveAgent(Agent):
         return self.assign(query)
 
     @override
-    def step_quiet(self) -> str | None:
-        pass
-
-    @override
     def just_do_it(self) -> dict:
         while True:
-            _history = json.dumps(self.memory, ensure_ascii=False)
+            _history = json.dumps(self._memory, ensure_ascii=False)
             next_move = NextMovePrompt(
-                query=self.query_by_step,
-                abilities=self.abilities,
+                query=self._query_by_step,
+                abilities=self._abilities,
                 history=_history
-            ).invoke(self.model)
+            ).invoke(self._model)
             if not isinstance(next_move, bool):
                 action, params = next_move
                 executing = ExecutorPrompt(params=params, action=action)
-                self.memorize(executing.invoke(model=self.model))
+                self.memorize(executing.invoke(model=self._model))
             return {
                 "success": next_move,
                 "response": IntrospectionPrompt(
-                    query=self.query_high_level,
+                    query=self._query_high_level,
                     prev_results=_history,
-                ).invoke(self.model)
+                ).invoke(self._model)
             }
