@@ -16,7 +16,8 @@ class SchedulerPrompt(Prompt):
         for ability in self.abilities:
             prompt[ability.name] = str(ability)
         prompt = json.dumps({
-            "precondition": "Below are the tools you can use (you can only use the following tools). "
+            "precondition": "Below are the tools(or abilities) you can use "
+                            "(you can only use the following tools(or abilities)). "
                             f'Now there is a [user_query].',
             "user_query": f'"{query}"',
             "task": "What you need to do is to plan your workflow based on the [tools] and [user_query].",
@@ -28,11 +29,20 @@ class SchedulerPrompt(Prompt):
                                    "to properly achieve the [user_query]!",
             "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to [user_query]. "
                                       "Make sure to choose tools properly and wisely.",
-            "output_format": "Sequential and well-organized with no additional redundant information",
-            "hint_for_output_format": 'Outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
-                                      'you should refer to [example_output].',
-            "output_example": "[tool_a.name, tool_b.name, tool_c.name, tool_d.name]",
-            "tools": json.dumps(prompt, ensure_ascii=False)
+            "output_format": "{your_thinking_process}\nschedule:{your_schedule_as_a_list_of_tool_names}",
+            "hint_for_output_format": 'firstly, output your thinking process step by step clear and organized.'
+                                      'secondly, outputs a list(python_list_format) of names of tools, surrounded by "[ ]", split by ", ", '
+                                      'you can refer to [output_example].',
+            "output_example": "1.First, I need to determine which ingredients to purchase, "
+                              "which requires checking a recipe or personal preferences to decide.\n"
+                              "2.After determining the ingredients, "
+                              "I need to go to the market or supermarket to buy the required ingredients.\n"
+                              "3.After purchasing the ingredients, I need to bring them home.\n"
+                              "4.Once home, I need to wash and prepare the ingredients.\n"
+                              "5.After preparation, I start cooking.\n"
+                              "6.After cooking is complete, I need to arrange the dishes on the dining table.\n"
+                              "schedule:[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]",
+            "tools(abilities)": json.dumps(prompt, ensure_ascii=False)
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
