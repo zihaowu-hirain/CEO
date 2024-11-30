@@ -25,7 +25,7 @@ def agentic(agent: Agent):
                         "name": "query",
                         "type": "str",
                         "description": f"A comprehensively, precisely and exactly instruction to be processed by {agent.name}.",
-                        "hint_for_query_input": "you must tell comprehensively and precisely about "
+                        "hint_for_query_param": "You must tell comprehensively and precisely about "
                                                 "{what_have_you_already_done} and {"
                                                 f"what_you_currently_need_{agent.name}_to_do_for_you"
                                                 "}",
