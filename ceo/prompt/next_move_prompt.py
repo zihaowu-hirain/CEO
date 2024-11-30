@@ -39,7 +39,7 @@ class NextMovePrompt(Prompt):
                     "condition": "If the [user_query] has not been fully properly accomplished and "
                                  "there is an ability in your [abilities] "
                                  "that can further advance the accomplishment of the [user_query]",
-                    "action": "Provide this ability."
+                    "action": "Choose and provide the most relevant ability as your next move."
                 }, {
                     "step": 5,
                     "condition": "If the [user_query] has not been fully properly accomplished and "
@@ -59,8 +59,10 @@ class NextMovePrompt(Prompt):
                              "{step5_thought_process}\n"
                              "{step6_thought_process}\n"
                              "ability:[ability.name]",
+            "hint_for_ability_choosing": "You can only choose and provide the most relevant ability as your next move.",
             "hint_for_output_format": 'the ability should be after all the thought processes and '
                                       'be surrounded by "[ ]".',
+            "output_example": ""
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
