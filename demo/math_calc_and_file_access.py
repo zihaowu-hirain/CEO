@@ -8,7 +8,8 @@ load_dotenv()
 
 
 @ability
-def constant_calculate(expr: str) -> float:
+def calculator(expr: str) -> float:
+    # this only accepts a single math expression
     return simplify(expr)
 
 
@@ -20,7 +21,7 @@ def write_file(filename: str, content: str) -> bool:
 
 
 if __name__ == '__main__':
-    ceo = Agent(abilities=[constant_calculate, write_file], brain=get_openai_model(), name='test')
+    ceo = Agent(abilities=[calculator, write_file], brain=get_openai_model(), name='test')
     ceo.assign("Here is a sphere with radius of 5.1121 cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
     result = ceo.just_do_it()
     print(result)
