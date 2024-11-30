@@ -39,29 +39,6 @@ class AdaptiveAgent(Agent):
     def beta(self) -> float:
         return self._beta
 
-    def estimate_step(self):
-        if self._query_by_step == '':
-            self.__expected_step = 0
-            return
-        self.__expected_step = len(self.plan(_log=False))
-
-    def memorize(self, action_performed: str):
-        now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        agent_name = f'Agent {self._name}'
-        self._memory[agent_name] = {
-            "action_executor": agent_name,
-            f"message_from_{self._name}": action_performed,
-            "date_time": now
-        }
-
-    def stop(self) -> bool:
-        if random.uniform(0, 1) > self._p:
-            return False
-        return True
-
-    def punish(self):
-        self._p = (self._beta * self._p) % 1.0
-
     @override
     def reposition(self):
         super().reposition()
@@ -99,3 +76,26 @@ class AdaptiveAgent(Agent):
                     prev_results=_history,
                 ).invoke(self._model)
             }
+
+    def estimate_step(self):
+        if self._query_by_step == '':
+            self.__expected_step = 0
+            return
+        self.__expected_step = len(self.plan(_log=False))
+
+    def memorize(self, action_performed: str):
+        now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
+        agent_name = f'Agent {self._name}'
+        self._memory[agent_name] = {
+            "action_executor": agent_name,
+            f"message_from_{self._name}": action_performed,
+            "date_time": now
+        }
+
+    def stop(self) -> bool:
+        if random.uniform(0, 1) > self._p:
+            return False
+        return True
+
+    def punish(self):
+        self._p = (self._beta * self._p) % 1.0
