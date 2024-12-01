@@ -101,8 +101,6 @@ class NextMovePrompt(Prompt):
                              '}\n'
                              "ability:[ability.name]",
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
-            "hint_for_ability_choosing": "You can only choose and provide the most relevant one ability as your next move."
-                                         "Only one single ability can be chosen.",
             "hint_for_params_output_format": 'The params should be after all the thought processes and before the ability. '
                                              'The params should be formatted as json.'
                                              'The params only gives the params for the chosen one ability.',
