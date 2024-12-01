@@ -73,7 +73,7 @@ class NextMovePrompt(Prompt):
                     "condition": "If the [user_query] has not been fully properly accomplished and "
                                  "there is an ability in your [abilities] "
                                  "that can further advance the accomplishment of the [user_query]",
-                    "action": "Choose and provide the most relevant ability as your next move"
+                    "action": "Choose and provide the ability as your next move"
                               "(only one single ability can be chosen), "
                               "and comprehensively explain your next move.",
                     "after_you_have_chosen_the_one_most_relevant_ability_as_next_move":
