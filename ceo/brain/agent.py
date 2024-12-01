@@ -97,7 +97,7 @@ class Agent:
         scheduling = SchedulerPrompt(query=self._query_by_step, abilities=self._abilities)
         self.__schedule = scheduling.invoke(self._model)
         if _log:
-            log.debug(f'Agent: {self._name}, Schedule: {[_.name for _ in self.__schedule]}. Query: "{self._query_high_level}".')
+            log.debug(f'Agent: {self._name}; Schedule: {[_.name for _ in self.__schedule]}; Query: "{self._query_high_level}".')
         return self.__schedule
 
     def reposition(self):
