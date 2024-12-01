@@ -88,13 +88,12 @@ class AdaptiveAgent(Agent):
 
     def memorize(self, action_performed: str):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        agent_name = f'Agent {self._name}'
         new_memory = {
             "date_time": now,
-            "action_executor": agent_name,
+            "agent_name": self._name,
             f"message_from_{self._name}": action_performed
         }
-        self._memory[agent_name] = new_memory
+        self._memory[self._name] = new_memory
         log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
 
     def stop(self) -> bool:
