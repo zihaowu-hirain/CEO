@@ -58,21 +58,30 @@ class AdaptiveAgent(Agent):
 
     @override
     def just_do_it(self) -> dict:
+        self.estimate_step()
+        stop = False
         while True:
+            if self._act_count + 1 > self.__expected_step:
+                stop = self.stop()
+                self.punish()
             _history = json.dumps(self._memory, ensure_ascii=False)
-            next_move = NextMovePrompt(
-                query=self._query_by_step,
-                abilities=self._abilities,
-                history=_history
-            ).invoke(self._model)
-            if not isinstance(next_move, bool):
-                action, params = next_move
-                self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
-                continue
+            next_move = False
+            if not stop:
+                next_move = NextMovePrompt(
+                    query=self._query_by_step,
+                    abilities=self._abilities,
+                    history=_history
+                ).invoke(self._model)
+                if not isinstance(next_move, bool):
+                    action, params = next_move
+                    self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
+                    self._act_count += 1
+                    continue
             response = IntrospectionPrompt(
                 query=self._query_high_level,
                 prev_results=_history,
             ).invoke(self._model)
+            self.reposition()
             log.debug(f'Agent: {self._name}, Conclusion: {response}')
             return {
                 "success": next_move,
