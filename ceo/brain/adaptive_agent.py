@@ -106,6 +106,7 @@ class AdaptiveAgent(Agent):
         log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
 
     def stop(self) -> bool:
+        log.debug(f'Agent: {self._name}, Termination Probability(p): {self._p}')
         if random.uniform(0, 1) > self._p:
             return False
         return True
