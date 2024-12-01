@@ -67,8 +67,7 @@ class AdaptiveAgent(Agent):
             ).invoke(self._model)
             if not isinstance(next_move, bool):
                 action, params = next_move
-                executing = ExecutorPrompt(params=params, action=action)
-                self.memorize(executing.invoke(model=self._model))
+                self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                 continue
             response = IntrospectionPrompt(
                 query=self._query_high_level,
