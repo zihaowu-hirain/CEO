@@ -69,6 +69,7 @@ class AdaptiveAgent(Agent):
                 action, params = next_move
                 executing = ExecutorPrompt(params=params, action=action)
                 self.memorize(executing.invoke(model=self._model))
+                continue
             response = IntrospectionPrompt(
                 query=self._query_high_level,
                 prev_results=_history,
