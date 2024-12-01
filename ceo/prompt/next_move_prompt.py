@@ -22,8 +22,9 @@ Step 3: The unfinished parts of the user query are "cook the tomatoes using a fr
         Among these, "do_cook" can complete the cooking task, 
         while "arrange_dished" can complete the placing task. Thus, my abilities can fulfill the unfinished parts of the user query.
 
-Step 4: Among my abilities, "do_cook" is the most relevant because it directly pertains to the process of cooking the tomatoes. 
-        After selecting this ability, I will use "tomatoes" and "frying pan" as parameters for cooking.
+Step 4: Since the user's query is not fully accomplished, and I have the ability to cook and arrange dishes, 
+        my next move is to cook the tomatoes. I will use the "do_cook" ability with "tomatoes" as the ingredient and "frying pan" as the cooking utensil 
+        because these parameters align with the user's request to cook the tomatoes using a frying pan.
 
 Step 5: This step is not applicable because the user query has not been fully accomplished, 
         and I have the ability to continue progressing.
@@ -73,12 +74,13 @@ class NextMovePrompt(Prompt):
                     "condition": "If the [user_query] has not been fully properly accomplished and "
                                  "there is an ability in your [abilities] "
                                  "that can further advance the accomplishment of the [user_query]",
-                    "action": "Choose and provide the ability as your next move"
-                              "(only one single ability can be chosen), "
-                              "and comprehensively explain your next move.",
-                    "after_you_have_chosen_the_one_most_relevant_ability_as_next_move":
-                        "Generate values of parameters for the ability(function) to achieve [next move]. "
-                        "Before you generate values of parameters, explain why you give these values to params.",
+                    "first_action": "Plan and explain your next move based on [history] "
+                                    "for further advancing the [user_query].",
+                    "second_action": "Choose and provide the ability according to your next move"
+                                     "(only one single ability can be chosen)",
+                    "third_action": "After you have chosen the ability as next move, "
+                                    "generate values of parameters for the ability(function) to achieve [next move], "
+                                    "before you generate values of parameters, explain why you give these values to params.",
                 }, {
                     "step": 5,
                     "condition": "If the [user_query] has not been fully properly accomplished and "
