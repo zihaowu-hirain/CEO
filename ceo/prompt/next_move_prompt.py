@@ -115,9 +115,9 @@ class NextMovePrompt(Prompt):
 
     def invoke(self, model: BaseChatModel, stream: bool = False) -> tuple[Ability, dict] | bool:
         result: str = model.invoke(self.prompt).content
-        log.debug(f"Next move thought process: {result}")
-        ability_name: str = result[result.rfind('['):][:result.rfind(']') + 1].strip()[1:-1]
-        params: dict = json.loads(result[result.rfind('{'):][:result.rfind('}') + 1].strip())
+        log.debug(f"Next move thought process: \n{result}")
+        ability_name: str = result[result.rfind('['):result.rfind(']') + 1].strip()[1:-1]
+        params: dict = json.loads(result[result.rfind('{'):result.rfind('}') + 1].strip())
         if ability_name.__contains__('-mission-complete-'):
             return True
         for ability in self.abilities:
