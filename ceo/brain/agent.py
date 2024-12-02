@@ -100,7 +100,7 @@ class Agent(BaseAgent, MemoryAugment):
                 prev_results=_history,
             ).invoke(self._model)
             self.reposition()
-            log.debug(f'Agent: {self._name}, Conclusion: {response}')
+            log.debug(f'Agent: {self._name}; Conclusion: {response};')
             return {
                 "success": next_move,
                 "response": response
@@ -114,7 +114,7 @@ class Agent(BaseAgent, MemoryAugment):
             self.__expected_step = 0
             return
         self.__expected_step = len(self.plan(_log=False))
-        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Query: "{self._query_high_level}".')
+        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Query: "{self._query_high_level}";')
 
     def memorize(self, action_performed: str):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
@@ -124,10 +124,10 @@ class Agent(BaseAgent, MemoryAugment):
             f"message_from_{self._name}": action_performed
         }
         self._memory[f"{self._name} at {now}"] = new_memory
-        log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
+        log.debug(f'Agent: {self._name}; Memory update: {new_memory};')
 
     def stop(self) -> bool:
-        log.debug(f'Agent: {self._name}, Termination Probability(p): {self._p}')
+        log.debug(f'Agent: {self._name}; Termination Probability(p): {self._p}; Penalty Rate(beta): {self._beta};')
         if random.uniform(0, 1) > self._p:
             return False
         return True

@@ -97,7 +97,7 @@ class BaseAgent:
         scheduling = SchedulerPrompt(query=self._query_by_step, abilities=self._abilities)
         self.__schedule = scheduling.invoke(self._model)
         if _log:
-            log.debug(f'Agent: {self._name}; Schedule: {[_.name for _ in self.__schedule]}; Query: "{self._query_high_level}".')
+            log.debug(f'Agent: {self._name}; Schedule: {[_.name for _ in self.__schedule]}; Query: "{self._query_high_level}";')
         return self.__schedule
 
     def reposition(self):
@@ -123,7 +123,7 @@ class BaseAgent:
             )
             action, params = analysing.invoke(self._model)
             executing = ExecutorPrompt(params=params, action=action)
-            action_str = f'Agent: {self._name}, Action {self._act_count + 1}/{len(self.__schedule)}: {executing.invoke(model=self._model)}'
+            action_str = f'Agent: {self._name}; Action {self._act_count + 1}/{len(self.__schedule)}: {executing.invoke(model=self._model)};'
             self.__prev_results.append(action_str)
             self._act_count += 1
             log.debug(action_str)
@@ -140,6 +140,6 @@ class BaseAgent:
             query=self._query_high_level,
             prev_results=self.__prev_results,
         ).invoke(self._model)
-        log.debug(f'Agent: {self._name}, Conclusion: {response}')
+        log.debug(f'Agent: {self._name}; Conclusion: {response};')
         self.reposition()
         return f'{self._name}: {response}'
