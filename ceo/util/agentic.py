@@ -1,12 +1,10 @@
 import logging
 
-from ceo.brain.base_agent import BaseAgent
+from ceo.brain.agent import Agent
 from ceo.ability.agentic_ability import AgenticAbility
 
 log = logging.getLogger('ceo.ability')
 
 
-def agentic(agent: BaseAgent):
-    def decorator(func):
-        return AgenticAbility(agent)
-    return decorator
+def agentic(agent: Agent):
+    return lambda func: AgenticAbility(agent)

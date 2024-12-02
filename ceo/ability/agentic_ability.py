@@ -7,12 +7,17 @@ from ceo.ability import Ability
 from ceo.brain.memory_augment import MemoryAugment
 
 log = logging.getLogger('ceo.ability')
+PREFIX = '__AgenticAbility__'
 
 
 class AgenticAbility(Ability):
-    def __init__(self, agent: BaseAgent):
-        self._agent: BaseAgent = agent
-        self.__name__ = f'talk_to_{agent.name}'
+    def __init__(self, agent: BaseAgent | MemoryAugment):
+        try:
+            _test_mem = agent.memory
+        except AttributeError:
+            raise TypeError("The 'agent' of AgenticAbility should be instance of 'ceo.Agent'.")
+        self._agent = agent
+        self.__name__ = f'{PREFIX}talk_to_{agent.name}'
         self.__doc__ = json.dumps({
             "description": {
                 "brief_description": f'Initiates a conversation with "{agent.name}" to use its abilities.',
@@ -40,10 +45,10 @@ class AgenticAbility(Ability):
         log.debug(f'Agent dispatcher generated. {self.__name__}: {self.__doc__}')
 
     @override
-    def __call__(self, query: str, memory: dict | None = None, *args, **kwargs) -> str:
-        if memory is not None and isinstance(self._agent, MemoryAugment):
-            self._agent.bring_in_memory(memory)
-        result = self._agent.assign(query).just_do_it()
+    def __call__(self, query: str, memory: dict, *args, **kwargs) -> str:
+        self._agent.assign(query)
+        self._agent.bring_in_memory(memory)
+        result = self._agent.just_do_it()
         if isinstance(result, dict):
             return json.dumps(result, ensure_ascii=False)
         return result

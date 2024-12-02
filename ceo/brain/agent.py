@@ -6,7 +6,7 @@ from typing import Callable, override
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.ability.agentic_ability import AgenticAbility
+from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.brain.base_agent import BaseAgent
 from ceo.brain.memory_augment import MemoryAugment
 from ceo.prompt import (
@@ -45,6 +45,7 @@ class Agent(BaseAgent, MemoryAugment):
     @override
     def bring_in_memory(self, memory: dict):
         self._memory.update(memory)
+        return self
 
     @override
     def reposition(self):
@@ -57,7 +58,7 @@ class Agent(BaseAgent, MemoryAugment):
     @override
     def assign(self, query: str):
         BaseAgent.assign(self, query)
-        self.reposition()
+        return self.reposition()
 
     @override
     def reassign(self, query: str):
@@ -81,7 +82,7 @@ class Agent(BaseAgent, MemoryAugment):
                 ).invoke(self._model)
                 if not isinstance(next_move, bool):
                     action, params = next_move
-                    if isinstance(action, AgenticAbility):
+                    if action.name.startswith(AGENTIC_ABILITY_PREFIX):
                         params['memory'] = self._memory
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
@@ -96,6 +97,9 @@ class Agent(BaseAgent, MemoryAugment):
                 "success": next_move,
                 "response": response
             }
+
+    def assign_with_memory(self, query: str, memory: dict):
+        return self.assign(query).bring_in_memory(memory)
 
     def estimate_step(self):
         if self._query_by_step == '':
