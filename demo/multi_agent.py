@@ -1,26 +1,15 @@
-import sys
-
-import sympy
+from sympy import simplify
 from dotenv import load_dotenv
-
 from ceo import Agent, get_openai_model, agentic, ability
 
 load_dotenv()
-sys.set_int_max_str_digits(10**8)
-
 model = get_openai_model()
 
 
 @ability
-def calculator(expr: str) -> float | str:
+def calculator(expr: str) -> float:
     # this function only accepts a single math expression
-    try:
-        try:
-            return f'{expr} equals to {sympy.simplify(expr, rational=None)}'
-        except ValueError as ve:
-            return ve.__repr__()
-    except sympy.SympifyError as se:
-        return se.__repr__()
+    return simplify(expr)
 
 
 @ability

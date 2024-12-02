@@ -19,7 +19,7 @@ def write_file(filename: str, content: str) -> bool:
 
 
 if __name__ == '__main__':
-    ceo = Agent(abilities=[calculator, write_file], brain=get_openai_model(temp=1), name='Copilot', p=0.05, beta=1.5)
+    ceo = Agent(abilities=[calculator, write_file], brain=get_openai_model(), name='Copilot', p=0.05, beta=1.5)
     ceo.assign("Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
     result = ceo.just_do_it()
     print(result)
