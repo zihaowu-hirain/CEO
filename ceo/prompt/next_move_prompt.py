@@ -9,9 +9,17 @@ from ceo.prompt.prompt import Prompt
 log = logging.getLogger('ceo.prompt')
 
 OUTPUT_EXAMPLE = """
-Step 1: In the history, the events that have already occurred include "buying two tomatoes" and "going home." 
-        These two events are prerequisites for the user query, indicating that the user has completed the purchase of tomatoes and has returned home. 
-        The next steps to complete are to cook the tomatoes using a frying pan and to place the cooked tomatoes on the dining table.
+Step 1: In the provided history, the events related to the user's query are as follows, listed chronologically:
+        - Buying two tomatoes: This event is the first in the sequence and is directly related to the user's query as it involves the acquisition of the main ingredient needed for the subsequent steps.
+        - Going home: Following the purchase, the user returns home, which is a necessary step before proceeding with the cooking process.
+        
+        From the history, we extract the following information related to the user's query:
+        - The user has successfully completed the purchase of tomatoes.
+        - The user is now at home, which is the location where the next steps of the process will take place.
+        
+        Based on these details, the subsequent steps to complete are:
+        - Cook the tomatoes using a frying pan.
+        - Place the cooked tomatoes on the dining table.
 
 Step 2: The user query is "Help me buy two tomatoes, then after getting home, cook the tomatoes using a frying pan, 
         and finally place the cooked tomatoes on the dining table." According to the history, the first two parts have been completed, 
