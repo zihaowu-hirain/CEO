@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import override
 
 from ceo.brain.base_agent import BaseAgent
 from ceo.ability import Ability
@@ -38,6 +39,7 @@ class AgenticAbility(Ability):
         super().__init__(self)
         log.debug(f'Agent dispatcher generated. {self.__name__}: {self.__doc__}')
 
+    @override
     def __call__(self, query: str, memory: dict | None = None, *args, **kwargs) -> str:
         if memory is not None and isinstance(self._agent, MemoryAugment):
             self._agent.bring_in_memory(memory)

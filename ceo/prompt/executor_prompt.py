@@ -31,7 +31,7 @@ class ExecutorPrompt(Prompt):
         return model.invoke(self.prompt).content
 
     def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
-        result = self.action.function(**self.params)
+        result = self.action.__call__(**self.params)
         prompt = json.dumps({
             "precondition": "Below is a tool, your choice (params) for the tool, "
                             "and the result of your using of this tool.",
