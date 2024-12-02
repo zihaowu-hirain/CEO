@@ -121,9 +121,12 @@ class NextMovePrompt(Prompt):
                              "ability:[ability.name]",
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
             "hint_for_ability_choosing": "Only one single ability can be chosen.",
-            "hint_for_params_output_format": 'The params should be after all the thought processes and before the ability. '
+            "hint_for_params_output_format": f'The "{SEPARATOR}" pattern should be after '
+                                             f'all the thought processes and before the [params and ability].'
+                                             f'The params should be after the "{SEPARATOR}" pattern.'
                                              'The params should be formatted as json.'
-                                             'The params only gives the params for the chosen one ability.',
+                                             'The params only gives the params for the chosen one ability.'
+                                             'The ability should be after params.',
             "hint_for_separation_pattern": f'The "{SEPARATOR}" pattern which separates [thought processes] and '
                                            '[params, ability] is absolutely important, do not forget to place it.',
             "hint_for_ability_output_format": 'The ability should be after the params. '
