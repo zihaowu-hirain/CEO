@@ -83,7 +83,7 @@ class Agent(BaseAgent, MemoryAugment):
                 if not isinstance(next_move, bool):
                     action, params = next_move
                     if action.name.startswith(AGENTIC_ABILITY_PREFIX):
-                        params['memory'] = self._memory
+                        params = {'query': self._query_by_step, 'memory': self._memory}
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
