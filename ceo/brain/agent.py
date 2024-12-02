@@ -15,13 +15,15 @@ from ceo.prompt import (
     IntrospectionPrompt
 )
 
+DEFAULT_P = 0.25
+DEFAULT_BETA = 1.25
 log = logging.getLogger('ceo')
 
 
 class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
                  brain: BaseChatModel, name: str,
-                 p: float, beta: float,
+                 p: float = DEFAULT_P, beta: float = DEFAULT_BETA,
                  query: str = '', memory: dict | None = None):
         BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
         MemoryAugment.__init__(self, memory=memory)

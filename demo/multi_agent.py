@@ -19,18 +19,18 @@ def write_file(filename: str, content: str) -> str:
     return f'{content} written to {filename}.'
 
 
-@agentic(Agent(abilities=[calculator], brain=model, name='Jack', p=0.05, beta=1.2))
+@agentic(Agent(abilities=[calculator], brain=model, name='Jack'))
 def agent1():
     return
 
 
-@agentic(Agent(abilities=[write_file], brain=model, name='Tylor', p=0.05, beta=1.2))
+@agentic(Agent(abilities=[write_file], brain=model, name='Tylor'))
 def agent2():
     return
 
 
 if __name__ == '__main__':
-    ceo = Agent(abilities=[agent1, agent2], brain=model, name='Copilot', p=0.9, beta=1.2)
+    ceo = Agent(abilities=[agent1, agent2], brain=model, name='Copilot')
     ceo.assign(
         "Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
     result = ceo.just_do_it()
