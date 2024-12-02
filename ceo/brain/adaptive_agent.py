@@ -61,7 +61,7 @@ class AdaptiveAgent(Agent):
         self.estimate_step()
         stop = False
         while True:
-            if self._act_count + 1 > self.__expected_step:
+            if self._act_count > self.__expected_step:
                 stop = self.stop()
                 self.punish()
             _history = json.dumps(self._memory, ensure_ascii=False)
@@ -102,7 +102,7 @@ class AdaptiveAgent(Agent):
             "agent_name": self._name,
             f"message_from_{self._name}": action_performed
         }
-        self._memory[self._name] = new_memory
+        self._memory[f"{self._name} at {now}"] = new_memory
         log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
 
     def stop(self) -> bool:
