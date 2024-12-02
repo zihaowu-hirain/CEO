@@ -109,6 +109,9 @@ class Agent(BaseAgent):
         self._memory[f"{self._name} at {now}"] = new_memory
         log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
 
+    def bring_in_memory(self, memory: dict):
+        self._memory.update(memory)
+
     def stop(self) -> bool:
         log.debug(f'Agent: {self._name}, Termination Probability(p): {self._p}')
         if random.uniform(0, 1) > self._p:
