@@ -3,9 +3,7 @@ import sys
 import sympy
 from dotenv import load_dotenv
 
-from ceo import Agent, get_openai_model
-from ceo.brain.base_agent import BaseAgent
-from ceo.util import agentic, ability
+from ceo import Agent, get_openai_model, agentic, ability
 
 load_dotenv()
 sys.set_int_max_str_digits(10**8)
@@ -32,18 +30,19 @@ def write_file(filename: str, content: str) -> str:
     return f'{content} written to {filename}.'
 
 
-@agentic(BaseAgent(abilities=[calculator], brain=model, name='Jack'))
+@agentic(Agent(abilities=[calculator], brain=model, name='Jack', p=0.05, beta=1.2))
 def agent1():
     return
 
 
-@agentic(BaseAgent(abilities=[write_file], brain=model, name='Tylor'))
+@agentic(Agent(abilities=[write_file], brain=model, name='Tylor', p=0.05, beta=1.2))
 def agent2():
     return
 
 
 if __name__ == '__main__':
-    agent = BaseAgent(abilities=[agent1, agent2], brain=model, name='test')
+    agent = Agent(abilities=[agent1, agent2], brain=model, name='test', p=0.05, beta=1.2)
+    print(agent.name)
     result = agent.assign("Here is a sphere with a radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()
