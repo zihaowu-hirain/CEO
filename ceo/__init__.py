@@ -1,7 +1,6 @@
 import logging
 
 from .brain.agent import Agent
-from .brain.adaptive_agent import AdaptiveAgent
 from .brain.lm import get_openai_model
 
 __AUTHOR__ = '吴子豪 / Vortez Wohl'
