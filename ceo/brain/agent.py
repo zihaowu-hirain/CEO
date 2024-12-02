@@ -127,14 +127,11 @@ class Agent(BaseAgent, MemoryAugment):
         log.debug(f'Agent: {self._name}; Memory update: {new_memory};')
 
     def stop(self) -> bool:
-        resample = 5
+        resample = 3
         log.debug(f'Agent: {self._name}; Termination Probability(p): {self._p}; Penalty Rate(beta): {self._beta};')
-        rand_sum = 0
-        rand_seq = []
+        rand_sum = 0.0
         for i in range(resample):
-            rand_seq.append(random.uniform(0, 1))
-        for num in sorted(rand_seq)[1:-1]:
-            rand_sum += num
+            rand_sum += random.uniform(0, 1)
         rand_avg = rand_sum / resample
         if rand_avg > self._p:
             return False
