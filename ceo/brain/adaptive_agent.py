@@ -28,6 +28,10 @@ class AdaptiveAgent(Agent):
         self.__base_p = p
 
     @property
+    def memory(self) -> dict:
+        return self._memory
+
+    @property
     def p(self) -> float:
         return self._p
 
