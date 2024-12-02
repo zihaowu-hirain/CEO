@@ -41,9 +41,9 @@ def agent2():
 
 
 if __name__ == '__main__':
-    agent = Agent(abilities=[agent1, agent2], brain=model, name='test', p=0.05, beta=1.2)
-    print(agent.name)
-    result = agent.assign("Here is a sphere with a radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, "
+    ceo = Agent(abilities=[agent1, agent2], brain=model, name='test', p=0.05, beta=1.2)
+    print(ceo.name)
+    result = ceo.assign("Here is a sphere with a radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()
     print(result)

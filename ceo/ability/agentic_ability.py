@@ -10,7 +10,7 @@ log = logging.getLogger('ceo.ability')
 
 class AgenticAbility(Ability):
     def __init__(self, agent: BaseAgent):
-        self._agent = agent
+        self._agent: BaseAgent = agent
         self.__name__ = f'talk_to_{agent.name}'
         self.__doc__ = json.dumps({
             "description": {
