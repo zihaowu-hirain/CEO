@@ -1,8 +1,11 @@
+import logging
+
 from ceo import Agent, get_openai_model, ability
 from sympy import simplify
 from dotenv import load_dotenv
 
 load_dotenv()
+logging.getLogger('ceo').setLevel(logging.DEBUG)
 
 
 @ability
