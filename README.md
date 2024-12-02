@@ -134,7 +134,7 @@ To start building your own agent, follow the steps listed.
     You can change an agent's personality using method `change_personality(personality: Personality)`
 
     ```python
-    ceo.change_personality(Personality.PRUDENT)
+    agent.change_personality(Personality.PRUDENT)
     ```
 
 5. assign a query to your agent
