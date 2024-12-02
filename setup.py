@@ -8,7 +8,7 @@ with open("LICENSE", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="ceo-py",
-    version='0.8.0-preview',
+    version='0.8.1-preview',
     author="vortezwohl",
     author_email="vortez.wohl@gmail.com",
     description="CEO is an intuitive and modular AI agent framework for task automation.",
