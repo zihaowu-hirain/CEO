@@ -105,7 +105,8 @@ class NextMovePrompt(Prompt):
                     "action": 'Provide a special ability called "-mission-failed-" (which is not a real ability).'
                 }, {
                     "step": 6,
-                    "condition": "If the [user_query] has been fully properly accomplished",
+                    "condition": "If the [user_query] has been fully and properly accomplished "
+                                 "according to [history] and [user_query]",
                     "action": 'Provide a special ability called "-mission-complete-" (which is not a real ability).'
                 }
             ],
