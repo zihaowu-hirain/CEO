@@ -58,8 +58,9 @@ class NextMovePrompt(Prompt):
             "history": history,
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
-                    "action": "Find events in the [history] that are related to the current [user_query], "
-                              "and list them in the order they occurred by time."
+                    "first_action": "Find events in the [history] that are related to the current [user_query], "
+                                    "and list all of them in the order they occurred by time.",
+                    "second_action": "Extract all information related to [user_query] from [history]."
                 }, {
                     "step": 2,
                     "action": "Analyse whether the [user_query] has been fully and properly accomplished, "
