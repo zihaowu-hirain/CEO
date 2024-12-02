@@ -9,28 +9,34 @@ from langchain_core.language_models import BaseChatModel
 from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.brain.base_agent import BaseAgent
 from ceo.brain.memory_augment import MemoryAugment
+from ceo.enum.Personality import Personality
 from ceo.prompt import (
     NextMovePrompt,
     ExecutorPrompt,
     IntrospectionPrompt
 )
 
-DEFAULT_P = 0.25
-DEFAULT_BETA = 1.25
+PRUDENT_P = 0.25
+PRUDENT_BETA = 1.45
+INQUISITIVE_P = 0.05
+INQUISITIVE_BETA = 1.25
 log = logging.getLogger('ceo')
 
 
 class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
                  brain: BaseChatModel, name: str,
-                 p: float = DEFAULT_P, beta: float = DEFAULT_BETA,
+                 personality: Personality = Personality.PRUDENT,
                  query: str = '', memory: dict | None = None):
         BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
         MemoryAugment.__init__(self, memory=memory)
         self.__expected_step = 0
-        self._p = p  # (0, 1)
-        self._beta = beta  # (0, MAX)
-        self.__base_p = p
+        if personality == Personality.PRUDENT:
+            self._p = self.__base_p = PRUDENT_P
+            self._beta = PRUDENT_BETA
+        elif personality == Personality.INQUISITIVE:
+            self._p = self.__base_p = INQUISITIVE_P
+            self._beta = INQUISITIVE_BETA
 
     @property
     def p(self) -> float:
@@ -73,7 +79,7 @@ class Agent(BaseAgent, MemoryAugment):
         while True:
             if self._act_count > self.__expected_step:
                 stop = self.stop()
-                self.punish()
+                self.penalize()
             _history = json.dumps(self._memory, ensure_ascii=False)
             next_move = False
             if not stop:
@@ -126,5 +132,10 @@ class Agent(BaseAgent, MemoryAugment):
             return False
         return True
 
-    def punish(self):
+    def penalize(self):
         self._p = (self._beta * self._p) % 1.0
+
+    def set_penalty(self, p: float, beta: float):
+        self._p = self.__base_p = p
+        self._beta = beta
+        return self
