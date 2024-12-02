@@ -1,135 +1,128 @@
 import json
 import logging
-from typing import Callable
+import random
+import datetime
+from typing import Callable, override
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.ability.ability import Ability
+from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
+from ceo.brain.base_agent import BaseAgent
+from ceo.brain.memory_augment import MemoryAugment
 from ceo.prompt import (
-    SchedulerPrompt,
-    AnalyserPrompt,
+    NextMovePrompt,
     ExecutorPrompt,
-    IntrospectionPrompt,
-    QueryResolverPrompt,
-    SelfIntroducePrompt
+    IntrospectionPrompt
 )
 
 log = logging.getLogger('ceo')
 
 
-class Agent:
-    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str, query: str = ''):
-        self.abilities = list()
-        self.prev_results = list()
-        self.schedule = list()
-        self.act_count = 0
-        self.name = name
-        self.model = brain
-        self.query_high_level = self.query_by_step = str()
-        if query is not None and query != '':
-            self.query_high_level, self.query_by_step = QueryResolverPrompt(query).invoke(self.model)
-        for ability in abilities:
-            self.abilities.append(Ability(ability))
-        self.introduction = str()
-        self.introduce()
+class Agent(BaseAgent, MemoryAugment):
+    def __init__(self, abilities: list[Callable],
+                 brain: BaseChatModel, name: str,
+                 p: float, beta: float,
+                 query: str = '', memory: dict | None = None):
+        BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
+        MemoryAugment.__init__(self, memory=memory)
+        self.__expected_step = 0
+        self._p = p  # (0, 1)
+        self._beta = beta  # (0, MAX)
+        self.__base_p = p
 
-    def __repr__(self):
-        ability_str = '['
-        for ability in self.abilities:
-            ability_str += f'{ability}, '
-        ability_str = ability_str[:-2] + ']'
-        if ability_str == ']':
-            ability_str = '[]'
-        schedule_str = '['
-        for ability in self.schedule:
-            schedule_str += f'{ability.name}, '
-        schedule_str = schedule_str[:-2] + ']'
-        if schedule_str == ']':
-            schedule_str = '[]'
-        return json.dumps({
-            self.name: {
-                "name": self.name,
-                "brain": self.model.dict()['model_name'],
-                "abilities": ability_str,
-                "schedule": schedule_str
-            }
-        }, ensure_ascii=False)
+    @property
+    def p(self) -> float:
+        return self._p
 
-    def __str__(self):
-        return self.__repr__()
+    @property
+    def base_p(self) -> float:
+        return self.__base_p
 
-    def introduce(self, update: bool = False) -> str:
-        if self.introduction == '' or update:
-            self.introduction = SelfIntroducePrompt(agent=self).invoke(self.model)
-        return self.introduction
+    @property
+    def beta(self) -> float:
+        return self._beta
 
-    def grant_ability(self, ability: Callable, update_introduction: bool = True):
-        self.abilities.append(Ability(ability))
-        self.introduce(update_introduction)
-
-    def grant_abilities(self, abilities: list[Callable]):
-        for ability in abilities:
-            self.grant_ability(ability, update_introduction=False)
-        self.introduce(update=True)
-
-    def deprive_ability(self, ability: Callable, update_introduction: bool = True):
-        ability = Ability(ability)
-        for _ability in self.abilities:
-            if _ability.name == ability.name:
-                self.abilities.remove(_ability)
-        self.introduce(update_introduction)
-
-    def deprive_abilities(self, abilities: list[Callable]):
-        for ability in abilities:
-            self.deprive_ability(ability, update_introduction=False)
-        self.introduce(update=True)
-
-    def plan(self) -> list:
-        scheduling = SchedulerPrompt(query=self.query_by_step, abilities=self.abilities)
-        self.schedule = scheduling.invoke(self.model)
-        log.debug(f'Agent: {self.name}, Schedule: {[_.name for _ in self.schedule]}. Query: "{self.query_high_level}".')
-        return self.schedule
-
-    def reposition(self):
-        self.prev_results = list()
-        self.schedule = list()
-        self.act_count = 0
+    @override
+    def bring_in_memory(self, memory: dict):
+        self._memory.update(memory)
         return self
 
+    @override
+    def reposition(self):
+        BaseAgent.reposition(self)
+        self._memory = dict()
+        self.__expected_step = 0
+        self._p = self.__base_p
+        return self
+
+    @override
     def assign(self, query: str):
-        self.query_high_level, self.query_by_step = (
-            QueryResolverPrompt(query=query).invoke(self.model))
+        BaseAgent.assign(self, query)
         return self.reposition()
 
+    @override
     def reassign(self, query: str):
         return self.assign(query)
 
-    def step_quiet(self) -> str:
-        if self.act_count < len(self.schedule):
-            analysing = AnalyserPrompt(
-                query=self.query_by_step,
-                prev_results=self.prev_results,
-                action=self.schedule[self.act_count]
-            )
-            action, params = analysing.invoke(self.model)
-            executing = ExecutorPrompt(params=params, action=action)
-            action_str = f'Agent: {self.name}, Action {self.act_count + 1}/{len(self.schedule)}: {executing.invoke(model=self.model)}'
-            self.prev_results.append(action_str)
-            self.act_count += 1
-            log.debug(action_str)
-            return action_str
-        self.reposition()
-        return ''
+    @override
+    def just_do_it(self) -> dict:
+        self.estimate_step()
+        stop = False
+        while True:
+            if self._act_count > self.__expected_step:
+                stop = self.stop()
+                self.punish()
+            _history = json.dumps(self._memory, ensure_ascii=False)
+            next_move = False
+            if not stop:
+                next_move = NextMovePrompt(
+                    query=self._query_by_step,
+                    abilities=self._abilities,
+                    history=_history
+                ).invoke(self._model)
+                if not isinstance(next_move, bool):
+                    action, params = next_move
+                    if action.name.startswith(AGENTIC_ABILITY_PREFIX):
+                        params = {'query': self._query_by_step, 'memory': self._memory}
+                    self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
+                    self._act_count += 1
+                    continue
+            response = IntrospectionPrompt(
+                query=self._query_high_level,
+                prev_results=_history,
+            ).invoke(self._model)
+            self.reposition()
+            log.debug(f'Agent: {self._name}, Conclusion: {response}')
+            return {
+                "success": next_move,
+                "response": response
+            }
 
-    def just_do_it(self) -> str | None:
-        if not self.plan():
-            return None
-        for act_count in range(len(self.schedule)):
-            self.step_quiet()
-        response = IntrospectionPrompt(
-            query=self.query_high_level,
-            prev_results=self.prev_results,
-        ).invoke(self.model)
-        log.debug(f'Agent: {self.name}, Conclusion: {response}')
-        self.reposition()
-        return f'{self.name}: {response}'
+    def assign_with_memory(self, query: str, memory: dict):
+        return self.assign(query).bring_in_memory(memory)
+
+    def estimate_step(self):
+        if self._query_by_step == '':
+            self.__expected_step = 0
+            return
+        self.__expected_step = len(self.plan(_log=False))
+        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Query: "{self._query_high_level}".')
+
+    def memorize(self, action_performed: str):
+        now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
+        new_memory = {
+            "date_time": now,
+            "agent_name": self._name,
+            f"message_from_{self._name}": action_performed
+        }
+        self._memory[f"{self._name} at {now}"] = new_memory
+        log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
+
+    def stop(self) -> bool:
+        log.debug(f'Agent: {self._name}, Termination Probability(p): {self._p}')
+        if random.uniform(0, 1) > self._p:
+            return False
+        return True
+
+    def punish(self):
+        self._p = (self._beta * self._p) % 1.0

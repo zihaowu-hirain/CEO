@@ -24,3 +24,6 @@ class Ability:
 
     def __str__(self):
         return self.__repr__()
+
+    def __call__(self, *args, **kwargs):
+        return self.function(*args, **kwargs)
