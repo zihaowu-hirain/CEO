@@ -10,16 +10,16 @@ log = logging.getLogger('ceo.prompt')
 
 OUTPUT_EXAMPLE = """
 Step 1: In the provided history, the events related to the user's query are as follows, listed chronologically:
-        - Buying two tomatoes: This event is the first in the sequence and is directly related to the user's query as it involves the acquisition of the main ingredient needed for the subsequent steps.
-        - Going home: Following the purchase, the user returns home, which is a necessary step before proceeding with the cooking process.
+        1. Buying two tomatoes: This event is the first in the sequence and is directly related to the user's query as it involves the acquisition of the main ingredient needed for the subsequent steps.
+        2. Going home: Following the purchase, the user returns home, which is a necessary step before proceeding with the cooking process.
         
         From the history, we extract the following information related to the user's query:
-        - The user has successfully completed the purchase of tomatoes.
-        - The user is now at home, which is the location where the next steps of the process will take place.
+        1. The user has successfully completed the purchase of tomatoes.
+        2. The user is now at home, which is the location where the next steps of the process will take place.
         
         Based on these details, the subsequent steps to complete are:
-        - Cook the tomatoes using a frying pan.
-        - Place the cooked tomatoes on the dining table.
+        1. Cook the tomatoes using a frying pan.
+        2. Place the cooked tomatoes on the dining table.
 
 Step 2: The user query is "Help me buy two tomatoes, then after getting home, cook the tomatoes using a frying pan, 
         and finally place the cooked tomatoes on the dining table." According to the history, the first two parts have been completed, 
@@ -66,23 +66,26 @@ class NextMovePrompt(Prompt):
             "history": history,
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
-                    "first_action": "Find events in the [history] that are related to the current [user_query], "
-                                    "and list all of them in the order they occurred by time.",
-                    "second_action": "Extract all information related to [user_query] from [history]."
+                    "first_action": "List all events in the [history] related to [user_query] respectively and chronologically.",
+                    "second_action": "Extract and list all key information related to [user_query] from [history] "
+                                     "formatted one by one respectively.",
+                    "additional": "For any details mentioned in [history] about [user_query], you should preserve them in full, "
+                                  "especially specific information with accuracy requirements such as numbers, dates, etc."
                 }, {
                     "step": 2,
-                    "action": "Analyse whether the [user_query] has been fully and properly accomplished, "
+                    "action": "Analyse whether the [user_query] has been fully and properly accomplished "
+                              "according to your report in [step_1], "
                               "and provide your analysis process and basis."
                 }, {
                     "step": 3,
                     "condition": "If the [user_query] has not been fully properly accomplished",
                     "action": "Analyse whether your [abilities] can complete the unfinished part of the [user_query], "
-                              "and provide the basis for your analysis process."
+                              "and provide the basis according to your report in [step_1]."
                 }, {
                     "step": 4,
                     "condition": "If the [user_query] has not been fully properly accomplished and "
                                  "there is an ability in your [abilities] "
-                                 "that can further advance the accomplishment of the [user_query]",
+                                 "that can further advance the accomplishment of the [user_query] based on [history].",
                     "first_action": "Plan and explain your next move based on [history] "
                                     "for further advancing the [user_query].",
                     "second_action": "Choose and provide the ability according to your next move"
@@ -112,6 +115,7 @@ class NextMovePrompt(Prompt):
                              '}\n'
                              "ability:[ability.name]",
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
+            "hint_for_ability_choosing": "Only one single ability can be chosen.",
             "hint_for_params_output_format": 'The params should be after all the thought processes and before the ability. '
                                              'The params should be formatted as json.'
                                              'The params only gives the params for the chosen one ability.',
