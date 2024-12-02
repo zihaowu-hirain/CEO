@@ -57,7 +57,7 @@ To start building your own agent, follow the steps listed.
     OPENAI_API_KEY=sk-...
     ```
 
-2. bring in APIs from `CEO`
+2. bring in SDKs from `CEO`
 
     - `Agent` lets you instantiate an agent.
 
