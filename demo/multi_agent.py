@@ -4,6 +4,7 @@ import sympy
 from dotenv import load_dotenv
 
 from ceo import Agent, get_openai_model
+from ceo.brain.base_agent import BaseAgent
 from ceo.util import agentic, ability
 
 load_dotenv()
@@ -31,18 +32,18 @@ def write_file(filename: str, content: str) -> str:
     return f'{content} written to {filename}.'
 
 
-@agentic(Agent(abilities=[calculator], brain=model, name='Jack'))
+@agentic(BaseAgent(abilities=[calculator], brain=model, name='Jack'))
 def agent1():
     return
 
 
-@agentic(Agent(abilities=[write_file], brain=model, name='Tylor'))
+@agentic(BaseAgent(abilities=[write_file], brain=model, name='Tylor'))
 def agent2():
     return
 
 
 if __name__ == '__main__':
-    agent = Agent(abilities=[agent1, agent2], brain=model, name='test')
+    agent = BaseAgent(abilities=[agent1, agent2], brain=model, name='test')
     result = agent.assign("Here is a sphere with a radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, "
                  "find the area and volume respectively, "
                  "then write the results into a file called 'result.txt'.").just_do_it()

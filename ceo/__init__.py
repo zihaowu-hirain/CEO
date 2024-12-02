@@ -1,7 +1,9 @@
 import logging
 
 from .brain.agent import Agent
+from .ability import Ability, AgenticAbility
 from .brain.lm import get_openai_model
+from .util import ability, agentic
 
 __AUTHOR__ = '吴子豪 / Vortez Wohl'
 __EMAIL__ = 'vortez.wohl@gmail.com'

@@ -6,7 +6,9 @@ from typing import Callable, override
 
 from langchain_core.language_models import BaseChatModel
 
+from ceo.ability.agentic_ability import AgenticAbility
 from ceo.brain.base_agent import BaseAgent
+from ceo.brain.memory_augment import MemoryAugment
 from ceo.prompt import (
     NextMovePrompt,
     ExecutorPrompt,
@@ -16,20 +18,17 @@ from ceo.prompt import (
 log = logging.getLogger('ceo')
 
 
-class Agent(BaseAgent):
+class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
                  brain: BaseChatModel, name: str,
-                 p: float, beta: float, query: str = ''):
-        super().__init__(abilities=abilities, brain=brain, name=name, query=query)
-        self._memory = dict()  # json
+                 p: float, beta: float,
+                 query: str = '', memory: dict | None = None):
+        BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
+        MemoryAugment.__init__(self, memory=memory)
         self.__expected_step = 0
         self._p = p  # (0, 1)
         self._beta = beta  # (0, MAX)
         self.__base_p = p
-
-    @property
-    def memory(self) -> dict:
-        return self._memory
 
     @property
     def p(self) -> float:
@@ -44,8 +43,12 @@ class Agent(BaseAgent):
         return self._beta
 
     @override
+    def bring_in_memory(self, memory: dict):
+        self._memory.update(memory)
+
+    @override
     def reposition(self):
-        super().reposition()
+        BaseAgent.reposition(self)
         self._memory = dict()
         self.__expected_step = 0
         self._p = self.__base_p
@@ -53,7 +56,7 @@ class Agent(BaseAgent):
 
     @override
     def assign(self, query: str):
-        super().assign(query)
+        BaseAgent.assign(self, query)
         self.reposition()
 
     @override
@@ -78,6 +81,8 @@ class Agent(BaseAgent):
                 ).invoke(self._model)
                 if not isinstance(next_move, bool):
                     action, params = next_move
+                    if isinstance(action, AgenticAbility):
+                        params['memory'] = self._memory
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
@@ -108,9 +113,6 @@ class Agent(BaseAgent):
         }
         self._memory[f"{self._name} at {now}"] = new_memory
         log.debug(f'Agent: {self._name}, Memory update: {new_memory}')
-
-    def bring_in_memory(self, memory: dict):
-        self._memory.update(memory)
 
     def stop(self) -> bool:
         log.debug(f'Agent: {self._name}, Termination Probability(p): {self._p}')
