@@ -8,6 +8,8 @@ from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
+SEPARATOR = "----SEPARATOR----"
+
 OUTPUT_EXAMPLE = """
 Step 1: In the provided history, the events related to the user's query are as follows, listed chronologically:
         1. Buying two tomatoes: This event is the first in the sequence and is directly related to the user's query as it involves the acquisition of the main ingredient needed for the subsequent steps.
@@ -38,6 +40,8 @@ Step 5: This step is not applicable because the user query has not been fully ac
         and I have the ability to continue progressing.
 
 Step 6: This step is not applicable because the user query has not been fully accomplished.
+
+""" + SEPARATOR + """
 
 params:{
   "ingredient": "tomatoes",
@@ -108,6 +112,7 @@ class NextMovePrompt(Prompt):
             "output_format": "{step1_thought_process}\n{step2_thought_process}\n"
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"
+                             f"{SEPARATOR}\n"
                              'params:{'
                              '{name_of_param_1}:{value_for_param_1},'
                              '{name_of_param_2}:{value_for_param_2},'
@@ -119,6 +124,8 @@ class NextMovePrompt(Prompt):
             "hint_for_params_output_format": 'The params should be after all the thought processes and before the ability. '
                                              'The params should be formatted as json.'
                                              'The params only gives the params for the chosen one ability.',
+            "hint_for_separation_pattern": f'The "{SEPARATOR}" pattern which separates [thought processes] and '
+                                           '[params, ability] is absolutely important, do not forget to place it.',
             "hint_for_ability_output_format": 'The ability should be after the params. '
                                               'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE
@@ -129,8 +136,9 @@ class NextMovePrompt(Prompt):
     def invoke(self, model: BaseChatModel, stream: bool = False) -> tuple[Ability, dict] | bool:
         result: str = model.invoke(self.prompt).content
         log.debug(f"Next move thought process: \n{result}")
-        ability_name: str = result[result.rfind('['):result.rfind(']') + 1].strip()[1:-1]
-        params: dict = json.loads(result[result.rfind('{'):result.rfind('}') + 1].strip())
+        result = result[result.rfind(SEPARATOR):]
+        ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
+        params: dict = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
         if ability_name.__contains__('-mission-complete-'):
             return True
         for ability in self.abilities:
