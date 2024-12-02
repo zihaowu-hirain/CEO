@@ -130,11 +130,17 @@ To start building your own agent, follow the steps listed.
         ```python
         agent.deprive_abilities([calculator])
         ```
+    
+    You can change an agent's personality using method `change_personality(personality: Personality)`
+
+    ```python
+    ceo.change_personality(Personality.PRUDENT)
+    ```
 
 5. assign a query to your agent
 
     ```python
-    agent.assign("Here is a sphere with radius of 3.1121 cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
+    agent.assign("Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
     ```
 
 6. leave the rest to your agent
