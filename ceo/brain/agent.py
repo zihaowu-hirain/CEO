@@ -147,3 +147,9 @@ class Agent(BaseAgent, MemoryAugment):
         self._p = self.__base_p = p
         self._beta = beta
         return self
+
+    def change_personality(self, personality: Personality):
+        if personality == Personality.PRUDENT:
+            return self.set_penalty(p=PRUDENT_P, beta=PRUDENT_BETA)
+        elif personality == Personality.INQUISITIVE:
+            return self.set_penalty(p=INQUISITIVE_P, beta=INQUISITIVE_BETA)
