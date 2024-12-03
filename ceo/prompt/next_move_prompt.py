@@ -141,8 +141,9 @@ class NextMovePrompt(Prompt):
         result: str = model.invoke(self.prompt).content
         log.debug(f"Next move thought process: \n{result}")
         result = result[result.rfind(SEPARATOR):]
-        ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
         params: dict = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
+        result = result[result.rfind('}') + 1:]
+        ability_name: str = result[result.rfind('['):result.rfind(']') + 1].strip()[1:-1]
         if ability_name.__contains__('-mission-complete-'):
             return True
         for ability in self.abilities:
