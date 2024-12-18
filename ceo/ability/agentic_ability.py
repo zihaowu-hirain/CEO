@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import override
+from typing_extensions import override
 
 from ceo.brain.base_agent import BaseAgent
 from ceo.ability import Ability

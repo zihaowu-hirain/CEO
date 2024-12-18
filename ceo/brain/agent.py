@@ -2,7 +2,8 @@ import json
 import logging
 import random
 import datetime
-from typing import Callable, override
+from typing import Callable
+from typing_extensions import override
 
 from langchain_core.language_models import BaseChatModel
 
