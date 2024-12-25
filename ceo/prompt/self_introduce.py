@@ -15,8 +15,9 @@ class SelfIntroducePrompt(Prompt):
         abilities_of_agent = agent_info_dict.get('abilities', [])
         for ability in abilities_of_agent:
             try:
-                del ability['description']['parameters']
-                del ability['description']['returns']
+                if isinstance(ability['description'], dict):
+                    del ability['description']['parameters']
+                    del ability['description']['returns']
                 del ability['parameters_required']
                 del ability['returns']
             except KeyError:
