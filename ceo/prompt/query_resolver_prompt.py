@@ -44,8 +44,8 @@ class QueryResolverPrompt(Prompt):
         summary_prompt = json.dumps({
             "task": "Summarize <user_query> into a short sentence "
                     "which includes all the key information from <user_query>.",
-            "user_query": f'"{user_query_by_step}".',
-            "output_format": "string(summarization of <user_query>)",
+            "user_query": user_query_by_step,
+            "output_format": "string (summarization of <user_query>)",
             "output_example": "To find toys for you in the room."
         }, ensure_ascii=False)
         summary = model.invoke(summary_prompt).content
