@@ -19,53 +19,55 @@ class DocstringPrompt(Prompt):
         f_returns: str = str(signature.return_annotation)
         for name, param in signature.parameters.items():
             f_parameters[name] = str(param.annotation)
-        function_repr = json.dumps(obj={
+        function_repr = {
             'name': f_name,
             'parameters': f_parameters,
             'returns': f_returns,
             'source_code': inspect.getsource(function)
-        }, ensure_ascii=False)
+        }
         docstring_format = {
             "description": {
-                "brief_description": "{Brief description of the function's purpose.}",
-                "detailed_description": "{Detailed description of the function's behavior, "
-                                        "including its main logic, algorithm used, and any other relevant information. "
-                                        "This section can include multiple sentences and paragraphs to provide "
-                                        "a comprehensive understanding of the function's functionality.}",
+                "brief_description": "{Brief and accurate description of the function, "
+                                     "including its input and output, main logic, algorithm used, "
+                                     "precautions mentioned, and any other relevant information.}",
                 "parameters": [{
                         "{name of param_1}": {
                             "name": "{name of param_1}",
                             "type": "{data type of param_1}",
-                            "description": "{description of param_1, including its role in the function "
+                            "description": "{Brief and accurate description of param_1, "
+                                           "including its role in the function "
                                            "and the constraints for it.}"
                         }
                     }, {
                         "{name of param_2}": {
                             "name": "{name of param_2}",
                             "type": "{data type of param_2}",
-                            "description": "{description of param_2, including its role in the function "
+                            "description": "{Brief and accurate description of param_2, "
+                                           "including its role in the function "
                                            "and the constraints for it.}"
                         }
                     }, {
                         "{name of param_...}": {
                             "name": "{name of param_...}",
                             "type": "{data type of param_...}",
-                            "description": "{description of param_..., including its role in the function "
+                            "description": "{Brief and accurate description of param_..., "
+                                           "including its role in the function "
                                            "and the constraints for it.}"
                         }
                     }
                 ],
                 "returns": {
                     "type": "{data type of the return value}",
-                    "description": "{description of the return value, including its meaning.}"
+                    "description": "{Brief and accurate description of the return value, "
+                                   "including its meaning.}"
                 }
             }
         }
         prompt = json.dumps({
-            "task": "Generate description for the [function].",
+            "objective": "Generate description for the <function>.",
             "function": function_repr,
-            "hint_for_function_understanding": "The [source_code] provides the unabridged definition of the [function]. "
-                                               "You can fully understand the [function] by reading [source_code].",
+            "hint_for_function_understanding": "The <source_code> provides the unabridged definition of the <function>."
+                                               "You can fully understand the <function> by reading <source_code>.",
             "output_format": "json",
             "hint_for_output_format": docstring_format
         }, ensure_ascii=False)
