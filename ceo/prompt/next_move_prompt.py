@@ -5,6 +5,7 @@ from langchain_core.language_models import BaseChatModel
 
 from ceo.ability import Ability
 from ceo.prompt.prompt import Prompt
+from ceo.exception.too_dumb_exception import TooDumbException
 
 log = logging.getLogger('ceo.prompt')
 
@@ -144,13 +145,17 @@ class NextMovePrompt(Prompt):
         log.debug(f'NextMovePrompt: {self.prompt}')
 
     # noinspection PyUnusedLocal
-    def invoke(self, model: BaseChatModel, stream: bool = False) -> tuple[Ability, dict] | bool:
+    def invoke(self, model: BaseChatModel, max_retry: int = 3, stream: bool = False) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
         tmp_prompt = self.prompt
         while True:
             if count > 0:
-                log.warning(f'NextMovePromptWarn: incorrectly formatted. Retry: {count}')
+                if count <= max_retry:
+                    log.warning(f'NextMovePromptWarn: incorrectly formatted. Retry: {count}')
+                else:
+                    log.warning(f'NextMovePromptWarn: max retry exceeded.')
+                    raise TooDumbException(model)
             count += 1
             result = model.invoke(tmp_prompt).content
             log.debug(f"Next move thought process: \n{result}")
