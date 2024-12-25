@@ -27,7 +27,7 @@ class AgenticAbility(Ability):
                 f"self_introduction_from_{agent.name}": agent.introduction,
                 "hint": f"By reading [self_introduction_from_{agent.name}], you can learn what {agent.name} can do, "
                         f"and then decide whether to initiates a conversation with {agent.name} according to its abilities.",
-                "args": [{
+                "parameters": [{
                     "query": {
                         "name": "query",
                         "type": "str",

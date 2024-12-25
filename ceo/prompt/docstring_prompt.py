@@ -32,7 +32,7 @@ class DocstringPrompt(Prompt):
                                         "including its main logic, algorithm used, and any other relevant information. "
                                         "This section can include multiple sentences and paragraphs to provide "
                                         "a comprehensive understanding of the function's functionality.}",
-                "args": [{
+                "parameters": [{
                         "{name of param_1}": {
                             "name": "{name of param_1}",
                             "type": "{data type of param_1}",
