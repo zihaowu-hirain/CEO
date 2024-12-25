@@ -29,7 +29,7 @@ class Ability:
     def __call__(self, *args, **kwargs):
         return self._function(*args, **kwargs)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         param_list: list = list()
         unnecessary_params: tuple = ('args', 'kwargs')
         for name, _ in self._parameters.items():
