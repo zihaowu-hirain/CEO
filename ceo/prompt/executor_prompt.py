@@ -49,7 +49,8 @@ class ExecutorPrompt(Prompt):
             "params (choice)": str(self.params),
             "result": str(result)
         }, ensure_ascii=False)
-        prompt = f'{self.ext_context}{self.seperator}{prompt}'
+        if len(self.ext_context) > 0:
+            prompt = f'{self.ext_context}{self.seperator}{prompt}'
         log.debug(f'ExecutorPrompt (after): {prompt}')
         if stream:
             return model.stream(prompt)
