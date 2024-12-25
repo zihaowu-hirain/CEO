@@ -39,9 +39,9 @@ class QueryResolverPrompt(Prompt):
         log.debug(f'QueryResolverPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> tuple[str, str]:
+        _dont_do_anything = "Don't do anything."
         if self.__query == '':
-            return (json.dumps({"User's intention": "Don't do anything."}),
-                    json.dumps({"User's query (Step by step)": "Don't do anything."}))
+            return _dont_do_anything, _dont_do_anything
         user_query_by_step = (f'raw_query: "{self.__query}"\n'
                               f'query_by_step: "{model.invoke(self.prompt).content}"')
         summary_prompt = json.dumps({
@@ -52,5 +52,4 @@ class QueryResolverPrompt(Prompt):
             "output_example": "To find toys for you in the room."
         }, ensure_ascii=False)
         summary = model.invoke(summary_prompt).content
-        return (json.dumps({"User's intention": summary}),
-                json.dumps({"User's query (Step by step)": user_query_by_step}))
+        return summary, user_query_by_step
