@@ -12,13 +12,15 @@ log = logging.getLogger('ceo.prompt')
 class IntrospectionPrompt(Prompt):
     def __init__(self, query: str, prev_results: list | str, ext_context: str = ''):
         prompt = json.dumps({
-            "precondition": "Below are actions you (you are the bot/assistant) have performed to achieve the [user_query]. "
+            "precondition": "Below are actions you (you are the bot/assistant) have performed "
+                            "to achieve the <user_query>. "
                             "You are talking to the user (I (who now talking to you here) am the user), "
                             "use 'you' instead of the 'user' when you organize your response (output).",
             "user_query": f'"{query}"',
             "task": "Tell user's intention first, "
-                    "then think seriously whether you have achieved the user's query according to actions you have performed. "
-                    "Finally, provide the results wanted by the user based on [user query]. "
+                    "then think seriously whether you have achieved the user's query "
+                    "according to actions you have performed. "
+                    "Finally, provide the results wanted by the user based on <user_query>. "
                     "If you did not achieve the user's query, explain why?",
             "output_format": "text",
             "output_example": "Your intention is to calculate math, and I was trying to open calculator. "
