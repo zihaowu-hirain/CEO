@@ -143,11 +143,28 @@ class NextMovePrompt(Prompt):
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
 
+    # noinspection PyUnusedLocal
     def invoke(self, model: BaseChatModel, stream: bool = False) -> tuple[Ability, dict] | bool:
-        result: str = model.invoke(self.prompt).content
-        log.debug(f"Next move thought process: \n{result}")
-        result = result[result.rfind(SEPARATOR):]
-        params: dict = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
+        result: str = str()
+        count: int = 0
+        while True:
+            if count > 0:
+                log.warning(f'NextMovePromptWarn: incorrectly formatted. Retry: {count}')
+            count += 1
+            result = model.invoke(self.prompt).content
+            log.debug(f"Next move thought process: \n{result}")
+            if not result.count(SEPARATOR) == 1:
+                self.prompt = (f'{self.prompt} Attention: do not forget to output a {SEPARATOR} '
+                               f'before the <params and ability>, '
+                               f'and do not output more than one {SEPARATOR}.')
+                continue
+            result = result[result.rfind(SEPARATOR):]
+            if result.count('ability:') == 1 and result.count('params:') == 1:
+                break
+            self.prompt = (f'{self.prompt} Attention: '
+                           'You can only provide the ability to be used in the next step,'
+                           ' and only one ability can be provided for the next step.')
+        params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
         result = result[result.rfind('}') + 1:]
         ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
         if ability_name.__contains__(MISSION_COMPLETE):
