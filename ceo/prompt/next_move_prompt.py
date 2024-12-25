@@ -72,11 +72,14 @@ class NextMovePrompt(Prompt):
             "history": history,
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
-                    "first_action": "List all events in the <history> related to <user_query> respectively and chronologically.",
+                    "first_action": "List all events in the <history> related to <user_query> "
+                                    "respectively and chronologically.",
                     "second_action": "Extract and list all key information related to <user_query> from <history> "
                                      "formatted one by one respectively.",
-                    "additional": "For any details mentioned in <history> about <user_query>, you should preserve them in full, "
-                                  "especially specific information with accuracy requirements such as numbers, dates, etc."
+                    "additional": "For any details mentioned in <history> about <user_query>, "
+                                  "you should preserve them in full, "
+                                  "especially specific information with accuracy requirements "
+                                  "such as numbers, dates, etc."
                 }, {
                     "step": 2,
                     "action": "Analyse whether the <user_query> has been fully and properly accomplished "
@@ -98,7 +101,8 @@ class NextMovePrompt(Prompt):
                                      "(only one single ability can be chosen)",
                     "third_action": "After you have chosen the ability as next move, "
                                     "generate values of parameters for the ability(function) to achieve <next move>, "
-                                    "before you generate values of parameters, explain why you give these values to params.",
+                                    "before you generate values of parameters, "
+                                    "explain why you give these values to params.",
                 }, {
                     "step": 5,
                     "condition": "If the <user_query> has not been fully properly accomplished and "
