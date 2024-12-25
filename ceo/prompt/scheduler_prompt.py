@@ -14,25 +14,28 @@ class SchedulerPrompt(Prompt):
         self.abilities = abilities
         prompt = dict()
         for ability in self.abilities:
-            prompt[ability.name] = str(ability)
+            prompt[ability.name] = ability.to_dict()
         prompt = json.dumps({
-            "precondition": "Below are the tools(or abilities) you can use "
-                            "(you can only use the following tools(or abilities)). "
-                            f'Now there is a [user_query].',
-            "user_query": f'"{query}"',
-            "task": "What you need to do is to plan your workflow based on the [tools] and [user_query].",
-            "description": "[user_query] might contains many steps, "
-                           "think carefully about every step and plan your workflow based on your tools.",
-            "hint_for_tool_usage": "[user_query] sometimes need to use one specific tool(s) more than once, "
+            "precondition": "Below are the <tools(abilities)> you can use "
+                            "(you can only use the following <tools(abilities)>). "
+                            f'Now there is a <user_query>.',
+            "user_query": query,
+            "task": "What you need to do is to plan your workflow based on the <tools(abilities)> and <user_query>.",
+            "description": "<user_query> might contains many steps, "
+                           "think carefully about every step and plan your workflow "
+                           "based on your tools in <tools(abilities)>.",
+            "hint_for_tool_usage": "<user_query> sometimes need to use one specific tool(s) more than once, "
                                    "you need to estimate as accurately as possible "
                                    "the number of times specific tools need to be used "
-                                   "to properly achieve the [user_query]!",
-            "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to [user_query]. "
+                                   "to properly achieve the <user_query>!",
+            "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to <user_query>. "
                                       "Make sure to choose tools properly and wisely.",
-            "output_format": "{your_thinking_process}\nschedule:{your_schedule_as_a_list_of_tool_names}",
-            "hint_for_output_format": 'firstly, output your thinking process step by step clear and organized.'
-                                      'secondly, outputs a list(python_list_format) of names of tools, surrounded by "[ ]", split by ", ", '
-                                      'you can refer to [output_example].',
+            "output_format": "{your_thinking_process}\n"
+                             "schedule:{your_schedule_as_a_list_of_tool_names}",
+            "hint_for_output": 'firstly, output your thinking process step by step clear and organized.'
+                               'secondly, outputs a list(python_list_format) of names of tools, '
+                               'surrounded by "[ ]", split by ", ", '
+                               'you can refer to <output_example>.',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
                               "which requires checking a recipe or personal preferences to decide.\n"
                               "2.After determining the ingredients, "
@@ -41,8 +44,9 @@ class SchedulerPrompt(Prompt):
                               "4.Once home, I need to wash and prepare the ingredients.\n"
                               "5.After preparation, I start cooking.\n"
                               "6.After cooking is complete, I need to arrange the dishes on the dining table.\n"
-                              "schedule:[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]",
-            "tools(abilities)": json.dumps(prompt, ensure_ascii=False)
+                              "schedule:"
+                              "[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]",
+            "tools(abilities)": prompt
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
