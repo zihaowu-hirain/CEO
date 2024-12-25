@@ -54,7 +54,7 @@ class SchedulerPrompt(Prompt):
     def invoke(self, model: BaseChatModel) -> list[Ability]:
         results = model.invoke(self.prompt).content
         if not results.startswith('['):
-            results = results[results.find('['):]
+            results = results[results.rfind('['):]
         if not results.endswith(']'):
             results = results[:results.rfind(']') + 1]
         results = results[1:-1].split(',')
