@@ -14,7 +14,7 @@ class SchedulerPrompt(Prompt):
         self.abilities = abilities
         prompt = dict()
         for ability in self.abilities:
-            prompt[ability.name] = str(ability)
+            prompt[ability.name] = ability.to_dict()
         prompt = json.dumps({
             "precondition": "Below are the <tools(abilities)> you can use "
                             "(you can only use the following <tools(abilities)>). "
@@ -22,7 +22,8 @@ class SchedulerPrompt(Prompt):
             "user_query": query,
             "task": "What you need to do is to plan your workflow based on the <tools(abilities)> and <user_query>.",
             "description": "<user_query> might contains many steps, "
-                           "think carefully about every step and plan your workflow based on your tools.",
+                           "think carefully about every step and plan your workflow "
+                           "based on your tools in <tools(abilities)>.",
             "hint_for_tool_usage": "<user_query> sometimes need to use one specific tool(s) more than once, "
                                    "you need to estimate as accurately as possible "
                                    "the number of times specific tools need to be used "
@@ -45,7 +46,7 @@ class SchedulerPrompt(Prompt):
                               "6.After cooking is complete, I need to arrange the dishes on the dining table.\n"
                               "schedule:"
                               "[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]",
-            "tools(abilities)": json.dumps(prompt, ensure_ascii=False)
+            "tools(abilities)": prompt
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
