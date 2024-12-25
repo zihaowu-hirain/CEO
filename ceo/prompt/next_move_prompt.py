@@ -59,16 +59,16 @@ class NextMovePrompt(Prompt):
                  abilities: list[Ability], history: str = '',
                  ext_context: str = ''):
         self.abilities = abilities
-        abilities_dict = dict()
+        abilities_dict: dict = dict()
         for ability in self.abilities:
-            abilities_dict[ability.name] = str(ability)
-        if history == '':
+            abilities_dict[ability.name] = ability.to_dict()
+        if history in ('', '[]', '()', '{}', {}, []):
             history = "Nothing happened before you."
         prompt = json.dumps({
             "precondition": "Below are the abilities you have(you can only use the following abilities)."
                             "<history> shows events happened before you. And there is a <user_query>.",
             "user_query": query,
-            "abilities": json.dumps(abilities_dict, ensure_ascii=False),
+            "abilities": abilities_dict,
             "history": history,
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
