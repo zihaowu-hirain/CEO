@@ -16,7 +16,7 @@ class ExecutorPrompt(Prompt):
         self.params = params
         prompt = json.dumps({
             "precondition": "Below is a tool and your choice (params) for using this tool.",
-            "task": "Explain what you are going to do.",
+            "objective": "Explain what you are going to do.",
             "output_format": "text",
             "output_example": "I am trying to open calculator.",
             "tool": action.__repr__(),
@@ -35,8 +35,8 @@ class ExecutorPrompt(Prompt):
         prompt = json.dumps({
             "precondition": "Below is a tool, your choice (params) for the tool, "
                             "and the result of your using of this tool.",
-            "task": "Explain what you have done, and write down the result detailed. "
-                    "The result is shown below at [result].",
+            "objective": "Explain what you have done, and write down the result detailed. "
+                         "The result is shown below at <result>.",
             "output_format": "text",
             "output_contains": [
                 "{the_tool(ability)_you_used}",
