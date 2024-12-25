@@ -49,6 +49,17 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
             f.write(cache_data_bytes)
         return func
 
+    # noinspection PyShadowingNames
+    def read_cache(func: Callable, cache_dir: str) -> dict:
+        cache_file = make_cache_filename(func, cache_dir)
+        cache_data: dict = dict()
+        if not os.path.exists(cache_file):
+            return cache_data
+        with open(cache_file, 'rb') as f:
+            cache_data_bytes = f.read()
+            cache_data = json.loads(cache_data_bytes)
+        return cache_data
+
     if cache_dir in ('', None):
         cache_dir = '.cache'
 
