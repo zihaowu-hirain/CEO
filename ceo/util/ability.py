@@ -14,10 +14,12 @@ log = logging.getLogger('ceo.ability')
 
 def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cache_dir: str = ''):
     # noinspection PyShadowingNames
-    def docstring_generator(func: Callable, brain: BaseChatModel, override: bool) -> Callable:
+    def docstring_generator(func: Callable, brain: BaseChatModel, override: bool, cache: bool, cache_dir: str) -> Callable:
         if override or func.__doc__ in ('', None):
             func.__doc__ = DocstringPrompt(func).invoke(brain)
             log.debug(f'Docstring generated for {func.__name__}. Docstring: "{func.__doc__}"')
+            if cache:
+                cache_function(func, cache_dir)
         return func
 
     # noinspection PyShadowingNames
@@ -71,10 +73,7 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
                 if override or func.__doc__ in ('', None):
                     func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
                     return func
-            func = docstring_generator(func, get_openai_model(), override)
-            if cache:
-                return cache_function(func, cache_dir)
-            return func
+            return docstring_generator(func, get_openai_model(), override, cache, cache_dir)
         return decorator(brain)
 
     # noinspection DuplicatedCode
@@ -84,8 +83,5 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
             if override or func.__doc__ in ('', None):
                 func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
                 return func
-        func = docstring_generator(func, brain, override)
-        if cache:
-            return cache_function(func, cache_dir)
-        return func
+        return docstring_generator(func, brain, override, cache, cache_dir)
     return decorator
