@@ -8,7 +8,7 @@ from .enum import Personality
 
 __AUTHOR__ = '吴子豪 / Vortez Wohl'
 __EMAIL__ = 'vortez.wohl@gmail.com'
-__VERSION__ = '0.9.0-preview'
+__VERSION__ = '0.9.2-preview'
 
 logger = logging.getLogger('ceo')
 logger.setLevel(logging.INFO)
