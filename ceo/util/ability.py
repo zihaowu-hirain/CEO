@@ -40,8 +40,8 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
         except json.decoder.JSONDecodeError:
             pass
         cache_data: dict = {
-            'source': inspect.getsource(func),
-            'docstring': func_doc
+            'src': inspect.getsource(func),
+            'doc': func_doc
         }
         with open(cache_file, 'wb') as f:
             cache_data_str = json.dumps(cache_data, ensure_ascii=False)
@@ -64,14 +64,26 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
         cache_dir = '.cache'
 
     if callable(brain) and not isinstance(brain, BaseChatModel):
+        # noinspection DuplicatedCode
         def decorator(func):
+            cache_func = read_cache(func, cache_dir)
+            if cache and cache_func.get('src', None) == inspect.getsource(func):
+                if override or func.__doc__ in ('', None):
+                    func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
+                    return func
             func = docstring_generator(func, get_openai_model(), override)
             if cache:
                 return cache_function(func, cache_dir)
             return func
         return decorator(brain)
 
+    # noinspection DuplicatedCode
     def decorator(func):
+        cache_func = read_cache(func, cache_dir)
+        if cache and cache_func.get('src', None) == inspect.getsource(func):
+            if override or func.__doc__ in ('', None):
+                func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
+                return func
         func = docstring_generator(func, brain, override)
         if cache:
             return cache_function(func, cache_dir)
