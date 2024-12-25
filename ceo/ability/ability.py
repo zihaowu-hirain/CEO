@@ -21,23 +21,26 @@ class Ability:
             self._description = doc_str
 
     def __repr__(self):
-        param_list: list = list()
-        unnecessary_params: tuple = ('args', 'kwargs')
-        for name, _ in self._parameters.items():
-            if name not in unnecessary_params:
-                param_list.append(name)
-        return json.dumps({
-            'ability_name': self._name,
-            'description': self._description,
-            'parameters_required': param_list,
-            'returns': str(self._returns)
-        }, ensure_ascii=False)
+        return json.dumps(self.to_dict(), ensure_ascii=False)
 
     def __str__(self):
         return self.__repr__()
 
     def __call__(self, *args, **kwargs):
         return self._function(*args, **kwargs)
+
+    def to_dict(self):
+        param_list: list = list()
+        unnecessary_params: tuple = ('args', 'kwargs')
+        for name, _ in self._parameters.items():
+            if name not in unnecessary_params:
+                param_list.append(name)
+        return {
+            'ability_name': self._name,
+            'description': self._description,
+            'parameters_required': param_list,
+            'returns': str(self._returns)
+        }
 
     @property
     def name(self) -> str:
