@@ -12,14 +12,13 @@ from ceo.prompt import DocstringPrompt
 log = logging.getLogger('ceo.ability')
 
 
-def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cache_dir: str = ''):
+def ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = ''):
     # noinspection PyShadowingNames
-    def docstring_generator(func: Callable, brain: BaseChatModel, override: bool, cache: bool, cache_dir: str) -> Callable:
-        if override or func.__doc__ in ('', None):
-            func.__doc__ = DocstringPrompt(func).invoke(brain)
-            log.debug(f'Docstring generated for {func.__name__}. Docstring: "{func.__doc__}"')
-            if cache:
-                cache_function(func, cache_dir)
+    def docstring_generator(func: Callable, brain: BaseChatModel, cache: bool, cache_dir: str) -> Callable:
+        func.__doc__ = DocstringPrompt(func).invoke(brain)
+        log.debug(f'Docstring generated for {func.__name__}. Docstring: "{func.__doc__}"')
+        if cache:
+            cache_function(func, cache_dir)
         return func
 
     # noinspection PyShadowingNames
@@ -33,6 +32,14 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
             os.mkdir(cache_path)
         return os.path.join(cache_path, f'{func_source_file_short}.{func.__name__}.cache')
 
+    def get_source(func: Callable) -> str:
+        source_lines = inspect.getsourcelines(func)[0]
+        for i, line in enumerate(source_lines):
+            if f'@{ability.__name__}' in line:
+                del source_lines[i]
+                break
+        return str().join(source_lines)
+
     # noinspection PyShadowingNames
     def cache_function(func: Callable, cache_dir: str) -> Callable:
         cache_file = make_cache_filename(func, cache_dir, create_path=True)
@@ -42,7 +49,7 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
         except json.decoder.JSONDecodeError:
             pass
         cache_data: dict = {
-            'src': inspect.getsource(func),
+            'src': get_source(func),
             'doc': func_doc
         }
         with open(cache_file, 'wb') as f:
@@ -69,19 +76,17 @@ def ability(brain: BaseChatModel, override: bool = True, cache: bool = True, cac
         # noinspection DuplicatedCode
         def decorator(func):
             cache_func = read_cache(func, cache_dir)
-            if cache and cache_func.get('src', None) == inspect.getsource(func):
-                if override or func.__doc__ in ('', None):
-                    func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
-                    return func
-            return docstring_generator(func, get_openai_model(), override, cache, cache_dir)
+            if cache and cache_func.get('src', None) == get_source(func):
+                func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
+                return func
+            return docstring_generator(func, get_openai_model(), cache, cache_dir)
         return decorator(brain)
 
     # noinspection DuplicatedCode
     def decorator(func):
         cache_func = read_cache(func, cache_dir)
-        if cache and cache_func.get('src', None) == inspect.getsource(func):
-            if override or func.__doc__ in ('', None):
-                func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
-                return func
-        return docstring_generator(func, brain, override, cache, cache_dir)
+        if cache and cache_func.get('src', None) == get_source(func):
+            func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
+            return func
+        return docstring_generator(func, brain, cache, cache_dir)
     return decorator
