@@ -50,22 +50,17 @@ class BaseAgent:
         return self._model
 
     def __repr__(self):
-        ability_str = '['
-        for ability in self._abilities:
-            ability_str += f'{ability}, '
-        ability_str = ability_str[:-2] + ']'
-        if ability_str == ']':
-            ability_str = '[]'
-        return json.dumps({
-            self._name: {
-                "name": self._name,
-                "brain": self._model.dict()['model_name'],
-                "abilities": ability_str
-            }
-        }, ensure_ascii=False)
+        return json.dumps(self.to_dict(), ensure_ascii=False)
 
     def __str__(self):
         return self.__repr__()
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self._name,
+            "brain": self._model.dict()['model_name'],
+            "abilities": [ability.to_dict() for ability in self._abilities]
+        }
 
     def introduce(self, update: bool = False) -> str:
         if self._introduction == '' or update:

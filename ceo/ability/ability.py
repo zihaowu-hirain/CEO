@@ -1,29 +1,59 @@
 import inspect
 import json
-from typing import Callable
+from typing_extensions import Callable
 
 
 class Ability:
     def __init__(self, function: Callable):
         signature = inspect.signature(function)
-        self.name: str = function.__name__
-        self.description: str = inspect.getdoc(function)
-        self.function: Callable = function
-        self.parameters: dict = dict()
-        self.returns: str = str(signature.return_annotation)
+        doc_str = inspect.getdoc(function)
+        self._name: str = function.__name__
+        self._description: str | dict = str()
+        self._function: Callable = function
+        self._parameters: dict = dict()
+        self._returns: any = signature.return_annotation
         for name, param in signature.parameters.items():
-            self.parameters[name] = str(param.annotation)
+            self._parameters[name] = str(param.annotation)
+        try:
+            self._description = json.loads(doc_str)
+            self._description = self._description.get('description', self._description)
+        except json.decoder.JSONDecodeError:
+            self._description = doc_str
 
     def __repr__(self):
-        return json.dumps({
-            'name': self.name,
-            'description': self.description,
-            'parameters': self.parameters,
-            'returns': self.returns
-        }, ensure_ascii=False)
+        return json.dumps(self.to_dict(), ensure_ascii=False)
 
     def __str__(self):
         return self.__repr__()
 
     def __call__(self, *args, **kwargs):
-        return self.function(*args, **kwargs)
+        return self._function(*args, **kwargs)
+
+    def to_dict(self) -> dict:
+        param_list: list = list()
+        unnecessary_params: tuple = ('args', 'kwargs')
+        for name, _ in self._parameters.items():
+            if name not in unnecessary_params:
+                param_list.append(name)
+        return {
+            'ability_name': self._name,
+            'description': self._description,
+            'parameters_required': param_list,
+            'returns': str(self._returns)
+        }
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @property
+    def parameters(self) -> dict:
+        return self._parameters
+
+    @property
+    def returns(self) -> any:
+        return self._returns

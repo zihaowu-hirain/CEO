@@ -21,17 +21,21 @@ class AgenticAbility(Ability):
         self.__doc__ = json.dumps({
             "description": {
                 "brief_description": f'Initiates a conversation with "{agent.name}" to use its abilities.',
-                "detailed_description": f"First, carefully consider and explore {agent.name}'s potential abilities in solving your tasks, "
-                                        f"then, if you need {agent.name}'s help, you must tell comprehensively, precisely "
+                "detailed_description": f"First, carefully consider and explore {agent.name}'s "
+                                        "potential abilities in solving your tasks, "
+                                        f"then, if you need {agent.name}'s help, "
+                                        "you must tell comprehensively, precisely "
                                         f"and exactly what you need {agent.name} to do.",
                 f"self_introduction_from_{agent.name}": agent.introduction,
-                "hint": f"By reading [self_introduction_from_{agent.name}], you can learn what {agent.name} can do, "
-                        f"and then decide whether to initiates a conversation with {agent.name} according to its abilities.",
-                "args": [{
+                "hint": f"By reading <self_introduction_from_{agent.name}>, you can learn what {agent.name} can do, "
+                        f"and then decide whether to initiates a conversation with {agent.name} "
+                        "according to its abilities.",
+                "parameters": [{
                     "query": {
                         "name": "query",
                         "type": "str",
-                        "description": f"A comprehensively, precisely and exactly instruction to be processed by {agent.name}."
+                        "description": "A comprehensively, precisely and exactly instruction "
+                                       f"to be processed by {agent.name}."
                     }
                   }
                 ],
