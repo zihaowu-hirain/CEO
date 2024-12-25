@@ -67,7 +67,7 @@ class NextMovePrompt(Prompt):
         prompt = json.dumps({
             "precondition": "Below are the abilities you have(you can only use the following abilities)."
                             "<history> shows events happened before you. And there is a <user_query>.",
-            "user_query": f'"{query}"',
+            "user_query": query,
             "abilities": json.dumps(abilities_dict, ensure_ascii=False),
             "history": history,
             "instructions_you_must_follow_step_by_step": [{

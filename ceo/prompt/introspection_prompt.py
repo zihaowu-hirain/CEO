@@ -16,7 +16,7 @@ class IntrospectionPrompt(Prompt):
                             "to achieve the <user_query>. "
                             "You are talking to the user (I (who now talking to you here) am the user), "
                             "use 'you' instead of the 'user' when you organize your response (output).",
-            "user_query": f'"{query}"',
+            "user_query": query,
             "task": "Tell user's intention first, "
                     "then think seriously whether you have achieved the user's query "
                     "according to actions you have performed. "
