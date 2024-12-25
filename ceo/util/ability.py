@@ -9,19 +9,19 @@ from ceo.prompt import DocstringPrompt
 log = logging.getLogger('ceo.ability')
 
 
-def docstring_generator(func: Callable, brain: BaseChatModel):
-    if func.__doc__ in ('', None):
+def docstring_generator(func: Callable, brain: BaseChatModel, override: bool):
+    if override or func.__doc__ in ('', None):
         func.__doc__ = DocstringPrompt(func).invoke(brain)
         log.debug(f'Docstring generated for {func.__name__}. Docstring: "{func.__doc__}"')
     return func
 
 
-def ability(brain: BaseChatModel):
+def ability(brain: BaseChatModel, override: bool = True):
     if callable(brain) and not isinstance(brain, BaseChatModel):
         def decorator(func):
-            return docstring_generator(func, get_openai_model())
+            return docstring_generator(func, get_openai_model(), override)
         return decorator(brain)
 
     def decorator(func):
-        return docstring_generator(func, brain)
+        return docstring_generator(func, brain, override)
     return decorator
