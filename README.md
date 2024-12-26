@@ -38,7 +38,7 @@ If you are incorporating the `CEO` framework into your research, please remember
 ```latex
 @software {CEO,
 author = {Zihao Wu},
-title = {CEO: An Intuitive and Modular AI Agent Framework for Task Automation},
+title = {CEO: An Intuitive and Modular agentic AI Framework for Task Automation},
 publisher = {Github},
 howpublished = {\url{https://github.com/vortezwohl/CEO}},
 year = {2024},
