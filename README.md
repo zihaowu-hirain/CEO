@@ -3,7 +3,7 @@
         <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="105">
     </p>
     <p style="font-weight: 200; font-size: 19px">
-        An Intuitive and Modular AI Agent Framework for Task Automation
+        An ultra-lightweight Agentic AI framework based on the ReAct paradigm, supporting mainstream LLMs and is much stronger than Swarm.
     </p>
 </div>
 
@@ -38,7 +38,7 @@ If you are incorporating the `CEO` framework into your research, please remember
 ```latex
 @software {CEO,
 author = {Zihao Wu},
-title = {CEO: An Intuitive and Modular agentic AI Framework for Task Automation},
+title = {CEO: An ultra-lightweight Agentic AI framework based on the ReAct paradigm},
 publisher = {Github},
 howpublished = {\url{https://github.com/vortezwohl/CEO}},
 year = {2024},
