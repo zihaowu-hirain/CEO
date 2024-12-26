@@ -40,7 +40,7 @@ If you are incorporating the `CEO` framework into your research, please remember
 author = {Zihao Wu},
 title = {CEO: An ultra-lightweight Agentic AI framework based on the ReAct paradigm},
 publisher = {Github},
-howpublished = {\url{https://github.com/vortezwohl/CEO}},
+howpublished = {\url{https://github.com/vortezwohl/CEO-Agentic-AI-Framework}},
 year = {2024},
 date = {2024-10-25}
 }
