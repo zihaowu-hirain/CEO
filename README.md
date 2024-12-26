@@ -3,7 +3,7 @@
         <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="105">
     </p>
     <p style="font-weight: 200; font-size: 19px">
-        An ultra-lightweight Agentic AI framework based on the ReAct paradigm, supporting mainstream LLMs and is much stronger than Swarm.
+        An **ultra-lightweight Agentic AI framework** based on the **ReAct** paradigm, supporting mainstream LLMs and is **much stronger than [Swarm](https://github.com/openai/swarm)**.
     </p>
 </div>
 
