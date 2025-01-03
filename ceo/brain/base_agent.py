@@ -58,7 +58,7 @@ class BaseAgent:
     def to_dict(self) -> dict:
         return {
             "name": self._name,
-            "brain": self._model.dict()['model_name'],
+            "brain": self._model.dict().get('model_name', 'unknown'),
             "abilities": [ability.to_dict() for ability in self._abilities]
         }
 
