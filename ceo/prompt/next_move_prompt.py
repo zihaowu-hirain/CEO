@@ -15,43 +15,30 @@ MISSION_FAILED = '-mission-failed-'
 
 OUTPUT_EXAMPLE = """
 Step 1: In the provided history, the events related to the user's query are as follows, listed chronologically:
-        1. Buying two tomatoes: This event is the first in the sequence and is directly related to the user's query as it involves the acquisition of the main ingredient needed for the subsequent steps.
-        2. Going home: Following the purchase, the user returns home, which is a necessary step before proceeding with the cooking process.
-        
-        From the history, we extract the following information related to the user's query:
-        1. The user has successfully completed the purchase of tomatoes.
-        2. The user is now at home, which is the location where the next steps of the process will take place.
-        
-        Based on these details, the subsequent steps to complete are:
-        1. Cook the tomatoes using a frying pan.
-        2. Place the cooked tomatoes on the dining table.
-
-Step 2: The user query is "Help me buy two tomatoes, then after getting home, cook the tomatoes using a frying pan, 
-        and finally place the cooked tomatoes on the dining table." According to the history, the first two parts have been completed, 
-        but the last two parts (cooking and placing) are still pending. Therefore, the user query has not been fully and properly accomplished.
-
-Step 3: The unfinished parts of the user query are "cook the tomatoes using a frying pan" and "place the cooked tomatoes on the dining table." 
-        The abilities I possess include "go_home()", "do_cook(ingredient: str, cooking_utensils: str) -> bool", and "arrange_dished()". 
-        Among these, "do_cook" can complete the cooking task, 
-        while "arrange_dished" can complete the placing task. Thus, my abilities can fulfill the unfinished parts of the user query.
-
-Step 4: Since the user's query is not fully accomplished, and I have the ability to cook and arrange dishes, 
-        my next move is to cook the tomatoes. I will use the "do_cook" ability with "tomatoes" as the ingredient and "frying pan" as the cooking utensil 
-        because these parameters align with the user's request to cook the tomatoes using a frying pan.
-
-Step 5: This step is not applicable because the user query has not been fully accomplished, 
-        and I have the ability to continue progressing.
-
+    1. The user calculated the radius of the sphere using the expression "(3 * 174.9 / 15.9 * 2.77)", resulting in a radius of approximately 91.41 cm.
+    2. The user then calculated the surface area of the sphere using the formula "4 * 3.14159 * (91.41^2)", resulting in a surface area of approximately 105001.841348316 cm².
+    From the history, we extract the following information related to the user's query:
+    1. The radius of the sphere has been successfully calculated as 91.41 cm.
+    2. The surface area has been calculated as approximately 105001.84 cm².
+    3. However, the volume of the sphere has not yet been calculated, and there is no record of writing the results into the file 'result.txt'.
+    Based on these details, the subsequent steps to complete are:
+    1. Calculate the volume of the sphere using the formula "(4/3) * pi * radius^3".
+    2. Write the results of the surface area and volume into a file called 'result.txt'.
+Step 2: The user query is to find the area and volume of a sphere with a specific radius and write the results into a file. 
+    According to the history, the radius and surface area have been calculated, but the volume calculation and file writing have not been completed. 
+    Therefore, the user query has not been fully and properly accomplished.
+Step 3: The unfinished parts of the user query are the calculation of the volume and writing the results to 'result.txt'. 
+    The abilities I possess include "calculator" for performing calculations and "write_file" for writing content to a file. Both abilities can fulfill the unfinished parts of the user query.
+Step 4: Since the user's query is not fully accomplished, and I have the ability to calculate the volume and write to a file, my next move is to calculate the volume of the sphere. 
+    I will use the "calculator" ability with the expression "(4/3) * 3.14159 * (91.41^3)" to compute the volume, as this aligns with the user's request to find the volume of the sphere.
+    After calculating the volume, I will then write both the surface area and volume results into 'result.txt' using the "write_file" ability.
+Step 5: This step is not applicable because the user query has not been fully accomplished, and I have the ability to continue progressing.
 Step 6: This step is not applicable because the user query has not been fully accomplished.
-
 """ + SEPARATOR + """
-
 params:{
-  "ingredient": "tomatoes",
-  "cooking_utensils": "frying pan"
+  "math_expression": "(4/3) * 3.14159 * (91.41^3)"
 }
-
-ability:[do_cook]
+ability:[calculator]
 """
 
 
