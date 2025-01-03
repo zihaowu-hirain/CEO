@@ -37,7 +37,7 @@ Step 6: This step is not applicable because the user query has not been fully ac
 
 """ + SEPARATOR + """
 params:{
-  "<param_name>": "(4/3) * 3.14159 * (91.41^3)"
+  "{name_of_param}": "(4/3) * 3.14159 * (91.41^3)"
 }
 ability:[calculator]
 """
