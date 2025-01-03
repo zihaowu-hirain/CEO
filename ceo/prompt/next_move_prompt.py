@@ -10,6 +10,7 @@ from ceo.exception.too_dumb_exception import TooDumbException
 log = logging.getLogger('ceo.prompt')
 
 SEPARATOR = '--SEP--'
+END = '--END--'
 MISSION_COMPLETE = '-mission-complete-'
 MISSION_FAILED = '-mission-failed-'
 
@@ -40,7 +41,7 @@ params:{
   "{name_of_param}": "(4/3) * 3.14159 * (91.41^3)"
 }
 ability:[calculator]
-"""
+""" + END
 
 
 class NextMovePrompt(Prompt):
@@ -110,11 +111,11 @@ class NextMovePrompt(Prompt):
                              "{step5_thought_process}\n{step6_thought_process}\n"
                              f"{SEPARATOR}\n"
                              'params:{'
-                             '{name_of_param_1}:{value_for_param_1},'
-                             '{name_of_param_2}:{value_for_param_2},'
-                             '{name_of_param_...}:{value_for_param_...}'
+                             '"{name_of_param_1}":{value_for_param_1},'
+                             '"{name_of_param_2}":{value_for_param_2},'
+                             '"{name_of_param_...}":{value_for_param_...}'
                              '}\n'
-                             "ability:[ability.name]",
+                             f'ability:[ability.name]\n{END}',
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
             "hint_for_ability_choosing": "Only one single ability can be chosen.",
             "hint_for_params_output_format": f'The "{SEPARATOR}" pattern should be after '
@@ -125,6 +126,10 @@ class NextMovePrompt(Prompt):
                                              'The ability should be after params.',
             "hint_for_separation_pattern": f'The "{SEPARATOR}" pattern which separates <thought processes> and '
                                            '<params and ability> is absolutely important, do not forget to place it.',
+            "hint_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
+                                    f'no more words are allowed after "{END}" pattern. '
+                                    f'The "{END}" pattern is absolutely important, do not forget to place it '
+                                    'in the end of your response.',
             "hint_for_ability_output_format": 'The ability should be after the params. '
                                               'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE
@@ -136,6 +141,7 @@ class NextMovePrompt(Prompt):
     def invoke(self, model: BaseChatModel, max_retry: int = 3, stream: bool = False) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
+        exclamation = '!'
         tmp_prompt = self.prompt
         while True:
             if count > 0:
@@ -147,18 +153,16 @@ class NextMovePrompt(Prompt):
             count += 1
             result = model.invoke(tmp_prompt).content
             log.debug(f"Next move thought process: \n{result}")
-            if not result.count(SEPARATOR) == 1:
-                if tmp_prompt == self.prompt:
-                    tmp_prompt = (f'{self.prompt} Attention: do not forget to output a "{SEPARATOR}" '
-                                  f'before the <params and ability>, and do not output more than one "{SEPARATOR}".')
-                continue
-            result = result[result.rfind(SEPARATOR):]
-            if result.count('ability:') == 1 and result.count('params:') == 1:
+            _accurate_action_str = result[result.rfind(SEPARATOR) + len(SEPARATOR):result.rfind(END)]
+            if (result.count(SEPARATOR) == 1
+                    and result.count(END) == 1
+                    and _accurate_action_str.count('ability:') == 1
+                    and _accurate_action_str.count('params:') == 1):
                 break
-            if tmp_prompt == self.prompt:
-                tmp_prompt = (f'{self.prompt} Attention: '
-                              'You should only provide the ability to be used in the next step, '
-                              'and only one ability can be provided for the next step.')
+            tmp_prompt += (f'\nAttention_{count}: '
+                           f'You must strictly follow the format in <output_format>{count * exclamation} '
+                           f'You can refer to example in <output_example>{count * exclamation}')
+        result = _accurate_action_str
         params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
         result = result[result.rfind('}') + 1:]
         ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
