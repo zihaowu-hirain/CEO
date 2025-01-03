@@ -53,14 +53,15 @@ class SchedulerPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel) -> list[Ability]:
         results = model.invoke(self.prompt).content
-        if not results.startswith('['):
-            results = results[results.rfind('['):]
-        if not results.endswith(']'):
-            results = results[:results.rfind(']') + 1]
-        results = results[1:-1].split(',')
+        results = results[results.rfind('['):results.rfind(']') + 1][1:-1].split(',')
+        results = [result
+                   .replace('\n', '')
+                   .replace('\"', '')
+                   .replace('\'', '').strip()
+                   for result in results]
         _fin_results = list()
         for _a_result in results:
             for ability in self.abilities:
-                if ability.name == _a_result.strip():
+                if ability.name == _a_result:
                     _fin_results.append(ability)
         return _fin_results
