@@ -138,7 +138,7 @@ class NextMovePrompt(Prompt):
         log.debug(f'NextMovePrompt: {self.prompt}')
 
     # noinspection PyUnusedLocal
-    def invoke(self, model: BaseChatModel, max_retry: int = 3, stream: bool = False) -> tuple[Ability, dict] | bool:
+    def invoke(self, model: BaseChatModel, max_retry: int = 5, stream: bool = False) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
         exclamation = '!'
@@ -159,9 +159,9 @@ class NextMovePrompt(Prompt):
                     and _accurate_action_str.count('ability:') == 1
                     and _accurate_action_str.count('params:') == 1):
                 break
-            tmp_prompt += (f'\nAttention_{count}: '
-                           f'You must strictly follow the format in <output_format>{count * exclamation} '
-                           f'You can refer to example in <output_example>{count * exclamation}')
+            tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                          f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
+                          f'You can refer to example in <output_example>{count * 2 * exclamation}')
         result = _accurate_action_str
         params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
         result = result[result.rfind('}') + 1:]
