@@ -33,8 +33,7 @@ class SchedulerPrompt(Prompt):
             "output_format": "{your_thinking_process}\n"
                              "schedule:{your_schedule_as_a_list_of_tool_names}",
             "hint_for_output": 'firstly, output your thinking process step by step clear and organized.'
-                               'secondly, outputs a list(python_list_format) of names of tools, '
-                               'surrounded by "[ ]", split by ", ", '
+                               'secondly, outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
                                'you can refer to <output_example>.',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
                               "which requires checking a recipe or personal preferences to decide.\n"
