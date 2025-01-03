@@ -51,7 +51,7 @@ class NextMovePrompt(Prompt):
         abilities_dict: dict = dict()
         for ability in self.abilities:
             abilities_dict[ability.name] = ability.to_dict()
-        if history in ('', '[]', '()', '{}', {}, []):
+        if history in ('', '[]', '()', '{}', {}, [], ()):
             history = "Nothing happened before you."
         prompt = json.dumps({
             "precondition": "Below are the abilities you have(you can only use the following abilities)."
