@@ -34,9 +34,10 @@ Step 4: Since the user's query is not fully accomplished, and I have the ability
     After calculating the volume, I will then write both the surface area and volume results into 'result.txt' using the "write_file" ability.
 Step 5: This step is not applicable because the user query has not been fully accomplished, and I have the ability to continue progressing.
 Step 6: This step is not applicable because the user query has not been fully accomplished.
+
 """ + SEPARATOR + """
 params:{
-  "math_expression": "(4/3) * 3.14159 * (91.41^3)"
+  "<param_name>": "(4/3) * 3.14159 * (91.41^3)"
 }
 ability:[calculator]
 """
