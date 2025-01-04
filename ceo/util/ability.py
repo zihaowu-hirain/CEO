@@ -8,6 +8,7 @@ from langchain_core.language_models import BaseChatModel
 
 from ceo.brain.lm import get_openai_model
 from ceo.prompt import DocstringPrompt
+from ceo.exception.class_method_exception import ClassMethodException
 
 log = logging.getLogger('ceo.ability')
 
@@ -69,12 +70,18 @@ def ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = ''):
             cache_data = json.loads(cache_data_bytes)
         return cache_data
 
+    def check_if_function_is_method(func: Callable) -> Callable:
+        if '.' in func.__qualname__:
+            raise ClassMethodException(func)
+        return func
+
     if cache_dir in ('', None):
         cache_dir = '.cache'
 
     if callable(brain) and not isinstance(brain, BaseChatModel):
         # noinspection DuplicatedCode
         def decorator(func):
+            func = check_if_function_is_method(func)
             cache_func = read_cache(func, cache_dir)
             if cache and cache_func.get('src', None) == get_source(func):
                 func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
@@ -84,6 +91,7 @@ def ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = ''):
 
     # noinspection DuplicatedCode
     def decorator(func):
+        func = check_if_function_is_method(func)
         cache_func = read_cache(func, cache_dir)
         if cache and cache_func.get('src', None) == get_source(func):
             func.__doc__ = json.dumps(cache_func.get('doc'), ensure_ascii=False)
