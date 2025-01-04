@@ -33,8 +33,7 @@ class SchedulerPrompt(Prompt):
             "output_format": "{your_thinking_process}\n"
                              "schedule:{your_schedule_as_a_list_of_tool_names}",
             "hint_for_output": 'firstly, output your thinking process step by step clear and organized.'
-                               'secondly, outputs a list(python_list_format) of names of tools, '
-                               'surrounded by "[ ]", split by ", ", '
+                               'secondly, outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
                                'you can refer to <output_example>.',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
                               "which requires checking a recipe or personal preferences to decide.\n"
@@ -53,14 +52,15 @@ class SchedulerPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel) -> list[Ability]:
         results = model.invoke(self.prompt).content
-        if not results.startswith('['):
-            results = results[results.rfind('['):]
-        if not results.endswith(']'):
-            results = results[:results.rfind(']') + 1]
-        results = results[1:-1].split(',')
+        results = results[results.rfind('['):results.rfind(']') + 1][1:-1].split(',')
+        results = [result
+                   .replace('\n', '')
+                   .replace('\"', '')
+                   .replace('\'', '').strip()
+                   for result in results]
         _fin_results = list()
         for _a_result in results:
             for ability in self.abilities:
-                if ability.name == _a_result.strip():
+                if ability.name == _a_result:
                     _fin_results.append(ability)
         return _fin_results

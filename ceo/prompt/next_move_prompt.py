@@ -10,49 +10,38 @@ from ceo.exception.too_dumb_exception import TooDumbException
 log = logging.getLogger('ceo.prompt')
 
 SEPARATOR = '--SEP--'
+END = '--END--'
 MISSION_COMPLETE = '-mission-complete-'
 MISSION_FAILED = '-mission-failed-'
 
 OUTPUT_EXAMPLE = """
 Step 1: In the provided history, the events related to the user's query are as follows, listed chronologically:
-        1. Buying two tomatoes: This event is the first in the sequence and is directly related to the user's query as it involves the acquisition of the main ingredient needed for the subsequent steps.
-        2. Going home: Following the purchase, the user returns home, which is a necessary step before proceeding with the cooking process.
-        
-        From the history, we extract the following information related to the user's query:
-        1. The user has successfully completed the purchase of tomatoes.
-        2. The user is now at home, which is the location where the next steps of the process will take place.
-        
-        Based on these details, the subsequent steps to complete are:
-        1. Cook the tomatoes using a frying pan.
-        2. Place the cooked tomatoes on the dining table.
-
-Step 2: The user query is "Help me buy two tomatoes, then after getting home, cook the tomatoes using a frying pan, 
-        and finally place the cooked tomatoes on the dining table." According to the history, the first two parts have been completed, 
-        but the last two parts (cooking and placing) are still pending. Therefore, the user query has not been fully and properly accomplished.
-
-Step 3: The unfinished parts of the user query are "cook the tomatoes using a frying pan" and "place the cooked tomatoes on the dining table." 
-        The abilities I possess include "go_home()", "do_cook(ingredient: str, cooking_utensils: str) -> bool", and "arrange_dished()". 
-        Among these, "do_cook" can complete the cooking task, 
-        while "arrange_dished" can complete the placing task. Thus, my abilities can fulfill the unfinished parts of the user query.
-
-Step 4: Since the user's query is not fully accomplished, and I have the ability to cook and arrange dishes, 
-        my next move is to cook the tomatoes. I will use the "do_cook" ability with "tomatoes" as the ingredient and "frying pan" as the cooking utensil 
-        because these parameters align with the user's request to cook the tomatoes using a frying pan.
-
-Step 5: This step is not applicable because the user query has not been fully accomplished, 
-        and I have the ability to continue progressing.
-
+    1. The user calculated the radius of the sphere using the expression "(3 * 174.9 / 15.9 * 2.77)", resulting in a radius of approximately 91.41 cm.
+    2. The user then calculated the surface area of the sphere using the formula "4 * 3.14159 * (91.41^2)", resulting in a surface area of approximately 105001.841348316 cm².
+    From the history, we extract the following information related to the user's query:
+    1. The radius of the sphere has been successfully calculated as 91.41 cm.
+    2. The surface area has been calculated as approximately 105001.84 cm².
+    3. However, the volume of the sphere has not yet been calculated, and there is no record of writing the results into the file 'result.txt'.
+    Based on these details, the subsequent steps to complete are:
+    1. Calculate the volume of the sphere using the formula "(4/3) * pi * radius^3".
+    2. Write the results of the surface area and volume into a file called 'result.txt'.
+Step 2: The user query is to find the area and volume of a sphere with a specific radius and write the results into a file. 
+    According to the history, the radius and surface area have been calculated, but the volume calculation and file writing have not been completed. 
+    Therefore, the user query has not been fully and properly accomplished.
+Step 3: The unfinished parts of the user query are the calculation of the volume and writing the results to 'result.txt'. 
+    The abilities I possess include "calculator" for performing calculations and "write_file" for writing content to a file. Both abilities can fulfill the unfinished parts of the user query.
+Step 4: Since the user's query is not fully accomplished, and I have the ability to calculate the volume and write to a file, my next move is to calculate the volume of the sphere. 
+    I will use the "calculator" ability with the expression "(4/3) * 3.14159 * (91.41^3)" to compute the volume, as this aligns with the user's request to find the volume of the sphere.
+    After calculating the volume, I will then write both the surface area and volume results into 'result.txt' using the "write_file" ability.
+Step 5: This step is not applicable because the user query has not been fully accomplished, and I have the ability to continue progressing.
 Step 6: This step is not applicable because the user query has not been fully accomplished.
 
 """ + SEPARATOR + """
-
 params:{
-  "ingredient": "tomatoes",
-  "cooking_utensils": "frying pan"
+  "{name_of_param}": "(4/3) * 3.14159 * (91.41^3)"
 }
-
-ability:[do_cook]
-"""
+ability:[calculator]
+""" + END
 
 
 class NextMovePrompt(Prompt):
@@ -63,7 +52,7 @@ class NextMovePrompt(Prompt):
         abilities_dict: dict = dict()
         for ability in self.abilities:
             abilities_dict[ability.name] = ability.to_dict()
-        if history in ('', '[]', '()', '{}', {}, []):
+        if history in ('', '[]', '()', '{}', {}, [], ()):
             history = "Nothing happened before you."
         prompt = json.dumps({
             "precondition": "Below are the abilities you have(you can only use the following abilities)."
@@ -122,11 +111,11 @@ class NextMovePrompt(Prompt):
                              "{step5_thought_process}\n{step6_thought_process}\n"
                              f"{SEPARATOR}\n"
                              'params:{'
-                             '{name_of_param_1}:{value_for_param_1},'
-                             '{name_of_param_2}:{value_for_param_2},'
-                             '{name_of_param_...}:{value_for_param_...}'
+                             '"{name_of_param_1}":{value_for_param_1},'
+                             '"{name_of_param_2}":{value_for_param_2},'
+                             '"{name_of_param_...}":{value_for_param_...}'
                              '}\n'
-                             "ability:[ability.name]",
+                             f'ability:[ability.name]\n{END}',
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
             "hint_for_ability_choosing": "Only one single ability can be chosen.",
             "hint_for_params_output_format": f'The "{SEPARATOR}" pattern should be after '
@@ -137,6 +126,10 @@ class NextMovePrompt(Prompt):
                                              'The ability should be after params.',
             "hint_for_separation_pattern": f'The "{SEPARATOR}" pattern which separates <thought processes> and '
                                            '<params and ability> is absolutely important, do not forget to place it.',
+            "hint_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
+                                    f'no more words are allowed after "{END}" pattern. '
+                                    f'The "{END}" pattern is absolutely important, do not forget to place it '
+                                    'in the end of your response.',
             "hint_for_ability_output_format": 'The ability should be after the params. '
                                               'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE
@@ -145,9 +138,10 @@ class NextMovePrompt(Prompt):
         log.debug(f'NextMovePrompt: {self.prompt}')
 
     # noinspection PyUnusedLocal
-    def invoke(self, model: BaseChatModel, max_retry: int = 3, stream: bool = False) -> tuple[Ability, dict] | bool:
+    def invoke(self, model: BaseChatModel, max_retry: int = 5, stream: bool = False) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
+        exclamation = '!'
         tmp_prompt = self.prompt
         while True:
             if count > 0:
@@ -159,18 +153,16 @@ class NextMovePrompt(Prompt):
             count += 1
             result = model.invoke(tmp_prompt).content
             log.debug(f"Next move thought process: \n{result}")
-            if not result.count(SEPARATOR) == 1:
-                if tmp_prompt == self.prompt:
-                    tmp_prompt = (f'{self.prompt} Attention: do not forget to output a "{SEPARATOR}" '
-                                  f'before the <params and ability>, and do not output more than one "{SEPARATOR}".')
-                continue
-            result = result[result.rfind(SEPARATOR):]
-            if result.count('ability:') == 1 and result.count('params:') == 1:
+            _accurate_action_str = result[result.rfind(SEPARATOR) + len(SEPARATOR):result.rfind(END)]
+            if (result.count(SEPARATOR) == 1
+                    and result.count(END) == 1
+                    and _accurate_action_str.count('ability:') == 1
+                    and _accurate_action_str.count('params:') == 1):
                 break
-            if tmp_prompt == self.prompt:
-                tmp_prompt = (f'{self.prompt} Attention: '
-                              'You should only provide the ability to be used in the next step, '
-                              'and only one ability can be provided for the next step.')
+            tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                          f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
+                          f'You can refer to example in <output_example>{count * 2 * exclamation}')
+        result = _accurate_action_str
         params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
         result = result[result.rfind('}') + 1:]
         ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
