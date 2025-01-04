@@ -2,7 +2,7 @@ import logging
 
 from .brain.agent import Agent
 from .ability import Ability, AgenticAbility
-from .brain.lm import get_openai_model
+from .brain.lm import get_openai_model, get_dashscope_model
 from .util import ability, agentic
 from .enum import Personality
 
