@@ -8,6 +8,8 @@ from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
 
+END = '--END--'
+
 
 class SchedulerPrompt(Prompt):
     def __init__(self, query: str, abilities: list[Ability], ext_context: str = ''):
@@ -30,11 +32,14 @@ class SchedulerPrompt(Prompt):
                                    "to properly achieve the <user_query>!",
             "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to <user_query>. "
                                       "Make sure to choose tools properly and wisely.",
-            "output_format": "{your_thinking_process}\n"
-                             "schedule:{your_schedule_as_a_list_of_tool_names}",
-            "hint_for_output": 'firstly, output your thinking process step by step clear and organized.'
-                               'secondly, outputs a list of names of tools, surrounded by "[ ]", split by ", ", '
-                               'you can refer to <output_example>.',
+            "tools(abilities)": prompt,
+            "output_format": "{thinking_process}\n"
+                             "schedule:{schedule_as_a_list_of_tool_names}\n"
+                             f"{END}",
+            "hint_1_for_output": 'firstly, output your thinking process step by step clear and organized. '
+                                 'secondly, outputs a list of names of tools, surrounded by "[ ]", split by ", ".',
+            "hint_2_for_output": 'You must strictly follow the format in <output_format>! '
+                                 'You can refer to example in <output_example>!',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
                               "which requires checking a recipe or personal preferences to decide.\n"
                               "2.After determining the ingredients, "
@@ -44,8 +49,12 @@ class SchedulerPrompt(Prompt):
                               "5.After preparation, I start cooking.\n"
                               "6.After cooking is complete, I need to arrange the dishes on the dining table.\n"
                               "schedule:"
-                              "[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]",
-            "tools(abilities)": prompt
+                              "[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]\n"
+                              f"{END}",
+            "hint_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
+                                    f'no more words are allowed after "{END}" pattern. '
+                                    f'The "{END}" pattern is absolutely important, do not forget to place it '
+                                    'in the end of your response.'
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')
