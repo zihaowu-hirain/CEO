@@ -3,10 +3,10 @@ from langchain_core.language_models import BaseChatModel
 
 DEFAULT_TMP = 0.125
 DEFAULT_TOP_P = 1.00
-DEFAULT_GPT = 'qwen-turbo-latest'
+DEFAULT_QWEN = 'qwen-plus'
 
 
-def get_lm(key: str = None, name: str = DEFAULT_GPT, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P,
+def get_lm(key: str = None, name: str = DEFAULT_QWEN, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P,
            stream: bool = False) -> BaseChatModel:
     return langchain_community.chat_models.ChatTongyi(
         api_key=key,
