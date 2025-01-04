@@ -132,7 +132,9 @@ class NextMovePrompt(Prompt):
                                     'in the end of your response.',
             "hint_for_ability_output_format": 'The ability should be after the params. '
                                               'The ability name should be surrounded by "[ ]".',
-            "output_example": OUTPUT_EXAMPLE
+            "output_example": OUTPUT_EXAMPLE,
+            "hint_for_output": 'You must strictly follow the format in <output_format>! '
+                               'You can refer to example in <output_example>!'
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
