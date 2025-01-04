@@ -11,7 +11,7 @@ setuptools.setup(
     version='0.9.3-preview',
     author="vortezwohl",
     author_email="vortez.wohl@gmail.com",
-    description="CEO is an intuitive and modular AI agent framework for task automation.",
+    description="An ultra-lightweight Agentic AI framework based on the ReAct paradigm.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license=license_content,
@@ -28,8 +28,12 @@ setuptools.setup(
     packages=setuptools.find_packages(where="."),
     python_requires=">=3.10",
     install_requires=[
-        'langchain-core>=0.3.13',
-        'langchain-openai>=0.2.3'
+        'langchain>=0.3.14',
+        'langchain-core>=0.3.29',
+        'langchain-community>=0.3.14',
+        'langchain-openai>=0.2.3',
+        'openai>=1.59.3',
+        'dashscope>=1.20.14'
     ],
     entry_points={},
     include_package_data=False

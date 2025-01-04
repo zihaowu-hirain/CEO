@@ -6,7 +6,7 @@ from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo import get_openai_model
+from ceo.brain.lm import get_openai_model
 from ceo.prompt import DocstringPrompt
 
 log = logging.getLogger('ceo.ability')
