@@ -127,13 +127,20 @@ class Agent(BaseAgent, MemoryAugment):
 
     def memorize(self, action_performed: dict):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
+        _action_performed = action_performed.copy()
+        _tmp_summarization = _action_performed['summarization']
+        del _action_performed['summarization']
+        _tmp_action_performed = _action_performed
+        if _tmp_action_performed['ability'].startswith(AGENTIC_ABILITY_PREFIX):
+            del _tmp_action_performed['choice']
         new_memory = {
-            "date_time": now,
+            "timestamp": now,
             "agent_name": self._name,
-            f"action_by_{self._name}": action_performed
+            f"message_from_{self._name}": _tmp_summarization,
+            f'action_performed_by_{self._name}': _tmp_action_performed
         }
         self._memory[f"{self._name} at {now}"] = new_memory
-        log.debug(f'Agent: {self._name}; Memory update: {action_performed['summarization']};')
+        log.debug(f'Agent: {self._name}; Memory update: {new_memory};')
 
     def stop(self) -> bool:
         resample = 3
