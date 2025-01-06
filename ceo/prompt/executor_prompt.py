@@ -85,11 +85,11 @@ class ExecutorPrompt(Prompt):
                         correct_format = False
                 if correct_format:
                     break
-                tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                tmp_prompt = (f'{prompt}\nAttention_{count}: '
                               f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
                               f'You should refer to example in <output_example>{count * 2 * exclamation}')
             except json.decoder.JSONDecodeError:
-                tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                tmp_prompt = (f'{prompt}\nAttention_{count}: '
                               f'You must strictly follow the json format in <output_format>{count * 2 * exclamation} '
                               f'You should refer to example in <output_example>{count * 2 * exclamation}')
         return res_dict
