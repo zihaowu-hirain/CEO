@@ -39,17 +39,24 @@ class ExecutorPrompt(Prompt):
                             "result of your using of this <ability> is shown at <result>.",
             "task": "Explain what you have done according to <ability>, <result>, and <params(choice)> "
                     "accurately, comprehensively, and briefly.",
-            "output_data_type": "text",
-            "output_includes": [
-                "{ability_just_used}",
-                "{choice_just_made}",
-                "{result_just_received}"
-            ],
-            "output_example": "I used the wechat_sender to wrote a wechat message which says 'Bonjour', "
-                              "the result shows 'success' which indicates success of wechat message sending.",
             "ability": self.action.to_dict(),
             "params(choice)": self.params,
-            "result": str(result)
+            "result": str(result),
+            "output_format": {
+                'summarization': '{summarization}',
+                'ability': '{ability_just_used}',
+                'choice': '{choice_just_made}',
+                'returns': '{result_just_received}'
+            },
+            "output_example": json.dumps({
+              'summarization': "I used the wechat_sender to wrote a wechat message which says 'Bonjour', "
+                               "the result shows 'success' which indicates success of wechat message sending.",
+              'ability': 'wechat_sender',
+              'choice': "{'msg': 'Bonjour'}",
+              'returns': 'success'
+            }, ensure_ascii=False),
+            "hint_for_output": 'You must strictly follow the format in <output_format>! '
+                               'You can refer to example in <output_example>!'
         }, ensure_ascii=False)
         if len(self.ext_context) > 0:
             prompt = f'{self.ext_context}{self.seperator}{prompt}'
