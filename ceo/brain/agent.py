@@ -130,7 +130,7 @@ class Agent(BaseAgent, MemoryAugment):
         new_memory = {
             "date_time": now,
             "agent_name": self._name,
-            f"message_from_{self._name}": action_performed
+            f"action_by_{self._name}": action_performed
         }
         self._memory[f"{self._name} at {now}"] = new_memory
         log.debug(f'Agent: {self._name}; Memory update: {action_performed['summarization']};')

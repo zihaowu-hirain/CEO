@@ -65,9 +65,9 @@ class NextMovePrompt(Prompt):
                     "step": 1,
                     "first_action": "List all events in the <history> related to <user_query> "
                                     "respectively and chronologically.",
-                    "second_action": "Extract and list all key information related to <user_query> from <history> "
+                    "second_action": "Extract and list all information related to <user_query> from <history> "
                                      "formatted one by one respectively.",
-                    "additional": "For any details mentioned in <history> about <user_query>, "
+                    "additional": "For all details mentioned in <history> about <user_query>, "
                                   "you should preserve them in full, "
                                   "especially specific information with accuracy requirements "
                                   "such as numbers, dates, etc."
