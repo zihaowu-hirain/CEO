@@ -12,17 +12,17 @@ log = logging.getLogger('ceo.prompt')
 class IntrospectionPrompt(Prompt):
     def __init__(self, query: str, history: dict | list, ext_context: str = ''):
         prompt = json.dumps({
-            "precondition": "Below in <history> are actions have been performed to achieve <user_query>. ",
-            "user_query": query,
-            "task": "Think seriously whether <user_query> has been fully achieved "
+            "precondition": "Below in <history> are actions have been performed to achieve <query>. ",
+            "query": query,
+            "task": "Think seriously whether <query> has been fully achieved "
                     "according to <history>. "
                     "Then, provide the detailed results mentioned in <history> accurately. "
-                    "Finally, if the <user_query> has not been fully achieved, explain why failed?",
-            "output_format": "text",
+                    "Finally, if the <query> has not been fully achieved, explain why failed?",
+            "output_datatype": "text",
             "output_example": "Your intention is to do calculation, and I was trying to open calculator. "
                               "But I failed because I did not have that ability to open calculator. "
                               "I have not achieved your intention.",
-            "hint_for_output": "Your output should be concise, comprehensive, and short enough.",
+            "hint_for_output": "The output should be concise, comprehensive, and short enough.",
             "history": history
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
