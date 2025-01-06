@@ -49,8 +49,8 @@ class AgenticAbility(Ability):
         log.debug(f'Agent dispatcher generated. {self.__name__}: {self.__doc__}')
 
     @override
-    def __call__(self, query: str, memory: dict, *args, **kwargs) -> str:
-        self._agent.assign(query)
+    def __call__(self, query_by_step: str, query_high_level: str, memory: dict, *args, **kwargs) -> str:
+        self._agent.relay(query_by_step=query_by_step, query_high_level=query_high_level)
         self._agent.bring_in_memory(memory)
         result = self._agent.just_do_it()
         if isinstance(result, dict):

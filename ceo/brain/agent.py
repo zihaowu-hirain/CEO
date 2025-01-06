@@ -73,6 +73,12 @@ class Agent(BaseAgent, MemoryAugment):
         return self.assign(query)
 
     @override
+    def relay(self, query_by_step: str, query_high_level: str):
+        self._query_by_step = query_by_step
+        self._query_high_level = query_high_level
+        return self.reposition()
+
+    @override
     def just_do_it(self) -> dict:
         self.estimate_step()
         stop = False
@@ -90,7 +96,11 @@ class Agent(BaseAgent, MemoryAugment):
                 if not isinstance(next_move, bool):
                     action, params = next_move
                     if action.name.startswith(AGENTIC_ABILITY_PREFIX):
-                        params = {'query': self._query_by_step, 'memory': self._memory}
+                        params = {
+                            'query_by_step': self._query_by_step,
+                            'query_high_level': self._query_high_level,
+                            'memory': self._memory
+                        }
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue

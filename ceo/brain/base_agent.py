@@ -112,6 +112,11 @@ class BaseAgent:
     def reassign(self, query: str):
         return self.assign(query)
 
+    def relay(self, query_by_step: str, query_high_level: str):
+        self._query_by_step = query_by_step
+        self._query_high_level = query_high_level
+        return self.reposition()
+
     def __step_quiet(self) -> str:
         if self._act_count < len(self.__schedule):
             analysing = AnalyserPrompt(
