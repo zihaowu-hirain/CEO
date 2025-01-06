@@ -4,8 +4,8 @@ from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.ability.ability import Ability
 from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
+from ceo.ability.ability import Ability
 from ceo.exception.too_dumb_exception import TooDumbException
 from ceo.prompt.prompt import Prompt
 

@@ -2,12 +2,14 @@ import json
 import logging
 from typing_extensions import override
 
-from ceo.brain.base_agent import BaseAgent
 from ceo.ability import Ability
 from ceo.brain.memory_augment import MemoryAugment
 
-log = logging.getLogger('ceo.ability')
 PREFIX = '__AgenticAbility__'
+
+from ceo.brain.base_agent import BaseAgent
+
+log = logging.getLogger('ceo.ability')
 
 
 class AgenticAbility(Ability):
