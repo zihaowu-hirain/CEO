@@ -141,7 +141,7 @@ class NextMovePrompt(Prompt):
         log.debug(f'NextMovePrompt: {self.prompt}')
 
     # noinspection PyUnusedLocal
-    def invoke(self, model: BaseChatModel, max_retry: int = 5) -> tuple[Ability, dict] | bool:
+    def invoke(self, model: BaseChatModel, max_retry: int = 6) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
         exclamation = '!'
@@ -162,14 +162,24 @@ class NextMovePrompt(Prompt):
                     and result.count(END) == 1
                     and _accurate_action_str.count('ability:') == 1
                     and _accurate_action_str.count('params:') == 1):
-                break
+                result = _accurate_action_str
+                params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
+                result = result[result.rfind('}') + 1:]
+                ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
+                _ability = None
+                _wrong_param = False
+                for ability in self.abilities:
+                    if ability.name == ability_name:
+                        _ability = ability
+                if _ability is not None:
+                    for _k in params.keys():
+                        if _k not in _ability.parameters.keys():
+                            _wrong_param = True
+                if not _wrong_param:
+                    break
             tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
                           f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
                           f'You should refer to example in <output_example>{count * 2 * exclamation}')
-        result = _accurate_action_str
-        params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
-        result = result[result.rfind('}') + 1:]
-        ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
         if ability_name.__contains__(MISSION_COMPLETE):
             return True
         for ability in self.abilities:
