@@ -134,7 +134,7 @@ class NextMovePrompt(Prompt):
                                               'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE,
             "hint_for_output": 'You must strictly follow the format in <output_format>! '
-                               'You can refer to example in <output_example>!'
+                               'You should refer to example in <output_example>!'
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
@@ -163,7 +163,7 @@ class NextMovePrompt(Prompt):
                 break
             tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
                           f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
-                          f'You can refer to example in <output_example>{count * 2 * exclamation}')
+                          f'You should refer to example in <output_example>{count * 2 * exclamation}')
         result = _accurate_action_str
         params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
         result = result[result.rfind('}') + 1:]

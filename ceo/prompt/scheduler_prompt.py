@@ -39,7 +39,7 @@ class SchedulerPrompt(Prompt):
             "hint_1_for_output": 'firstly, output your thinking process step by step clear and organized. '
                                  'secondly, outputs a list of names of tools, surrounded by "[ ]", split by ", ".',
             "hint_2_for_output": 'You must strictly follow the format in <output_format>! '
-                                 'You can refer to example in <output_example>!',
+                                 'You should refer to example in <output_example>!',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
                               "which requires checking a recipe or personal preferences to decide.\n"
                               "2.After determining the ingredients, "

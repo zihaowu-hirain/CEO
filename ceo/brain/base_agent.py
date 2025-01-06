@@ -57,9 +57,11 @@ class BaseAgent:
         return self.__repr__()
 
     def to_dict(self) -> dict:
+        __model_dict = self._model.dict()
+        model_name = __model_dict.get('model_name', __model_dict.get('_type', 'unknown'))
         return {
             "name": self._name,
-            "brain": self._model.dict().get('model_name', 'unknown'),
+            "brain": model_name,
             "abilities": [ability.to_dict() for ability in self._abilities]
         }
 
@@ -119,7 +121,8 @@ class BaseAgent:
             )
             action, params = analysing.invoke(self._model)
             executing = ExecutorPrompt(params=params, action=action)
-            action_str = f'Agent: {self._name}; Action {self._act_count + 1}/{len(self.__schedule)}: {executing.invoke(model=self._model)};'
+            action_str = (f'Agent: {self._name}; Action {self._act_count + 1}/{len(self.__schedule)}: '
+                          f'{json.dumps(executing.invoke(model=self._model), ensure_ascii=False)};')
             self.__prev_results.append(action_str)
             self._act_count += 1
             log.debug(action_str)

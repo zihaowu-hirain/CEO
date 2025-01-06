@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from langchain_core.language_models import BaseChatModel
 
 from ceo.ability.ability import Ability
+from ceo.exception.too_dumb_exception import TooDumbException
 from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
@@ -31,7 +32,7 @@ class ExecutorPrompt(Prompt):
             return model.stream(self.prompt)
         return model.invoke(self.prompt).content
 
-    def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
+    def invoke(self, model: BaseChatModel, max_retry: int = 3) -> dict:
         result = self.action.__call__(**self.params)
         prompt = json.dumps({
             "precondition": "Below is an ability shown at <ability>, "
@@ -61,6 +62,34 @@ class ExecutorPrompt(Prompt):
         if len(self.ext_context) > 0:
             prompt = f'{self.ext_context}{self.seperator}{prompt}'
         log.debug(f'ExecutorPrompt (after): {prompt}')
-        if stream:
-            return model.stream(prompt)
-        return model.invoke(prompt).content
+        count = 0
+        exclamation = '!'
+        tmp_prompt = prompt
+        keys = ('summarization', 'ability', 'choice', 'returns')
+        while True:
+            # noinspection DuplicatedCode
+            if count > 0:
+                if count <= max_retry:
+                    log.warning(f'ExecutorAfterPromptWarn: incorrectly formatted. Retry: {count}')
+                else:
+                    log.warning(f'ExecutorAfterPromptWarn: max retry exceeded.')
+                    raise TooDumbException(model)
+            count += 1
+            res = model.invoke(tmp_prompt).content
+            log.debug(f"Executor (after) thought process: \n{res}")
+            try:
+                correct_format = True
+                res_dict: dict = json.loads(res[res.find('{'):res.rfind('}') + 1].strip())
+                for _key in keys:
+                    if _key not in res_dict.keys():
+                        correct_format = False
+                if correct_format:
+                    break
+                tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                              f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
+                              f'You should refer to example in <output_example>{count * 2 * exclamation}')
+            except json.decoder.JSONDecodeError:
+                tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                              f'You must strictly follow the json format in <output_format>{count * 2 * exclamation} '
+                              f'You should refer to example in <output_example>{count * 2 * exclamation}')
+        return res_dict
