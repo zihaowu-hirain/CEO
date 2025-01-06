@@ -50,7 +50,7 @@ class ExecutorPrompt(Prompt):
                 'returns': '{result_just_received}'
             },
             "output_example": json.dumps({
-              'summarization': "I used the wechat_sender to wrote a wechat message which says 'Bonjour', "
+              'summarization': "I used the wechat_sender ability to wrote a wechat message which says 'Bonjour', "
                                "the result shows 'success' which indicates success of wechat message sending.",
               'ability': 'wechat_sender',
               'choice': "{'msg': 'Bonjour'}",

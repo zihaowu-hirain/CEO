@@ -123,7 +123,7 @@ class Agent(BaseAgent, MemoryAugment):
             f"message_from_{self._name}": action_performed
         }
         self._memory[f"{self._name} at {now}"] = new_memory
-        log.debug(f'Agent: {self._name}; Memory update: {new_memory};')
+        log.debug(f'Agent: {self._name}; Memory update: {action_performed['summarization']};')
 
     def stop(self) -> bool:
         resample = 3
