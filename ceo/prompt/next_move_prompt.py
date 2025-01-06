@@ -140,7 +140,7 @@ class NextMovePrompt(Prompt):
         log.debug(f'NextMovePrompt: {self.prompt}')
 
     # noinspection PyUnusedLocal
-    def invoke(self, model: BaseChatModel, max_retry: int = 5, stream: bool = False) -> tuple[Ability, dict] | bool:
+    def invoke(self, model: BaseChatModel, max_retry: int = 5) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
         exclamation = '!'
