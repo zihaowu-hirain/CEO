@@ -24,7 +24,7 @@ class QueryResolverPrompt(Prompt):
                 "step_{n}": "(Condition) {action_of_step_{n}}"
             },
             "hint_1_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible. "
-                                 "Keep track of the steps' interdependence and orderliness again.",
+                                 "Keep track of the steps' interdependence and orderliness.",
             "hint_2_for_output": 'You must strictly follow the format in <output_format>! '
                                  'You can refer to example in <output_example>!',
             "output_example": {
