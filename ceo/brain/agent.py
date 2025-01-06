@@ -1,4 +1,3 @@
-import json
 import logging
 import random
 import datetime
@@ -81,13 +80,12 @@ class Agent(BaseAgent, MemoryAugment):
             if self._act_count > self.__expected_step:
                 stop = self.stop()
                 self.penalize()
-            _history = json.dumps(self._memory, ensure_ascii=False)
             next_move = False
             if not stop:
                 next_move = NextMovePrompt(
                     query=self._query_by_step,
                     abilities=self._abilities,
-                    history=_history
+                    history=self._memory
                 ).invoke(self._model)
                 if not isinstance(next_move, bool):
                     action, params = next_move
@@ -98,7 +96,7 @@ class Agent(BaseAgent, MemoryAugment):
                     continue
             response = IntrospectionPrompt(
                 query=self._query_high_level,
-                history=_history
+                history=self._memory
             ).invoke(self._model)
             self.reposition()
             log.debug(f'Agent: {self._name}; Conclusion: {response};')

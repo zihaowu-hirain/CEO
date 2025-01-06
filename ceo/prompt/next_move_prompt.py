@@ -46,13 +46,14 @@ ability:[calculator]
 
 class NextMovePrompt(Prompt):
     def __init__(self, query: str,
-                 abilities: list[Ability], history: str = '',
+                 abilities: list[Ability],
+                 history: dict | None = None,
                  ext_context: str = ''):
         self.abilities = abilities
         abilities_dict: dict = dict()
         for ability in self.abilities:
             abilities_dict[ability.name] = ability.to_dict()
-        if history in ('', '[]', '()', '{}', {}, [], ()):
+        if history in ('', '[]', '()', '{}', {}, [], (), None):
             history = "Nothing happened before you."
         prompt = json.dumps({
             "precondition": "Below are the abilities you have(you can only use the following abilities)."
@@ -146,6 +147,7 @@ class NextMovePrompt(Prompt):
         exclamation = '!'
         tmp_prompt = self.prompt
         while True:
+            # noinspection DuplicatedCode
             if count > 0:
                 if count <= max_retry:
                     log.warning(f'NextMovePromptWarn: incorrectly formatted. Retry: {count}')

@@ -10,7 +10,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class IntrospectionPrompt(Prompt):
-    def __init__(self, query: str, history: list | str, ext_context: str = ''):
+    def __init__(self, query: str, history: dict | list, ext_context: str = ''):
         prompt = json.dumps({
             "precondition": "Below in <history> are actions have been performed to achieve <user_query>. ",
             "user_query": query,
@@ -23,7 +23,7 @@ class IntrospectionPrompt(Prompt):
                               "But I failed because I did not have that ability to open calculator. "
                               "I have not achieved your intention.",
             "hint_for_output": "Your output should be concise, comprehensive, and short enough.",
-            "history": history if isinstance(history, str) else str(history)
+            "history": history
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'IntrospectionPrompt: {self.prompt}')
