@@ -15,12 +15,12 @@ class ExecutorPrompt(Prompt):
         self.action = action
         self.params = params
         prompt = json.dumps({
-            "precondition": "Below is a tool(ability) shown at <tool(ability)> "
-                            "and your choice(params) for using the <tool(ability)> is shown at <params(choice)>.",
+            "precondition": "Below is an ability shown at <ability> "
+                            "and your choice(params) for using the <ability> is shown at <params(choice)>.",
             "task": "Explain what you are going to do.",
-            "output_format": "text",
+            "output_datatype": "text",
             "output_example": "I am trying to open calculator.",
-            "tool(ability)": self.action.to_dict(),
+            "ability": self.action.to_dict(),
             "params(choice)": self.params
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
@@ -34,20 +34,20 @@ class ExecutorPrompt(Prompt):
     def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
         result = self.action.__call__(**self.params)
         prompt = json.dumps({
-            "precondition": "Below is a tool(ability) shown at <tool(ability)>, "
-                            "and your choice(params) for the <tool(ability)> is shown at <params(choice)>, "
-                            "and the <result> of your using of this <tool(ability)>.",
-            "task": "Explain what you have done, and write down the result detailed. "
-                    "The result is shown below at <result>.",
-            "output_format": "text",
-            "output_contains": [
-                "{the_tool(ability)_you_used}",
-                "{the_choice_you_made}",
-                "{what_you_have_done}"
+            "precondition": "Below is an ability shown at <ability>, "
+                            "your choice(params) for the <ability> is shown at <params(choice)>, "
+                            "result of your using of this <ability> is shown at <result>.",
+            "task": "Explain what you have done according to <ability>, <result>, and <params(choice)> "
+                    "accurately, comprehensively, and briefly.",
+            "output_data_type": "text",
+            "output_includes": [
+                "{ability_just_used}",
+                "{choice_just_made}",
+                "{result_just_received}"
             ],
-            "hint_for_output": 'When you give the response, say "ability" instead of "tool".',
-            "output_example": "I wrote a wechat message which says 'Bonjour'. The result is 'success'.",
-            "tool(ability)": self.action.to_dict(),
+            "output_example": "I used the wechat_sender to wrote a wechat message which says 'Bonjour', "
+                              "the result shows 'success' which indicates success of wechat message sending.",
+            "ability": self.action.to_dict(),
             "params(choice)": self.params,
             "result": str(result)
         }, ensure_ascii=False)
