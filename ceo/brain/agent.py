@@ -98,7 +98,7 @@ class Agent(BaseAgent, MemoryAugment):
                     continue
             response = IntrospectionPrompt(
                 query=self._query_high_level,
-                prev_results=_history
+                history=_history
             ).invoke(self._model)
             self.reposition()
             log.debug(f'Agent: {self._name}; Conclusion: {response};')

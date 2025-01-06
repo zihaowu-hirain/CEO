@@ -1,5 +1,6 @@
 import json
 import logging
+import warnings
 from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
@@ -127,13 +128,18 @@ class BaseAgent:
         return ''
 
     def just_do_it(self) -> str | None:
+        warnings.warn(
+            "This function is deprecated and will be removed in future versions.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         if not self.plan():
             return None
         for act_count in range(len(self.__schedule)):
             self.__step_quiet()
         response = IntrospectionPrompt(
             query=self._query_high_level,
-            prev_results=self.__prev_results
+            history=self.__prev_results
         ).invoke(self._model)
         log.debug(f'Agent: {self._name}; Conclusion: {response};')
         self.reposition()
