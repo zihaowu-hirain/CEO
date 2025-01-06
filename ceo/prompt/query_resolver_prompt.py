@@ -14,19 +14,19 @@ class QueryResolverPrompt(Prompt):
             "precondition": 'There is a user query shown below at <user_query>',
             "user_query": query,
             "task": "What you need to do is to tell user's intention based on <user_query>.",
-            "task_redeclare": "To tell user's intention based on <user_query>. "
-                              "Not your intention (you are the user's assistant).",
             "additional_important": "For any details mentioned in <user_query>, you should preserve them in full, "
                                     "especially specific information with accuracy requirements "
                                     "such as all numbers occur, parameter, location, "
                                     "date/time, name, proper noun, entity, etc...",
             "hint_for_thinking": "Deduce and analyse the <user_query> step by step. "
                                  "Keep track of the steps' interdependence and orderliness.",
-            "output_format (json)": {
-                "step_{n}": "{action_of_step_{n}}"
+            "output_format": {
+                "step_{n}": "(Condition) {action_of_step_{n}}"
             },
-            "hint_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible. "
-                               "Keep track of the steps' interdependence and orderliness again.",
+            "hint_1_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible. "
+                                 "Keep track of the steps' interdependence and orderliness again.",
+            "hint_2_for_output": 'You must strictly follow the format in <output_format>! '
+                                 'You can refer to example in <output_example>!',
             "output_example": {
                 "step_1": "(Start) Open the door",
                 "step_2": "(After: door opened) Go into the room",
