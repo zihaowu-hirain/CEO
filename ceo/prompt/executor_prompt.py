@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from langchain_core.language_models import BaseChatModel
 
 from ceo.ability.ability import Ability
+from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.exception.too_dumb_exception import TooDumbException
 from ceo.prompt.prompt import Prompt
 
@@ -15,6 +16,9 @@ class ExecutorPrompt(Prompt):
     def __init__(self, params: dict, action: Ability, ext_context: str = ''):
         self.action = action
         self.params = params
+        tmp_params = self.params.copy()
+        if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
+            del tmp_params['memory']
         prompt = json.dumps({
             "precondition": "Below is an ability shown at <ability> "
                             "and your choice(params) for using the <ability> is shown at <params(choice)>.",
@@ -22,7 +26,7 @@ class ExecutorPrompt(Prompt):
             "output_datatype": "text",
             "output_example": "I am trying to open calculator.",
             "ability": self.action.to_dict(),
-            "params(choice)": self.params
+            "params(choice)": tmp_params
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'ExecutorPrompt (before): {self.prompt}')
@@ -34,6 +38,9 @@ class ExecutorPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel, max_retry: int = 3) -> dict:
         result = self.action.__call__(**self.params)
+        tmp_params = self.params.copy()
+        if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
+            del tmp_params['memory']
         prompt = json.dumps({
             "precondition": "Below is an ability shown at <ability>, "
                             "your choice(params) for the <ability> is shown at <params(choice)>, "
@@ -41,7 +48,7 @@ class ExecutorPrompt(Prompt):
             "task": "Explain what you have done according to <ability>, <result>, and <params(choice)> "
                     "accurately, comprehensively, and briefly.",
             "ability": self.action.to_dict(),
-            "params(choice)": self.params,
+            "params(choice)": tmp_params,
             "result": str(result),
             "output_format": {
                 'summarization': '{summarization}',
