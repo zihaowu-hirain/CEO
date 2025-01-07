@@ -42,7 +42,6 @@ class QueryResolverPrompt(Prompt):
         _dont_do_anything = "Don't do anything."
         if self.__query == '':
             return _dont_do_anything, _dont_do_anything
-        user_query_by_step = (f'raw_query: "{self.__query}"\n'
-                              f'query_by_step: "{model.invoke(self.prompt).content}"')
+        user_query_by_step = model.invoke(self.prompt).content
         log.debug(f'QueryResolverResponse: {user_query_by_step}')
         return self.__query, user_query_by_step
