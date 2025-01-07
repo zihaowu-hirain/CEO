@@ -18,21 +18,21 @@ class SchedulerPrompt(Prompt):
         for ability in self.abilities:
             prompt[ability.name] = ability.to_dict()
         prompt = json.dumps({
-            "precondition": "Below are the <tools(abilities)> you can use "
-                            "(you can only use the following <tools(abilities)>). "
-                            f'Now there is a <user_query>.',
+            "precondition": "In <abilities> are the abilities you have. "
+                            f'And there is a <user_query>.',
+            "limitation": "You can only use abilities in <abilities>.",
             "user_query": query,
-            "task": "What you need to do is to plan your workflow based on the <tools(abilities)> and <user_query>.",
+            "task": "What you need to do is to plan your workflow based on the <abilities> and <user_query>.",
             "description": "<user_query> might contains many steps, "
                            "think carefully about every step and plan your workflow "
-                           "based on your tools in <tools(abilities)>.",
+                           "based on your abilities in <abilities>.",
             "hint_for_tool_usage": "<user_query> sometimes need to use one specific tool(s) more than once, "
                                    "you need to estimate as accurately as possible "
                                    "the number of times specific tools need to be used "
                                    "to properly achieve the <user_query>!",
             "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to <user_query>. "
                                       "Make sure to choose tools properly and wisely.",
-            "tools(abilities)": prompt,
+            "abilities": prompt,
             "output_format": "{thinking_process}\n"
                              "schedule:{schedule_as_a_list_of_tool_names}\n"
                              f"{END}",
