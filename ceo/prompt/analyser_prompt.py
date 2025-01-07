@@ -10,7 +10,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class AnalyserPrompt(Prompt):
-    def __init__(self, query: str, prev_results: list, action: Ability, ext_context: str = ''):
+    def __init__(self, query: str | dict, prev_results: list, action: Ability, ext_context: str = ''):
         self.action = action
         prev_results_str = str()
         if len(prev_results) > 0:

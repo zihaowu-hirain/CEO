@@ -47,7 +47,7 @@ ability:[calculator]
 
 
 class NextMovePrompt(Prompt):
-    def __init__(self, query: str,
+    def __init__(self, query: str | dict,
                  abilities: list[Ability],
                  history: OrderedDict | None = None,
                  ext_context: str = ''):

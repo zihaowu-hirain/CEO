@@ -93,8 +93,10 @@ class Agent(BaseAgent, MemoryAugment):
                 self.penalize()
             next_move = False
             if not stop:
-                combined_query = (f'raw_query: "{self._query}".\n'
-                                  f'query_by_step: "{self._query_by_step}"')
+                combined_query = {
+                    'raw_query': self._query,
+                    'query_by_step': self._query_by_step
+                }
                 next_move = NextMovePrompt(
                     query=combined_query,
                     abilities=self._abilities,
