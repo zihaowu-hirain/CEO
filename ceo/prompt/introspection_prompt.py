@@ -22,7 +22,8 @@ class IntrospectionPrompt(Prompt):
             "output_example": "Your intention is to do calculation, and I was trying to open calculator. "
                               "But I failed because I did not have that ability to open calculator. "
                               "I have not achieved your intention.",
-            "hint_for_output": "The output should be concise, accurate, and short enough.",
+            "hint_1_for_output": "Provide thought process (briefly and concisely) before opinion and conclusion.",
+            "hint_2_for_output": "Output should be concise, accurate, and short enough.",
             "history": history
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
