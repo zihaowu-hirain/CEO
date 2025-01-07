@@ -185,6 +185,14 @@ class NextMovePrompt(Prompt):
                             _wrong_param = True
                 if not _wrong_param:
                     break
+                else:
+                    tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                                  f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
+                                  f'You should refer to example in <output_example>{count * 2 * exclamation}\n'
+                                  f'Attention_To_Params: '
+                                  f'You must provide correct parameters '
+                                  f'according to <abilities>{count * 2 * exclamation}')
+                    continue
             tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
                           f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
                           f'You should refer to example in <output_example>{count * 2 * exclamation}')
