@@ -44,6 +44,9 @@ def agent2():
 
 if __name__ == '__main__':
     ceo = Agent(abilities=[agent1, agent2], brain=model, name='CEO', personality=Personality.INQUISITIVE)
-    ceo.assign("Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
-    result = ceo.just_do_it()
+    radius = '(10.0001 * 10121.3565334 * 3.334 / 2 * 16)'  # 2699595.210270594
+    pi = 3.14159
+    output_file = 'result.txt'
+    query = f"Here is a sphere with radius of {radius} cm and pi here is {pi}, find the area and volume respectively then write the results into a file called '{output_file}'."
+    result = ceo.assign(query).just_do_it()  # area = 91581298098351.5, volume = 8.241081123222426e+19
     print(result)
