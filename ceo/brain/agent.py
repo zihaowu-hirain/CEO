@@ -112,7 +112,7 @@ class Agent(BaseAgent, MemoryAugment):
                 history=self.memory
             ).invoke(self._model)
             self.reposition()
-            log.debug(f'Agent: {self._name}; Conclusion: {response};')
+            # log.debug(f'Agent: {self._name}; Conclusion: {response};')
             return {
                 "success": next_move,
                 "response": response
