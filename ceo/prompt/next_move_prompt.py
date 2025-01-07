@@ -5,6 +5,7 @@ from collections import OrderedDict
 from langchain_core.language_models import BaseChatModel
 
 from ceo.ability import Ability
+from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.prompt.prompt import Prompt
 from ceo.exception.too_dumb_exception import TooDumbException
 
@@ -180,6 +181,8 @@ class NextMovePrompt(Prompt):
                 _wrong_param = False
                 for ability in self.abilities:
                     if ability.name == ability_name:
+                        if ability_name.startswith(AGENTIC_ABILITY_PREFIX):
+                            break
                         _ability = ability
                 if _ability is not None:
                     for _k in params.keys():
