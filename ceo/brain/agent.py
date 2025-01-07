@@ -135,7 +135,8 @@ class Agent(BaseAgent, MemoryAugment):
         del _action_performed['summarization']
         _tmp_action_performed = _action_performed
         if _tmp_action_performed['ability'].startswith(AGENTIC_ABILITY_PREFIX):
-            del _tmp_action_performed['choice']
+            if 'choice' in _tmp_action_performed.keys():
+                _tmp_action_performed['choice'] = 'Ask for a favor.'
         new_memory = {
             "timestamp": now,
             "agent_name": self._name,
