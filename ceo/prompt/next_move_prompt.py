@@ -61,10 +61,10 @@ class NextMovePrompt(Prompt):
         else:
             latest_progress = history[list(history.keys())[-1]]
         prompt = json.dumps({
-            "precondition": "Below are abilities you have(you can only use the following abilities), "
-                            "and there is a <user_query>. "
+            "precondition": "In <abilities> are abilities you have, and there is a <user_query>. "
                             "<history> shows events happened before you, "
                             "<latest_progress> shows the latest progress of <user_query>.",
+            "limitation": "You can only use the following abilities in <abilities>",
             "user_query": query,
             "abilities": abilities_dict,
             "history": history,
