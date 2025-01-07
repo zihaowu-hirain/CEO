@@ -145,7 +145,9 @@ class NextMovePrompt(Prompt):
             "history": history,
             "latest_progress": latest_progress,
             "hint_for_latest_progress": "The <latest_progress> shows the previous move.",
-            "abilities": abilities_dict
+            "abilities": abilities_dict,
+            "limitation_for_params": f'You must make sure the parameters you provide '
+                                     f'for <ability> are real and correct according to <abilities>!'
         }
         prompt = json.dumps(prompt_dict, ensure_ascii=False)
         super().__init__(prompt, ext_context)
