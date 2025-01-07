@@ -58,20 +58,20 @@ class ExecutorPrompt(Prompt):
             "params(choice)": tmp_params,
             "result": str(result),
             "output_format": {
-                'summarization': '{summarization}',
                 'ability': '{ability_just_used}',
                 'choice': '{choice_just_made}',
-                'returns': '{result_just_received}'
+                'returns': '{result_just_received}',
+                'summarization': '{summarization}'
             },
             "output_example": json.dumps({
-              'summarization': "I used the wechat_sender ability to wrote a wechat message which says 'Bonjour', "
-                               "the result shows 'success' which indicates success of wechat message sending.",
-              'ability': 'wechat_sender',
-              'choice': "{'msg': 'Bonjour'}",
-              'returns': 'success'
+                'ability': 'wechat_sender',
+                'choice': "{'msg': 'Bonjour'}",
+                'returns': 'success',
+                'summarization': "I used the wechat_sender ability to wrote a wechat message which says 'Bonjour', "
+                                 "the result shows 'success' which indicates success of wechat message sending."
             }, ensure_ascii=False),
-            "hint_for_output": 'You must strictly follow the format in <output_format>! '
-                               'You can refer to example in <output_example>!'
+            "hint_for_output": 'You must strictly follow the format in <output_format>!! '
+                               'You can refer to example in <output_example>!!'
         }, ensure_ascii=False)
         if len(self.ext_context) > 0:
             prompt = f'{self.ext_context}{self.seperator}{prompt}'
