@@ -76,6 +76,7 @@ class DocstringPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel) -> str | Iterator:
         raw_docstring = model.invoke(self.prompt).content
+        log.debug(f'DocstringResponse: {raw_docstring}')
         if not raw_docstring.startswith('{'):
             raw_docstring = raw_docstring[raw_docstring.find('{'):]
         if not raw_docstring.endswith('}'):

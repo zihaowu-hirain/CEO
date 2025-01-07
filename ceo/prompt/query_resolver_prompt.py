@@ -44,6 +44,7 @@ class QueryResolverPrompt(Prompt):
             return _dont_do_anything, _dont_do_anything
         user_query_by_step = (f'raw_query: "{self.__query}"\n'
                               f'query_by_step: "{model.invoke(self.prompt).content}"')
+        log.debug(f'QueryResolverResponse: {user_query_by_step}')
         summary_prompt = json.dumps({
             "task": "Summarize <user_query> into a short sentence "
                     "which includes all the key information from <user_query>.",

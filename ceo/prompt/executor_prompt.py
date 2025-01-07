@@ -34,7 +34,9 @@ class ExecutorPrompt(Prompt):
     def explain(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
         if stream:
             return model.stream(self.prompt)
-        return model.invoke(self.prompt).content
+        resp = model.invoke(self.prompt).content
+        log.debug(f'ExecutorResponse (before): {resp}')
+        return resp
 
     def invoke(self, model: BaseChatModel, max_retry: int = 3) -> dict:
         result = self.action.__call__(**self.params)

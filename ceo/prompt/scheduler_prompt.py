@@ -61,6 +61,7 @@ class SchedulerPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel) -> list[Ability]:
         results = model.invoke(self.prompt).content
+        log.debug(f'SchedulerResponse: {results}')
         results = results[results.rfind('['):results.rfind(']') + 1][1:-1].split(',')
         results = [result
                    .replace('\n', '')
