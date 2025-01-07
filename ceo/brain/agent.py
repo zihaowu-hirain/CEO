@@ -56,6 +56,8 @@ class Agent(BaseAgent, MemoryAugment):
     @override
     def bring_in_memory(self, memory: OrderedDict):
         self._memory.update(memory)
+        log.debug(f'Agent: {self._name}; '
+                  f'Memory brought in: {len(self._memory.keys())};')
         return self
 
     @override
@@ -128,7 +130,6 @@ class Agent(BaseAgent, MemoryAugment):
         self.__expected_step = len(self.plan(_log=False))
         log.debug(f'Agent: {self._name}; '
                   f'Expected steps: {self.__expected_step}; '
-                  f'Memory size: {len(self._memory.keys())}; '
                   f'Query: "{self._query_high_level}";')
 
     def memorize(self, action_performed: dict):
