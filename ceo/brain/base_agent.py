@@ -119,12 +119,12 @@ class BaseAgent:
 
     def __step_quiet(self) -> str:
         if self._act_count < len(self.__schedule):
-            combined_query_str = json.dumps({
+            combined_query = {
                 'raw_query': self._query,
                 'query_by_step': self._query_by_step
-            }, ensure_ascii=False)
+            }
             analysing = AnalyserPrompt(
-                query=combined_query_str,
+                query=combined_query,
                 prev_results=self.__prev_results,
                 action=self.__schedule[self._act_count]
             )

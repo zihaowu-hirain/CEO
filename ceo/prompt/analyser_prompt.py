@@ -19,7 +19,8 @@ class AnalyserPrompt(Prompt):
             prev_results_str += f'{result};\n'
         prompt = {
             "precondition": "Below is the <tool(ability)> you can use (you can only use this tool(ability)). "
-                            f'And there is a user query: "{query}"',
+                            f'And there is a user query in <user_query>.',
+            "user_query": query,
             "objective": "What you need to do is to generate values of parameters of the <tool(ability)> "
                          "to achieve <user query>",
             "hints": {
