@@ -66,11 +66,6 @@ class NextMovePrompt(Prompt):
                             "<history> shows events happened before you, "
                             "<latest_progress> shows the latest progress of <user_query>.",
             "limitation": "You can only use the following abilities in <abilities>",
-            "user_query": query,
-            "abilities": abilities_dict,
-            "history": history,
-            "latest_progress": latest_progress,
-            "hint_for_latest_progress": "The <latest_progress> which shows the previous move is very important.",
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
                     "first_action": "List events from <history> and <latest_progress> "
@@ -145,7 +140,12 @@ class NextMovePrompt(Prompt):
                                               'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE,
             "hint_for_output": 'You must strictly follow the format in <output_format>! '
-                               'You should refer to example in <output_example>!'
+                               'You should refer to example in <output_example>!',
+            "user_query": query,
+            "history": history,
+            "latest_progress": latest_progress,
+            "hint_for_latest_progress": "The <latest_progress> shows the previous move.",
+            "abilities": abilities_dict
         }
         prompt = json.dumps(prompt_dict, ensure_ascii=False)
         super().__init__(prompt, ext_context)
