@@ -78,9 +78,9 @@ class Agent(BaseAgent, MemoryAugment):
         return self.assign(query)
 
     @override
-    def relay(self, query_by_step: str, query: str):
-        self._query_by_step = query_by_step
+    def relay(self, query: str, query_by_step: str):
         self._query = query
+        self._query_by_step = query_by_step
         return self.reposition()
 
     @override
@@ -93,8 +93,10 @@ class Agent(BaseAgent, MemoryAugment):
                 self.penalize()
             next_move = False
             if not stop:
+                combined_query = (f'raw_query: "{self._query}".\n'
+                                  f'query_by_step: "{self._query_by_step}"')
                 next_move = NextMovePrompt(
-                    query=self._query_by_step,
+                    query=combined_query,
                     abilities=self._abilities,
                     history=self.memory
                 ).invoke(self._model)
