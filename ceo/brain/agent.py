@@ -1,3 +1,5 @@
+import hashlib
+import json
 import logging
 import random
 import datetime
@@ -139,8 +141,9 @@ class Agent(BaseAgent, MemoryAugment):
             f"message_from_{self._name}": _tmp_summarization,
             f'action_performed_by_{self._name}': _tmp_action_performed
         }
-        self._memory[f"{self._name} at {now}"] = new_memory
-        log.debug(f'Agent: {self._name}; Memory update: {new_memory};')
+        mem_hash = hashlib.md5(json.dumps(new_memory, ensure_ascii=False).encode()).hexdigest()
+        self._memory[f"agent:[{self._name}] at:[{now}] hash:[{mem_hash}]"] = new_memory
+        log.debug(f'Agent: {self._name}; Memory size: {len(self._memory.keys())}; Memory update: {new_memory};')
 
     def stop(self) -> bool:
         resample = 3
