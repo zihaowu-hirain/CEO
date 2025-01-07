@@ -1,13 +1,17 @@
 import json
 import logging
+from collections import OrderedDict
+
 from typing_extensions import override
 
-from ceo.brain.base_agent import BaseAgent
 from ceo.ability import Ability
 from ceo.brain.memory_augment import MemoryAugment
 
-log = logging.getLogger('ceo.ability')
 PREFIX = '__AgenticAbility__'
+
+from ceo.brain.base_agent import BaseAgent
+
+log = logging.getLogger('ceo.ability')
 
 
 class AgenticAbility(Ability):
@@ -37,11 +41,10 @@ class AgenticAbility(Ability):
                         "description": "A comprehensively, precisely and exactly instruction "
                                        f"to be processed by {agent.name}."
                     }
-                  }
-                ],
+                }],
                 "returns": {
-                  "type": "str",
-                  "description": f"{agent.name}'s response to your instruction."
+                    "type": "str",
+                    "description": f"{agent.name}'s response to your instruction."
                 }
             }
         }, ensure_ascii=False)
@@ -49,8 +52,8 @@ class AgenticAbility(Ability):
         log.debug(f'Agent dispatcher generated. {self.__name__}: {self.__doc__}')
 
     @override
-    def __call__(self, query: str, memory: dict, *args, **kwargs) -> str:
-        self._agent.assign(query)
+    def __call__(self, query: str, query_by_step: str, memory: OrderedDict, *args, **kwargs) -> str:
+        self._agent.relay(query_by_step=query_by_step, query=query)
         self._agent.bring_in_memory(memory)
         result = self._agent.just_do_it()
         if isinstance(result, dict):

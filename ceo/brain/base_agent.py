@@ -1,5 +1,6 @@
 import json
 import logging
+import warnings
 from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
@@ -23,9 +24,9 @@ class BaseAgent:
         self._act_count = 0
         self._name = name
         self._model = brain
-        self._query_high_level = self._query_by_step = str()
+        self._query = self._query_by_step = str()
         if query is not None and query != '':
-            self._query_high_level, self._query_by_step = QueryResolverPrompt(query).invoke(self._model)
+            self._query, self._query_by_step = QueryResolverPrompt(query).invoke(self._model)
         for ability in abilities:
             self._abilities.append(Ability(ability))
         self._introduction = str()
@@ -56,9 +57,11 @@ class BaseAgent:
         return self.__repr__()
 
     def to_dict(self) -> dict:
+        __model_dict = self._model.dict()
+        model_name = __model_dict.get('model_name', __model_dict.get('_type', 'unknown'))
         return {
             "name": self._name,
-            "brain": self._model.dict().get('model_name', 'unknown'),
+            "brain": model_name,
             "abilities": [ability.to_dict() for ability in self._abilities]
         }
 
@@ -92,7 +95,7 @@ class BaseAgent:
         scheduling = SchedulerPrompt(query=self._query_by_step, abilities=self._abilities)
         self.__schedule = scheduling.invoke(self._model)
         if _log:
-            log.debug(f'Agent: {self._name}; Schedule: {[_.name for _ in self.__schedule]}; Query: "{self._query_high_level}";')
+            log.debug(f'Agent: {self._name}; Schedule: {[_.name for _ in self.__schedule]}; Query: "{self._query}";')
         return self.__schedule
 
     def reposition(self):
@@ -102,23 +105,33 @@ class BaseAgent:
         return self
 
     def assign(self, query: str):
-        self._query_high_level, self._query_by_step = (
+        self._query, self._query_by_step = (
             QueryResolverPrompt(query=query).invoke(self._model))
         return self.reposition()
 
     def reassign(self, query: str):
         return self.assign(query)
 
+    def relay(self, query: str, query_by_step: str):
+        self._query = query
+        self._query_by_step = query_by_step
+        return self.reposition()
+
     def __step_quiet(self) -> str:
         if self._act_count < len(self.__schedule):
+            combined_query = {
+                'raw_query': self._query,
+                'query_by_step': self._query_by_step
+            }
             analysing = AnalyserPrompt(
-                query=self._query_by_step,
+                query=combined_query,
                 prev_results=self.__prev_results,
                 action=self.__schedule[self._act_count]
             )
             action, params = analysing.invoke(self._model)
             executing = ExecutorPrompt(params=params, action=action)
-            action_str = f'Agent: {self._name}; Action {self._act_count + 1}/{len(self.__schedule)}: {executing.invoke(model=self._model)};'
+            action_str = (f'Agent: {self._name}; Action {self._act_count + 1}/{len(self.__schedule)}: '
+                          f'{json.dumps(executing.invoke(model=self._model), ensure_ascii=False)};')
             self.__prev_results.append(action_str)
             self._act_count += 1
             log.debug(action_str)
@@ -127,13 +140,18 @@ class BaseAgent:
         return ''
 
     def just_do_it(self) -> str | None:
+        warnings.warn(
+            "This function is deprecated and will be removed in future versions.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         if not self.plan():
             return None
         for act_count in range(len(self.__schedule)):
             self.__step_quiet()
         response = IntrospectionPrompt(
-            query=self._query_high_level,
-            prev_results=self.__prev_results
+            query=self._query,
+            history=self.__prev_results
         ).invoke(self._model)
         log.debug(f'Agent: {self._name}; Conclusion: {response};')
         self.reposition()
