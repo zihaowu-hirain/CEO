@@ -1,5 +1,6 @@
 import json
 import logging
+from collections import OrderedDict
 
 from langchain_core.language_models import BaseChatModel
 
@@ -47,20 +48,27 @@ ability:[calculator]
 class NextMovePrompt(Prompt):
     def __init__(self, query: str,
                  abilities: list[Ability],
-                 history: dict | None = None,
+                 history: OrderedDict | None = None,
                  ext_context: str = ''):
         self.abilities = abilities
         abilities_dict: dict = dict()
+        # noinspection PyUnusedLocal
+        latest_progress = None
         for ability in self.abilities:
             abilities_dict[ability.name] = ability.to_dict()
-        if history in ('', '[]', '()', '{}', {}, [], (), None):
-            history = "Nothing happened before you."
+        if history in ('', '[]', '()', '{}', {}, [], (), None) or len(history.keys()) == 0:
+            latest_progress = history = "Nothing happened before you."
+        else:
+            latest_progress = history[list(history.keys())[-1]]
         prompt = json.dumps({
-            "precondition": "Below are the abilities you have(you can only use the following abilities)."
-                            "<history> shows events happened before you. And there is a <user_query>.",
+            "precondition": "Below are abilities you have(you can only use the following abilities), "
+                            "and there is a <user_query>. "
+                            "<history> shows events happened before you, "
+                            "<latest_progress> shows the latest progress of <user_query>.",
             "user_query": query,
             "abilities": abilities_dict,
             "history": history,
+            "latest_progress": latest_progress,
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
                     "first_action": "List all events in the <history> related to <user_query> "
