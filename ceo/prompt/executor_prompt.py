@@ -74,7 +74,7 @@ class ExecutorPrompt(Prompt):
                                'You can refer to example in <output_example>!!'
         }, ensure_ascii=False)
         if len(self.ext_context) > 0:
-            prompt = f'{self.ext_context}{self.seperator}{prompt}'
+            prompt = Prompt.construct_prompt(prompt, self.ext_context)
         log.debug(f'ExecutorPrompt (after): {prompt}')
         count = 0
         exclamation = '!'
@@ -99,11 +99,13 @@ class ExecutorPrompt(Prompt):
                         correct_format = False
                 if correct_format:
                     break
-                tmp_prompt = (f'{prompt}\nAttention_{count}: '
+                tmp_prompt = (f'{prompt}Attention_{count}: '
                               f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
                               f'You should refer to example in <output_example>{count * 2 * exclamation}')
+                tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
             except json.decoder.JSONDecodeError:
-                tmp_prompt = (f'{prompt}\nAttention_{count}: '
+                tmp_prompt = (f'{prompt}Attention_{count}: '
                               f'You must strictly follow the json format in <output_format>{count * 2 * exclamation} '
                               f'You should refer to example in <output_example>{count * 2 * exclamation}')
+                tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
         return res_dict

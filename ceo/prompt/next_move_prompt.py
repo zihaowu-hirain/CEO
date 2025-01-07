@@ -60,7 +60,7 @@ class NextMovePrompt(Prompt):
             latest_progress = history = "Nothing happened before you."
         else:
             latest_progress = history[list(history.keys())[-1]]
-        prompt = json.dumps({
+        prompt_dict = {
             "precondition": "In <abilities> are abilities you have, and there is a <user_query>. "
                             "<history> shows events happened before you, "
                             "<latest_progress> shows the latest progress of <user_query>.",
@@ -145,7 +145,8 @@ class NextMovePrompt(Prompt):
             "output_example": OUTPUT_EXAMPLE,
             "hint_for_output": 'You must strictly follow the format in <output_format>! '
                                'You should refer to example in <output_example>!'
-        }, ensure_ascii=False)
+        }
+        prompt = json.dumps(prompt_dict, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
 
@@ -187,16 +188,18 @@ class NextMovePrompt(Prompt):
                 if not _wrong_param:
                     break
                 else:
-                    tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                    tmp_prompt = (f'{self.prompt}Attention_{count}: '
                                   f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
                                   f'You should refer to example in <output_example>{count * 2 * exclamation}\n'
                                   f'Attention_To_Params: '
                                   f'You must provide correct parameters '
                                   f'according to <abilities>{count * 2 * exclamation}')
+                    tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
                     continue
-            tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+            tmp_prompt = (f'{self.prompt}Attention_{count}: '
                           f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
                           f'You should refer to example in <output_example>{count * 2 * exclamation}')
+            tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
         if ability_name.__contains__(MISSION_COMPLETE):
             return True
         for ability in self.abilities:
