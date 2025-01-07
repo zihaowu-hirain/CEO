@@ -5,6 +5,7 @@ import random
 import datetime
 from typing import Callable
 from typing_extensions import override
+from collections import OrderedDict
 
 from langchain_core.language_models import BaseChatModel
 
@@ -29,7 +30,7 @@ class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
                  brain: BaseChatModel, name: str,
                  personality: Personality = Personality.PRUDENT,
-                 query: str = '', memory: dict | None = None):
+                 query: str = '', memory: OrderedDict | None = None):
         BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
         MemoryAugment.__init__(self, memory=memory)
         self.__expected_step = 0
@@ -53,14 +54,14 @@ class Agent(BaseAgent, MemoryAugment):
         return self._beta
 
     @override
-    def bring_in_memory(self, memory: dict):
+    def bring_in_memory(self, memory: OrderedDict):
         self._memory.update(memory)
         return self
 
     @override
     def reposition(self):
         BaseAgent.reposition(self)
-        self._memory = dict()
+        self._memory = OrderedDict()
         self.__expected_step = 0
         self._p = self.__base_p
         return self
@@ -93,7 +94,7 @@ class Agent(BaseAgent, MemoryAugment):
                 next_move = NextMovePrompt(
                     query=self._query_by_step,
                     abilities=self._abilities,
-                    history=self._memory
+                    history=self.memory
                 ).invoke(self._model)
                 if not isinstance(next_move, bool):
                     action, params = next_move
@@ -101,14 +102,14 @@ class Agent(BaseAgent, MemoryAugment):
                         params = {
                             'query_by_step': self._query_by_step,
                             'query_high_level': self._query_high_level,
-                            'memory': self._memory
+                            'memory': self.memory
                         }
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
             response = IntrospectionPrompt(
                 query=self._query_high_level,
-                history=self._memory
+                history=self.memory
             ).invoke(self._model)
             self.reposition()
             log.debug(f'Agent: {self._name}; Conclusion: {response};')
@@ -117,7 +118,7 @@ class Agent(BaseAgent, MemoryAugment):
                 "response": response
             }
 
-    def assign_with_memory(self, query: str, memory: dict):
+    def assign_with_memory(self, query: str, memory: OrderedDict):
         return self.assign(query).bring_in_memory(memory)
 
     def estimate_step(self):
