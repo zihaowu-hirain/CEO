@@ -69,10 +69,11 @@ class NextMovePrompt(Prompt):
             "abilities": abilities_dict,
             "history": history,
             "latest_progress": latest_progress,
+            "hint_for_latest_progress": "The <latest_progress> which shows the previous move is very important.",
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
-                    "first_action": "List all events in the <history> related to <user_query> "
-                                    "respectively and chronologically.",
+                    "first_action": "List events from <history> and <latest_progress> "
+                                    "which are related to <user_query> (respectively and chronologically).",
                     "second_action": "Extract and list all information related to <user_query> from <history> "
                                      "formatted one by one respectively.",
                     "additional": "For all details mentioned in <history> about <user_query>, "
