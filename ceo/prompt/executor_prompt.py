@@ -42,6 +42,10 @@ class ExecutorPrompt(Prompt):
         if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
             del tmp_params['memory']
             tmp_params['choice'] = 'Ask for a favor.'
+            if 'query_by_step' in tmp_params.keys():
+                del tmp_params['query_by_step']
+            if 'query_high_level' in tmp_params.keys():
+                del tmp_params['query_high_level']
         prompt = json.dumps({
             "precondition": "Below is an ability shown at <ability>, "
                             "your choice(params) for the <ability> is shown at <params(choice)>, "
