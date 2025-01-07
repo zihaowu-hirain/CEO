@@ -42,15 +42,6 @@ class QueryResolverPrompt(Prompt):
         _dont_do_anything = "Don't do anything."
         if self.__query == '':
             return _dont_do_anything, _dont_do_anything
-        user_query_by_step = (f'raw_query: "{self.__query}"\n'
-                              f'query_by_step: "{model.invoke(self.prompt).content}"')
+        user_query_by_step = model.invoke(self.prompt).content
         log.debug(f'QueryResolverResponse: {user_query_by_step}')
-        summary_prompt = json.dumps({
-            "task": "Summarize <user_query> into a short sentence "
-                    "which includes all the key information from <user_query>.",
-            "user_query": user_query_by_step,
-            "output_format": "string (summarization of <user_query>)",
-            "output_example": "To find toys for you in the room."
-        }, ensure_ascii=False)
-        summary = model.invoke(summary_prompt).content
-        return summary, user_query_by_step
+        return self.__query, user_query_by_step

@@ -78,9 +78,9 @@ class Agent(BaseAgent, MemoryAugment):
         return self.assign(query)
 
     @override
-    def relay(self, query_by_step: str, query_high_level: str):
+    def relay(self, query: str, query_by_step: str):
+        self._query = query
         self._query_by_step = query_by_step
-        self._query_high_level = query_high_level
         return self.reposition()
 
     @override
@@ -93,8 +93,12 @@ class Agent(BaseAgent, MemoryAugment):
                 self.penalize()
             next_move = False
             if not stop:
+                combined_query = {
+                    'raw_query': self._query,
+                    'query_by_step': self._query_by_step
+                }
                 next_move = NextMovePrompt(
-                    query=self._query_by_step,
+                    query=combined_query,
                     abilities=self._abilities,
                     history=self.memory
                 ).invoke(self._model)
@@ -102,15 +106,15 @@ class Agent(BaseAgent, MemoryAugment):
                     action, params = next_move
                     if action.name.startswith(AGENTIC_ABILITY_PREFIX):
                         params = {
+                            'query': self._query,
                             'query_by_step': self._query_by_step,
-                            'query_high_level': self._query_high_level,
                             'memory': self.memory
                         }
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
             response = IntrospectionPrompt(
-                query=self._query_high_level,
+                query=self._query,
                 history=self.memory
             ).invoke(self._model)
             self.reposition()
@@ -130,7 +134,7 @@ class Agent(BaseAgent, MemoryAugment):
         self.__expected_step = len(self.plan(_log=False))
         log.debug(f'Agent: {self._name}; '
                   f'Expected steps: {self.__expected_step}; '
-                  f'Query: "{self._query_high_level}";')
+                  f'Query: "{self._query}";')
 
     def memorize(self, action_performed: dict):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')

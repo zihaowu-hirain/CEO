@@ -10,7 +10,7 @@ log = logging.getLogger('ceo.prompt')
 
 
 class AnalyserPrompt(Prompt):
-    def __init__(self, query: str, prev_results: list, action: Ability, ext_context: str = ''):
+    def __init__(self, query: str | dict, prev_results: list, action: Ability, ext_context: str = ''):
         self.action = action
         prev_results_str = str()
         if len(prev_results) > 0:
@@ -19,7 +19,8 @@ class AnalyserPrompt(Prompt):
             prev_results_str += f'{result};\n'
         prompt = {
             "precondition": "Below is the <tool(ability)> you can use (you can only use this tool(ability)). "
-                            f'And there is a user query: "{query}"',
+                            f'And there is a user query in <user_query>.',
+            "user_query": query,
             "objective": "What you need to do is to generate values of parameters of the <tool(ability)> "
                          "to achieve <user query>",
             "hints": {
