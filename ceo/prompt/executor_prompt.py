@@ -4,7 +4,9 @@ from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
+from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.ability.ability import Ability
+from ceo.exception.too_dumb_exception import TooDumbException
 from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
@@ -14,14 +16,17 @@ class ExecutorPrompt(Prompt):
     def __init__(self, params: dict, action: Ability, ext_context: str = ''):
         self.action = action
         self.params = params
+        tmp_params = self.params.copy()
+        if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
+            del tmp_params['memory']
         prompt = json.dumps({
-            "precondition": "Below is a tool(ability) shown at <tool(ability)> "
-                            "and your choice(params) for using the <tool(ability)> is shown at <params(choice)>.",
+            "precondition": "Below is an ability shown at <ability> "
+                            "and your choice(params) for using the <ability> is shown at <params(choice)>.",
             "task": "Explain what you are going to do.",
-            "output_format": "text",
+            "output_datatype": "text",
             "output_example": "I am trying to open calculator.",
-            "tool(ability)": self.action.to_dict(),
-            "params(choice)": self.params
+            "ability": self.action.to_dict(),
+            "params(choice)": tmp_params
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'ExecutorPrompt (before): {self.prompt}')
@@ -29,31 +34,78 @@ class ExecutorPrompt(Prompt):
     def explain(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
         if stream:
             return model.stream(self.prompt)
-        return model.invoke(self.prompt).content
+        resp = model.invoke(self.prompt).content
+        log.debug(f'ExecutorResponse (before): {resp}')
+        return resp
 
-    def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
+    def invoke(self, model: BaseChatModel, max_retry: int = 3) -> dict:
         result = self.action.__call__(**self.params)
+        tmp_params = self.params.copy()
+        if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
+            del tmp_params['memory']
+            tmp_params['choice'] = 'Ask for a favor.'
+            if 'query_by_step' in tmp_params.keys():
+                del tmp_params['query_by_step']
+            if 'query_high_level' in tmp_params.keys():
+                del tmp_params['query_high_level']
         prompt = json.dumps({
-            "precondition": "Below is a tool(ability) shown at <tool(ability)>, "
-                            "and your choice(params) for the <tool(ability)> is shown at <params(choice)>, "
-                            "and the <result> of your using of this <tool(ability)>.",
-            "task": "Explain what you have done, and write down the result detailed. "
-                    "The result is shown below at <result>.",
-            "output_format": "text",
-            "output_contains": [
-                "{the_tool(ability)_you_used}",
-                "{the_choice_you_made}",
-                "{what_you_have_done}"
-            ],
-            "hint_for_output": 'When you give the response, say "ability" instead of "tool".',
-            "output_example": "I wrote a wechat message which says 'Bonjour'. The result is 'success'.",
-            "tool(ability)": self.action.to_dict(),
-            "params(choice)": self.params,
-            "result": str(result)
+            "precondition": "Below is an ability shown at <ability>, "
+                            "your choice(params) for the <ability> is shown at <params(choice)>, "
+                            "result of your using of this <ability> is shown at <result>.",
+            "task": "Explain what you have done according to <ability>, <result>, and <params(choice)> "
+                    "accurately, comprehensively, and briefly.",
+            "ability": self.action.to_dict(),
+            "params(choice)": tmp_params,
+            "result": str(result),
+            "output_format": {
+                'ability': '{ability_just_used}',
+                'choice': '{choice_just_made}',
+                'returns': '{result_just_received}',
+                'summarization': '{summarization}'
+            },
+            "output_example": json.dumps({
+                'ability': 'wechat_sender',
+                'choice': "{'msg': 'Bonjour'}",
+                'returns': 'success',
+                'summarization': "I used the wechat_sender ability to wrote a wechat message which says 'Bonjour', "
+                                 "the result shows 'success' which indicates success of wechat message sending."
+            }, ensure_ascii=False),
+            "hint_for_output": 'You must strictly follow the format in <output_format>!! '
+                               'You can refer to example in <output_example>!!'
         }, ensure_ascii=False)
         if len(self.ext_context) > 0:
-            prompt = f'{self.ext_context}{self.seperator}{prompt}'
+            prompt = Prompt.construct_prompt(prompt, self.ext_context)
         log.debug(f'ExecutorPrompt (after): {prompt}')
-        if stream:
-            return model.stream(prompt)
-        return model.invoke(prompt).content
+        count = 0
+        exclamation = '!'
+        tmp_prompt = prompt
+        keys = ('summarization', 'ability', 'choice', 'returns')
+        while True:
+            # noinspection DuplicatedCode
+            if count > 0:
+                if count <= max_retry:
+                    log.warning(f'ExecutorAfterPromptWarn: incorrectly formatted. Retry: {count}')
+                else:
+                    log.warning(f'ExecutorAfterPromptWarn: max retry exceeded.')
+                    raise TooDumbException(model)
+            count += 1
+            res = model.invoke(tmp_prompt).content
+            log.debug(f"Executor (after) thought process: \n{res}")
+            try:
+                correct_format = True
+                res_dict: dict = json.loads(res[res.find('{'):res.rfind('}') + 1].strip())
+                for _key in keys:
+                    if _key not in res_dict.keys():
+                        correct_format = False
+                if correct_format:
+                    break
+                tmp_prompt = (f'{prompt}Attention_{count}: '
+                              f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
+                              f'You should refer to example in <output_example>{count * 2 * exclamation}')
+                tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
+            except json.decoder.JSONDecodeError:
+                tmp_prompt = (f'{prompt}Attention_{count}: '
+                              f'You must strictly follow the json format in <output_format>{count * 2 * exclamation} '
+                              f'You should refer to example in <output_example>{count * 2 * exclamation}')
+                tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
+        return res_dict

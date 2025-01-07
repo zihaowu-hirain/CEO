@@ -52,6 +52,7 @@ class AnalyserPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel) -> tuple[Ability, dict]:
         result = model.invoke(self.prompt).content
+        log.debug(f'AnalyserResponse: {result}')
         if not result.startswith('{'):
             result = result[result.find('{'):]
         if not result.endswith('}'):

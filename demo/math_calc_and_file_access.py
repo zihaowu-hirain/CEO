@@ -28,6 +28,9 @@ def write_file(filename: str, content: str) -> str:
 
 if __name__ == '__main__':
     ceo = Agent(abilities=[calculator, write_file], brain=get_openai_model(), name='CEO', personality=Personality.INQUISITIVE)
-    ceo.assign("Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
-    result = ceo.just_do_it()
+    radius = '(10.01 * 10.36 * 3.33 / 2 * 16)'  # 2762.663904
+    pi = 3.14159
+    output_file = 'result.txt'
+    query = f"Here is a sphere with radius of {radius} cm and pi here is {pi}, find the area and volume respectively then write the results into a file called '{output_file}'."
+    result = ceo.assign(query).just_do_it()  # area = 95910378.2949379, volume = 88322713378.13666
     print(result)

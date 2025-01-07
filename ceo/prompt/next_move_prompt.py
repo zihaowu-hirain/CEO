@@ -1,9 +1,11 @@
 import json
 import logging
+from collections import OrderedDict
 
 from langchain_core.language_models import BaseChatModel
 
 from ceo.ability import Ability
+from ceo.ability.agentic_ability import PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.prompt.prompt import Prompt
 from ceo.exception.too_dumb_exception import TooDumbException
 
@@ -46,27 +48,31 @@ ability:[calculator]
 
 class NextMovePrompt(Prompt):
     def __init__(self, query: str,
-                 abilities: list[Ability], history: str = '',
+                 abilities: list[Ability],
+                 history: OrderedDict | None = None,
                  ext_context: str = ''):
         self.abilities = abilities
         abilities_dict: dict = dict()
+        # noinspection PyUnusedLocal
+        latest_progress = None
         for ability in self.abilities:
             abilities_dict[ability.name] = ability.to_dict()
-        if history in ('', '[]', '()', '{}', {}, [], ()):
-            history = "Nothing happened before you."
-        prompt = json.dumps({
-            "precondition": "Below are the abilities you have(you can only use the following abilities)."
-                            "<history> shows events happened before you. And there is a <user_query>.",
-            "user_query": query,
-            "abilities": abilities_dict,
-            "history": history,
+        if history in ('', '[]', '()', '{}', {}, [], (), None) or len(history.keys()) == 0:
+            latest_progress = history = "Nothing happened before you."
+        else:
+            latest_progress = history[list(history.keys())[-1]]
+        prompt_dict = {
+            "precondition": "In <abilities> are abilities you have, and there is a <user_query>. "
+                            "<history> shows events happened before you, "
+                            "<latest_progress> shows the latest progress of <user_query>.",
+            "limitation": "You can only use the following abilities in <abilities>",
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
-                    "first_action": "List all events in the <history> related to <user_query> "
-                                    "respectively and chronologically.",
-                    "second_action": "Extract and list all key information related to <user_query> from <history> "
+                    "first_action": "List events from <history> and <latest_progress> "
+                                    "which are related to <user_query> (respectively and chronologically).",
+                    "second_action": "Extract and list all information related to <user_query> from <history> "
                                      "formatted one by one respectively.",
-                    "additional": "For any details mentioned in <history> about <user_query>, "
+                    "additional": "For all details mentioned in <history> about <user_query>, "
                                   "you should preserve them in full, "
                                   "especially specific information with accuracy requirements "
                                   "such as numbers, dates, etc."
@@ -134,18 +140,27 @@ class NextMovePrompt(Prompt):
                                               'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE,
             "hint_for_output": 'You must strictly follow the format in <output_format>! '
-                               'You can refer to example in <output_example>!'
-        }, ensure_ascii=False)
+                               'You should refer to example in <output_example>!',
+            "user_query": query,
+            "history": history,
+            "latest_progress": latest_progress,
+            "hint_for_latest_progress": "The <latest_progress> shows the previous move.",
+            "abilities": abilities_dict,
+            "limitation_for_params": f'You must make sure the parameters you provide '
+                                     f'for <ability> are real and correct according to <abilities>!'
+        }
+        prompt = json.dumps(prompt_dict, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
 
     # noinspection PyUnusedLocal
-    def invoke(self, model: BaseChatModel, max_retry: int = 5, stream: bool = False) -> tuple[Ability, dict] | bool:
+    def invoke(self, model: BaseChatModel, max_retry: int = 6) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
         exclamation = '!'
         tmp_prompt = self.prompt
         while True:
+            # noinspection DuplicatedCode
             if count > 0:
                 if count <= max_retry:
                     log.warning(f'NextMovePromptWarn: incorrectly formatted. Retry: {count}')
@@ -160,14 +175,33 @@ class NextMovePrompt(Prompt):
                     and result.count(END) == 1
                     and _accurate_action_str.count('ability:') == 1
                     and _accurate_action_str.count('params:') == 1):
-                break
-            tmp_prompt = (f'{self.prompt}\nAttention_{count}: '
+                result = _accurate_action_str
+                params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
+                result = result[result.rfind('}') + 1:]
+                ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
+                _ability = None
+                _wrong_param = False
+                for ability in self.abilities:
+                    if ability.name == ability_name:
+                        if ability_name.startswith(AGENTIC_ABILITY_PREFIX):
+                            break
+                        _ability = ability
+                if _ability is not None:
+                    for _k in params.keys():
+                        if _k not in _ability.parameters.keys():
+                            _wrong_param = True
+                if not _wrong_param:
+                    break
+                else:
+                    tmp_prompt = (f'{self.prompt}Limitation_For_Parameters: '
+                                  f'You must make sure the parameters you provide for <ability> are real and correct '
+                                  f'according to <abilities>{count * 2 * exclamation}')
+                    tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
+                    continue
+            tmp_prompt = (f'{self.prompt}Attention_{count}: '
                           f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
-                          f'You can refer to example in <output_example>{count * 2 * exclamation}')
-        result = _accurate_action_str
-        params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
-        result = result[result.rfind('}') + 1:]
-        ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
+                          f'You should refer to example in <output_example>{count * 2 * exclamation}')
+            tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
         if ability_name.__contains__(MISSION_COMPLETE):
             return True
         for ability in self.abilities:

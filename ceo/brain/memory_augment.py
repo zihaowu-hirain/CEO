@@ -1,14 +1,19 @@
 import abc
+from collections import OrderedDict
 
 
 class MemoryAugment:
-    def __init__(self, memory: dict | None = None):
-        self._memory = memory
+    def __init__(self, memory: OrderedDict | None = None):
+        self._memory: OrderedDict | None = None
+        if memory is not None:
+            self._memory = memory.copy()
 
     @property
-    def memory(self) -> dict:
-        return self._memory
+    def memory(self) -> OrderedDict | None:
+        if self._memory is not None:
+            return self._memory.copy()
+        return None
 
     @abc.abstractmethod
-    def bring_in_memory(self, memory: dict):
+    def bring_in_memory(self, memory: OrderedDict):
         pass
