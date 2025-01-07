@@ -39,11 +39,10 @@ class AgenticAbility(Ability):
                         "description": "A comprehensively, precisely and exactly instruction "
                                        f"to be processed by {agent.name}."
                     }
-                  }
-                ],
+                }],
                 "returns": {
-                  "type": "str",
-                  "description": f"{agent.name}'s response to your instruction."
+                    "type": "str",
+                    "description": f"{agent.name}'s response to your instruction."
                 }
             }
         }, ensure_ascii=False)
