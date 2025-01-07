@@ -145,7 +145,7 @@ class Agent(BaseAgent, MemoryAugment):
         }
         mem_hash = hashlib.md5(json.dumps(new_memory, ensure_ascii=False).encode()).hexdigest()
         self._memory[f"agent:[{self._name}] at:[{now}] hash:[{mem_hash}]"] = new_memory
-        log.debug(f'Agent: {self._name}; Memory size: {len(self._memory.keys())}; Memory update: {new_memory};')
+        log.debug(f'Agent: {self._name}; Memory size: {len(self._memory.keys())}; Memory update: {_tmp_summarization};')
 
     def stop(self) -> bool:
         resample = 3
