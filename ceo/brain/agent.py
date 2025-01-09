@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import json
 import logging
@@ -138,7 +139,7 @@ class Agent(BaseAgent, MemoryAugment):
 
     def memorize(self, action_performed: dict):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        _action_performed = action_performed.copy()
+        _action_performed = copy.deepcopy(action_performed)
         _tmp_summarization = _action_performed['summarization']
         del _action_performed['summarization']
         _tmp_action_performed = _action_performed

@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 from collections.abc import Iterator
@@ -15,8 +16,8 @@ log = logging.getLogger('ceo.prompt')
 class ExecutorPrompt(Prompt):
     def __init__(self, params: dict, action: Ability, ext_context: str = ''):
         self.action = action
-        self.params = params
-        tmp_params = self.params.copy()
+        self.params = copy.deepcopy(params)
+        tmp_params = copy.deepcopy(self.params)
         if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
             del tmp_params['memory']
         prompt = json.dumps({
@@ -40,7 +41,7 @@ class ExecutorPrompt(Prompt):
 
     def invoke(self, model: BaseChatModel, max_retry: int = 3) -> dict:
         result = self.action.__call__(**self.params)
-        tmp_params = self.params.copy()
+        tmp_params = copy.deepcopy(self.params)
         if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
             tmp_params = {'choice': 'Ask for a favor.'}
         prompt = json.dumps({

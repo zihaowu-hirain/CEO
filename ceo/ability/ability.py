@@ -1,3 +1,4 @@
+import copy
 import inspect
 import json
 from typing_extensions import Callable
@@ -52,7 +53,7 @@ class Ability:
 
     @property
     def parameters(self) -> dict:
-        return self._parameters
+        return copy.deepcopy(self._parameters)
 
     @property
     def returns(self) -> any:
