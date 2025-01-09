@@ -75,6 +75,7 @@ class DocstringPrompt(Prompt):
         log.debug(f'DocstringPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> str | Iterator:
+        # noinspection DuplicatedCode
         raw_docstring = model.invoke(self.prompt).content
         log.debug(f'DocstringResponse: {raw_docstring}')
         if not raw_docstring.startswith('{'):
