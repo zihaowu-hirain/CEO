@@ -1,4 +1,5 @@
 import abc
+import copy
 from collections import OrderedDict
 
 
@@ -11,7 +12,7 @@ class MemoryAugment:
     @property
     def memory(self) -> OrderedDict | None:
         if self._memory is not None:
-            return self._memory.copy()
+            return copy.deepcopy(self._memory)
         return None
 
     @abc.abstractmethod

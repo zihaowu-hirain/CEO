@@ -57,7 +57,7 @@ class Agent(BaseAgent, MemoryAugment):
     def bring_in_memory(self, memory: OrderedDict):
         self._memory.update(memory)
         log.debug(f'Agent: {self._name}; '
-                  f'Memory brought in: {len(self._memory.keys())};')
+                  f'Memory brought in: {len(memory.keys())};')
         return self
 
     @override
