@@ -65,7 +65,6 @@ class NextMovePrompt(Prompt):
             "precondition": "In <abilities> are abilities you have, and there is a <user_query>. "
                             "<history> shows events happened before you, "
                             "<latest_progress> shows the latest progress of <user_query>.",
-            "limitation": "You can only use the following abilities in <abilities>",
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
                     "first_action": "List events from <history> and <latest_progress> "
@@ -112,6 +111,7 @@ class NextMovePrompt(Prompt):
                     "action": f'Provide a special ability called "{MISSION_COMPLETE}" (which is not a real ability).'
                 }
             ],
+            "be_aware_of_sequence_of_movements": 'Ensure that actions be performed in the proper order.',
             "output_format": "{step1_thought_process}\n{step2_thought_process}\n"
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"
@@ -123,7 +123,6 @@ class NextMovePrompt(Prompt):
                              '}\n'
                              f'ability:[ability.name]\n{END}',
             "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
-            "hint_for_ability_choosing": "Only one single ability can be chosen.",
             "hint_for_params_output_format": f'The "{SEPARATOR}" pattern should be after '
                                              f'all the thought processes and before the <params and ability>.'
                                              f'The params should be after the "{SEPARATOR}" pattern.'
@@ -136,8 +135,6 @@ class NextMovePrompt(Prompt):
                                     f'no more words are allowed after "{END}" pattern. '
                                     f'The "{END}" pattern is absolutely important, do not forget to place it '
                                     'in the end of your response.',
-            "hint_for_ability_output_format": 'The ability should be after the params. '
-                                              'The ability name should be surrounded by "[ ]".',
             "output_example": OUTPUT_EXAMPLE,
             "hint_for_output": 'You must strictly follow the format in <output_format>! '
                                'You should refer to example in <output_example>!',
@@ -146,6 +143,10 @@ class NextMovePrompt(Prompt):
             "latest_progress": latest_progress,
             "hint_for_latest_progress": "The <latest_progress> shows the previous move.",
             "abilities": abilities_dict,
+            "limitation_1_for_ability_choosing": "Only one ability can be chosen.",
+            "limitation_2_for_ability_choosing": "You can only use the abilities listed in <abilities>.",
+            "limitation_for_ability_output_format": 'The ability should be after the params. '
+                                                    'The ability name should be surrounded by "[ ]".',
             "limitation_for_params": f'You must make sure the parameters you provide '
                                      f'for <ability> are real and correct according to <abilities>!'
         }
