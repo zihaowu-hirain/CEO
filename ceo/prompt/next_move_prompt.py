@@ -182,6 +182,7 @@ class NextMovePrompt(Prompt):
                 ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
                 _ability = None
                 _wrong_param = False
+                _wrong_param_names = list()
                 for ability in self.abilities:
                     if ability.name == ability_name:
                         if ability_name.startswith(AGENTIC_ABILITY_PREFIX):
@@ -191,12 +192,21 @@ class NextMovePrompt(Prompt):
                     for _k in params.keys():
                         if _k not in _ability.parameters.keys():
                             _wrong_param = True
+                            _wrong_param_names.append(_k)
                 if not _wrong_param:
                     break
                 else:
-                    tmp_prompt = (f'{self.prompt}Limitation_For_Parameters: '
-                                  f'You must make sure the parameters you provide for <ability> are real and correct '
-                                  f'according to <abilities>{count * 2 * exclamation}')
+                    tmp_prompt_dict = None
+                    if isinstance(tmp_prompt, str):
+                        tmp_prompt_dict = json.loads(tmp_prompt)
+                    tmp_prompt_dict_prompt_str = json.dumps(tmp_prompt_dict.get('prompt'), ensure_ascii=False)
+                    __additional_prompt = tmp_prompt_dict.get('additional_prompt', '')
+                    if len(__additional_prompt) > 0:
+                        __additional_prompt += f"\n{'-' * 5}\n"
+                    tmp_prompt_dict_prompt_str += f"{__additional_prompt}"
+                    tmp_prompt = (f'{tmp_prompt_dict_prompt_str}For ability called "{ability_name}", '
+                                  f'these parameter_names are incorrect: {_wrong_param_names}, '
+                                  f"correct parameter_names: {_ability.to_dict().get('parameters_required', [])};")
                     tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
                     continue
             tmp_prompt = (f'{self.prompt}Attention_{count}: '
