@@ -4,6 +4,7 @@ import json
 import logging
 import random
 import datetime
+import time
 from typing import Callable
 from typing_extensions import override
 from collections import OrderedDict
@@ -86,7 +87,10 @@ class Agent(BaseAgent, MemoryAugment):
 
     @override
     def just_do_it(self) -> dict:
-        self.estimate_step()
+        __start_time = time.perf_counter()
+        if self.__expected_step < 1:
+            self.estimate_step()
+        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Query: "{self._query}";')
         stop = False
         while True:
             if self._act_count > self.__expected_step:
@@ -118,11 +122,18 @@ class Agent(BaseAgent, MemoryAugment):
                 query=self._query,
                 history=self.memory
             ).invoke(self._model)
+            __time_used = time.perf_counter() - __start_time
+            __step_count = self._act_count
             self.reposition()
             # log.debug(f'Agent: {self._name}; Conclusion: {response};')
+            log.debug(f'Agent: {self._name}; Step count: {__step_count}; Time used: {__time_used} seconds;')
             return {
                 "success": next_move,
-                "response": response
+                "response": response,
+                'misc': {
+                    'time_used': __time_used,
+                    'step_count': __step_count
+                }
             }
 
     def assign_with_memory(self, query: str, memory: OrderedDict):
@@ -133,9 +144,11 @@ class Agent(BaseAgent, MemoryAugment):
             self.__expected_step = 0
             return
         self.__expected_step = len(self.plan(_log=False))
-        log.debug(f'Agent: {self._name}; '
-                  f'Expected steps: {self.__expected_step}; '
-                  f'Query: "{self._query}";')
+        return self
+
+    def set_expected_step(self, expected_step: int):
+        self.__expected_step = expected_step
+        return self
 
     def memorize(self, action_performed: dict):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
@@ -155,6 +168,7 @@ class Agent(BaseAgent, MemoryAugment):
         mem_hash = hashlib.md5(json.dumps(new_memory, ensure_ascii=False).encode()).hexdigest()
         self._memory[f"agent:[{self._name}] at:[{now}] hash:[{mem_hash}]"] = new_memory
         log.debug(f'Agent: {self._name}; Memory size: {len(self._memory.keys())}; Memory update: {_tmp_summarization};')
+        return self
 
     def stop(self) -> bool:
         resample = 3
@@ -169,6 +183,7 @@ class Agent(BaseAgent, MemoryAugment):
 
     def penalize(self):
         self._p = (self._beta * self._p) % 1.0
+        return self
 
     def set_penalty(self, p: float, beta: float):
         self._p = self.__base_p = p
@@ -180,3 +195,4 @@ class Agent(BaseAgent, MemoryAugment):
             return self.set_penalty(p=PRUDENT_P, beta=PRUDENT_BETA)
         elif personality == Personality.INQUISITIVE:
             return self.set_penalty(p=INQUISITIVE_P, beta=INQUISITIVE_BETA)
+        return self
