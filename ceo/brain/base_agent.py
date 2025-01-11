@@ -37,8 +37,7 @@ class BaseAgent:
         self.__prev_results = list()
         self.__schedule = list()
         if self._name is None or len(self._name) < 1:
-            __tmp_bytes = f'{self.to_dict()}{time.time()}{random.uniform(0, 10 ** 3)}'.encode('utf-8')
-            self._name = f'智能體{hashlib.md5(__tmp_bytes).hexdigest()}型號'
+            self._name = self._generate_name()
 
     @property
     def abilities(self) -> list[Ability]:
@@ -61,6 +60,12 @@ class BaseAgent:
 
     def __str__(self):
         return self.__repr__()
+
+    def _generate_name(self) -> str:
+        __tmp_bytes = f'{self.to_dict()}{time.time()}{random.uniform(0, 10 ** 3)}'.encode('utf-8')
+        __tmp_str = hashlib.md5(__tmp_bytes).hexdigest()
+        __sample_str = ''.join(random.sample(__tmp_str, 6))
+        return f'智能體{__sample_str}型號'
 
     def to_dict(self) -> dict:
         __model_dict = self._model.dict()
