@@ -57,5 +57,9 @@ class AgenticAbility(Ability):
         self._agent.bring_in_memory(memory)
         result = self._agent.just_do_it()
         if isinstance(result, dict):
+            if 'conclusion' in result.keys():
+                del result['conclusion']
+            if 'misc' in result.keys():
+                del result['misc']
             return json.dumps(result, ensure_ascii=False)
         return result

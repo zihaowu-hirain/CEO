@@ -118,18 +118,19 @@ class Agent(BaseAgent, MemoryAugment):
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
-            response = IntrospectionPrompt(
-                query=self._query,
+            brief_conclusion, response = IntrospectionPrompt(
+                request=self._query,
                 history=self.memory
             ).invoke(self._model)
             __time_used = time.perf_counter() - __start_time
             __step_count = self._act_count
             self.reposition()
-            # log.debug(f'Agent: {self._name}; Conclusion: {response};')
+            log.debug(f'Agent: {self._name}; Conclusion: {brief_conclusion};')
             log.debug(f'Agent: {self._name}; Step count: {__step_count}; Time used: {__time_used} seconds;')
             return {
                 "success": next_move,
-                "response": response,
+                "conclusion": brief_conclusion,
+                "raw_response": response,
                 'misc': {
                     'time_used': __time_used,
                     'step_count': __step_count
@@ -163,7 +164,7 @@ class Agent(BaseAgent, MemoryAugment):
             "timestamp": now,
             "agent_name": self._name,
             f"message_from_{self._name}": _tmp_summarization,
-            f'action_performed_by_{self._name}': _tmp_action_performed
+            f'action_taken_by_{self._name}': _tmp_action_performed
         }
         mem_hash = hashlib.md5(json.dumps(new_memory, ensure_ascii=False).encode()).hexdigest()
         self._memory[f"agent:[{self._name}] at:[{now}] hash:[{mem_hash}]"] = new_memory

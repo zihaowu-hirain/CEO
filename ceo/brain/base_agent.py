@@ -149,10 +149,10 @@ class BaseAgent:
             return None
         for act_count in range(len(self.__schedule)):
             self.__step_quiet()
-        response = IntrospectionPrompt(
-            query=self._query,
+        brief_conclusion, response = IntrospectionPrompt(
+            request=self._query,
             history=self.__prev_results
         ).invoke(self._model)
-        log.debug(f'Agent: {self._name}; Conclusion: {response};')
+        log.debug(f'Agent: {self._name}; Conclusion: {brief_conclusion};')
         self.reposition()
         return f'{self._name}: {response}'
