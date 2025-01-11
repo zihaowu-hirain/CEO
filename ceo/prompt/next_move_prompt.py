@@ -159,7 +159,7 @@ class NextMovePrompt(Prompt):
         super().__init__(prompt, ext_context)
         log.debug(f'NextMovePrompt: {self.prompt}')
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,DuplicatedCode
     def invoke(self, model: BaseChatModel, max_retry: int = 6) -> tuple[Ability, dict] | bool:
         result: str = str()
         count: int = 0
@@ -181,10 +181,23 @@ class NextMovePrompt(Prompt):
                     and result.count(END) == 1
                     and _accurate_action_str.count('ability:') == 1
                     and _accurate_action_str.count('args:') == 1):
+                tmp_prompt_dict = None
+                if isinstance(tmp_prompt, str):
+                    tmp_prompt_dict = json.loads(tmp_prompt)
+                tmp_prompt_dict_prompt_str = json.dumps(tmp_prompt_dict.get('prompt'), ensure_ascii=False)
+                __additional_prompt = tmp_prompt_dict.get('additional_prompt', '')
+                if len(__additional_prompt) > 0:
+                    __additional_prompt += f"\n{'-' * 5}\n"
+                tmp_prompt_dict_prompt_str += f"{__additional_prompt}"
                 result = _accurate_action_str
                 args = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
                 result = result[result.rfind('}') + 1:]
                 ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
+                if ability_name not in self.__ability_names:
+                    tmp_prompt = (f'{tmp_prompt_dict_prompt_str}There is no ability called "{ability_name}", '
+                                  f'These abilities are available for you to choose: {self.__ability_names}.')
+                    tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
+                    continue
                 _ability = None
                 _wrong_param = False
                 _wrong_param_names = list()
@@ -201,14 +214,6 @@ class NextMovePrompt(Prompt):
                 if not _wrong_param:
                     break
                 else:
-                    tmp_prompt_dict = None
-                    if isinstance(tmp_prompt, str):
-                        tmp_prompt_dict = json.loads(tmp_prompt)
-                    tmp_prompt_dict_prompt_str = json.dumps(tmp_prompt_dict.get('prompt'), ensure_ascii=False)
-                    __additional_prompt = tmp_prompt_dict.get('additional_prompt', '')
-                    if len(__additional_prompt) > 0:
-                        __additional_prompt += f"\n{'-' * 5}\n"
-                    tmp_prompt_dict_prompt_str += f"{__additional_prompt}"
                     tmp_prompt = (f'{tmp_prompt_dict_prompt_str}For ability called "{ability_name}", '
                                   f'these parameter_names are incorrect: {_wrong_param_names}, '
                                   f"correct parameter_names: {_ability.to_dict().get('parameters_required', [])};")
