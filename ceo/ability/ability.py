@@ -2,8 +2,8 @@ import asyncio
 import copy
 import inspect
 import json
+import threading
 
-import nest_asyncio
 from typing_extensions import Callable
 
 
@@ -32,10 +32,18 @@ class Ability:
 
     def __call__(self, *args, **kwargs):
         if inspect.iscoroutinefunction(self._function):
-            nest_asyncio.apply()
-            __loop = asyncio.new_event_loop()
-            __res = __loop.run_until_complete(self._function(*args, **kwargs))
-            __loop.close()
+            __res = None
+
+            def __func(loop: asyncio.AbstractEventLoop):
+                nonlocal __res, args, kwargs
+                __res = loop.run_until_complete(self._function(*args, **kwargs))
+
+            __thread = threading.Thread(
+                target=__func,
+                args=(asyncio.new_event_loop(),)
+            )
+            __thread.start()
+            __thread.join(timeout=None)
             return __res
         return self._function(*args, **kwargs)
 
