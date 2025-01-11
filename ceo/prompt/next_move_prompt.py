@@ -198,13 +198,15 @@ class NextMovePrompt(Prompt):
                                   f'These abilities are available for you to choose: {self.__ability_names}.')
                     tmp_prompt = Prompt.construct_prompt(tmp_prompt, '')
                     continue
+                if (ability_name.startswith(AGENTIC_ABILITY_PREFIX)
+                        or MISSION_COMPLETE in ability_name
+                        or MISSION_FAILED in ability_name):
+                    break
                 _ability = None
                 _wrong_param = False
                 _wrong_param_names = list()
                 for ability in self.abilities:
                     if ability.name == ability_name:
-                        if ability_name.startswith(AGENTIC_ABILITY_PREFIX):
-                            break
                         _ability = ability
                 if _ability is not None:
                     for _k in args.keys():
