@@ -38,7 +38,7 @@ class BaseAgent:
         self.__schedule = list()
         if self._name is None or len(self._name) < 1:
             __tmp_bytes = f'{self.to_dict()}{time.time()}{random.uniform(0, 10 ** 3)}'.encode('utf-8')
-            self._name = f'agent_{hashlib.md5(__tmp_bytes).hexdigest()}'
+            self._name = f'智能體{hashlib.md5(__tmp_bytes).hexdigest()}型號'
 
     @property
     def abilities(self) -> list[Ability]:
