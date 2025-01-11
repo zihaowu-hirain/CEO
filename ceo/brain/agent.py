@@ -151,20 +151,20 @@ class Agent(BaseAgent, MemoryAugment):
         self.__expected_step = expected_step
         return self
 
-    def memorize(self, action_performed: dict):
+    def memorize(self, action_taken: dict):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        _action_performed = copy.deepcopy(action_performed)
-        _tmp_summarization = _action_performed['summarization']
-        del _action_performed['summarization']
-        _tmp_action_performed = _action_performed
-        if _tmp_action_performed['ability'].startswith(AGENTIC_ABILITY_PREFIX):
-            if 'choice' in _tmp_action_performed.keys():
-                _tmp_action_performed['choice'] = 'Ask for a favor.'
+        _action_taken = copy.deepcopy(action_taken)
+        _tmp_summarization = _action_taken['summarization']
+        del _action_taken['summarization']
+        _tmp_action_taken = _action_taken
+        if _tmp_action_taken['ability'].startswith(AGENTIC_ABILITY_PREFIX):
+            if 'choice' in _tmp_action_taken.keys():
+                _tmp_action_taken['choice'] = 'Ask for a favor.'
         new_memory = {
             "timestamp": now,
             "agent_name": self._name,
             f"message_from_{self._name}": _tmp_summarization,
-            f'action_taken_by_{self._name}': _tmp_action_performed
+            f'action_taken_by_{self._name}': _tmp_action_taken
         }
         mem_hash = hashlib.md5(json.dumps(new_memory, ensure_ascii=False).encode()).hexdigest()
         self._memory[f"agent:[{self._name}] at:[{now}] hash:[{mem_hash}]"] = new_memory
