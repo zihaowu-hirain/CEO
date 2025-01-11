@@ -14,20 +14,20 @@ log = logging.getLogger('ceo.prompt')
 
 
 class ExecutorPrompt(Prompt):
-    def __init__(self, params: dict, action: Ability, ext_context: str = ''):
+    def __init__(self, args: dict, action: Ability, ext_context: str = ''):
         self.action = action
-        self.params = copy.deepcopy(params)
-        tmp_params = copy.deepcopy(self.params)
+        self.args = copy.deepcopy(args)
+        tmp_args = copy.deepcopy(self.args)
         if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
-            del tmp_params['memory']
+            del tmp_args['memory']
         prompt = json.dumps({
             "precondition": "Below is an ability shown at <ability> "
-                            "and your choice(params) for using the <ability> is shown at <params(choice)>.",
+                            "and your choice(args) for using the <ability> is shown at <args(choice)>.",
             "task": "Explain what you are going to do.",
             "output_datatype": "text",
             "output_example": "I am trying to open calculator.",
             "ability": self.action.to_dict(),
-            "params(choice)": tmp_params
+            "args(choice)": tmp_args
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'ExecutorPrompt (before): {self.prompt}')
@@ -40,18 +40,18 @@ class ExecutorPrompt(Prompt):
         return resp
 
     def invoke(self, model: BaseChatModel, max_retry: int = 3) -> dict:
-        result = self.action.__call__(**self.params)
-        tmp_params = copy.deepcopy(self.params)
+        result = self.action.__call__(**self.args)
+        tmp_args = copy.deepcopy(self.args)
         if self.action.name.startswith(AGENTIC_ABILITY_PREFIX):
-            tmp_params = {'choice': 'Ask for a favor.'}
+            tmp_args = {'choice': 'Ask for a favor.'}
         prompt = json.dumps({
             "precondition": "Below is an ability shown at <ability>, "
-                            "your choice(params) for the <ability> is shown at <params(choice)>, "
+                            "your choice(args) for the <ability> is shown at <args(choice)>, "
                             "result of your using of this <ability> is shown at <result>.",
-            "task": "Explain what you have done according to <ability>, <result>, and <params(choice)> "
+            "task": "Explain what you have done according to <ability>, <result>, and <args(choice)> "
                     "accurately, comprehensively, and briefly.",
             "ability": self.action.to_dict(),
-            "params(choice)": tmp_params,
+            "args(choice)": tmp_args,
             "result": str(result),
             "output_format": {
                 'ability': '{ability_just_used}',

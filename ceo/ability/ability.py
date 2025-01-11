@@ -1,6 +1,9 @@
+import asyncio
 import copy
 import inspect
 import json
+import threading
+
 from typing_extensions import Callable
 
 
@@ -28,6 +31,20 @@ class Ability:
         return self.__repr__()
 
     def __call__(self, *args, **kwargs):
+        if inspect.iscoroutinefunction(self._function):
+            __res = None
+
+            def __func(loop: asyncio.AbstractEventLoop):
+                nonlocal __res, args, kwargs
+                __res = loop.run_until_complete(self._function(*args, **kwargs))
+
+            __thread = threading.Thread(
+                target=__func,
+                args=(asyncio.new_event_loop(),)
+            )
+            __thread.start()
+            __thread.join(timeout=None)
+            return __res
         return self._function(*args, **kwargs)
 
     def to_dict(self) -> dict:

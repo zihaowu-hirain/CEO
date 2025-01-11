@@ -30,10 +30,10 @@ log = logging.getLogger('ceo')
 
 class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
-                 brain: BaseChatModel, name: str,
+                 brain: BaseChatModel, name: str = '',
                  personality: Personality = Personality.PRUDENT,
-                 query: str = '', memory: OrderedDict | None = None):
-        BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
+                 request: str = '', memory: OrderedDict | None = None):
+        BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, request=request)
         MemoryAugment.__init__(self, memory=memory)
         self.__expected_step = 0
         if personality == Personality.PRUDENT:
@@ -71,18 +71,18 @@ class Agent(BaseAgent, MemoryAugment):
         return self
 
     @override
-    def assign(self, query: str):
-        BaseAgent.assign(self, query)
+    def assign(self, request: str):
+        BaseAgent.assign(self, request)
         return self.reposition()
 
     @override
-    def reassign(self, query: str):
-        return self.assign(query)
+    def reassign(self, request: str):
+        return self.assign(request)
 
     @override
-    def relay(self, query: str, query_by_step: str):
-        self._query = query
-        self._query_by_step = query_by_step
+    def relay(self, request: str, request_by_step: str):
+        self._request = request
+        self._request_by_step = request_by_step
         return self.reposition()
 
     @override
@@ -90,7 +90,7 @@ class Agent(BaseAgent, MemoryAugment):
         __start_time = time.perf_counter()
         if self.__expected_step < 1:
             self.estimate_step()
-        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Query: "{self._query}";')
+        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Request: "{self._request}";')
         stop = False
         while True:
             if self._act_count > self.__expected_step:
@@ -98,49 +98,50 @@ class Agent(BaseAgent, MemoryAugment):
                 self.penalize()
             next_move = False
             if not stop:
-                combined_query = {
-                    'raw_query': self._query,
-                    'query_by_step': self._query_by_step
+                combined_request = {
+                    'raw_request': self._request,
+                    'request_by_step': self._request_by_step
                 }
                 next_move = NextMovePrompt(
-                    query=combined_query,
+                    request=combined_request,
                     abilities=self._abilities,
                     history=self.memory
                 ).invoke(self._model)
                 if not isinstance(next_move, bool):
-                    action, params = next_move
+                    action, args = next_move
                     if action.name.startswith(AGENTIC_ABILITY_PREFIX):
-                        params = {
-                            'query': self._query,
-                            'query_by_step': self._query_by_step,
+                        args = {
+                            'request': self._request,
+                            'request_by_step': self._request_by_step,
                             'memory': self.memory
                         }
-                    self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
+                    self.memorize(ExecutorPrompt(args=args, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
-            response = IntrospectionPrompt(
-                query=self._query,
+            brief_conclusion, response = IntrospectionPrompt(
+                request=self._request,
                 history=self.memory
             ).invoke(self._model)
             __time_used = time.perf_counter() - __start_time
             __step_count = self._act_count
             self.reposition()
-            # log.debug(f'Agent: {self._name}; Conclusion: {response};')
+            log.debug(f'Agent: {self._name}; Conclusion: {brief_conclusion};')
             log.debug(f'Agent: {self._name}; Step count: {__step_count}; Time used: {__time_used} seconds;')
             return {
                 "success": next_move,
-                "response": response,
+                "conclusion": brief_conclusion,
+                "raw_response": response,
                 'misc': {
                     'time_used': __time_used,
                     'step_count': __step_count
                 }
             }
 
-    def assign_with_memory(self, query: str, memory: OrderedDict):
-        return self.assign(query).bring_in_memory(memory)
+    def assign_with_memory(self, request: str, memory: OrderedDict):
+        return self.assign(request).bring_in_memory(memory)
 
     def estimate_step(self):
-        if self._query_by_step == '':
+        if self._request_by_step == '':
             self.__expected_step = 0
             return
         self.__expected_step = len(self.plan(_log=False))
@@ -150,20 +151,20 @@ class Agent(BaseAgent, MemoryAugment):
         self.__expected_step = expected_step
         return self
 
-    def memorize(self, action_performed: dict):
+    def memorize(self, action_taken: dict):
         now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        _action_performed = copy.deepcopy(action_performed)
-        _tmp_summarization = _action_performed['summarization']
-        del _action_performed['summarization']
-        _tmp_action_performed = _action_performed
-        if _tmp_action_performed['ability'].startswith(AGENTIC_ABILITY_PREFIX):
-            if 'choice' in _tmp_action_performed.keys():
-                _tmp_action_performed['choice'] = 'Ask for a favor.'
+        _action_taken = copy.deepcopy(action_taken)
+        _tmp_summarization = _action_taken['summarization']
+        del _action_taken['summarization']
+        _tmp_action_taken = _action_taken
+        if _tmp_action_taken['ability'].startswith(AGENTIC_ABILITY_PREFIX):
+            if 'choice' in _tmp_action_taken.keys():
+                _tmp_action_taken['choice'] = 'Ask for a favor.'
         new_memory = {
             "timestamp": now,
             "agent_name": self._name,
             f"message_from_{self._name}": _tmp_summarization,
-            f'action_performed_by_{self._name}': _tmp_action_performed
+            f'action_taken_by_{self._name}': _tmp_action_taken
         }
         mem_hash = hashlib.md5(json.dumps(new_memory, ensure_ascii=False).encode()).hexdigest()
         self._memory[f"agent:[{self._name}] at:[{now}] hash:[{mem_hash}]"] = new_memory
