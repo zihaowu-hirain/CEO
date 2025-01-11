@@ -108,14 +108,14 @@ class Agent(BaseAgent, MemoryAugment):
                     history=self.memory
                 ).invoke(self._model)
                 if not isinstance(next_move, bool):
-                    action, params = next_move
+                    action, args = next_move
                     if action.name.startswith(AGENTIC_ABILITY_PREFIX):
-                        params = {
+                        args = {
                             'request': self._request,
                             'request_by_step': self._request_by_step,
                             'memory': self.memory
                         }
-                    self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
+                    self.memorize(ExecutorPrompt(args=args, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
             brief_conclusion, response = IntrospectionPrompt(

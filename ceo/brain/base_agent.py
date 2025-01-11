@@ -128,8 +128,8 @@ class BaseAgent:
                 prev_results=self.__prev_results,
                 action=self.__schedule[self._act_count]
             )
-            action, params = analysing.invoke(self._model)
-            executing = ExecutorPrompt(params=params, action=action)
+            action, args = analysing.invoke(self._model)
+            executing = ExecutorPrompt(args=args, action=action)
             action_str = (f'Agent: {self._name}; Action {self._act_count + 1}/{len(self.__schedule)}: '
                           f'{json.dumps(executing.invoke(model=self._model), ensure_ascii=False)};')
             self.__prev_results.append(action_str)
