@@ -16,9 +16,9 @@ THOUGHT_PROCESS = '--THOUGHT-PROCESS--'
 CONCLUSION = '--CONCLUSION--'
 
 OUTPUT_EXAMPLE = THOUGHT_PROCESS + """
-(Start) [Grocery shopping]: I asked Alex to buy carrots and chicken breasts from the supermarket. """ + f'({SUCCESS})' + """
+(Start) [Grocery shopping]: Alex bought carrots and chicken breasts from the supermarket. """ + f'({SUCCESS})' + """
 (After: Grocery shopping) [Cooking the meal]: I cooked the chicken with the carrots and garlic in a pan. """ + f'({SUCCESS})' + """
-(After: Cooking the meal) [Plating the dish]: I asked Sara to plate the chicken and vegetables. """ + f'({SUCCESS})' + """
+(After: Cooking the meal) [Plating the dish]: Sara plated the chicken and vegetables. """ + f'({SUCCESS})' + """
 (After: Plating the dish) [Eating the meal]: There is no record in <history> indicating that someone sat down to eat the meal. """ + f'({FAILED})' + """
 Based on above assessments, here is my conclusion:
 """ + CONCLUSION + ("\nYour request has not been fully achieved. "
