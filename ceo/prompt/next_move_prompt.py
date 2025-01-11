@@ -17,27 +17,14 @@ MISSION_COMPLETE = '-mission-complete-'
 MISSION_FAILED = '-mission-failed-'
 
 OUTPUT_EXAMPLE = """
-Step 1: In the provided history, events related to the user's request are listed chronologically:
-    1. The user calculated the radius of the sphere using the expression "(3 * 174.9 / 15.9 * 2.77)", resulting in a radius of approximately 91.41 cm.
-    2. The user then calculated the surface area of the sphere using the formula "4 * 3.14159 * (91.41^2)", resulting in a surface area of approximately 105001.841348316 cm².
-    From the history, I extract the following information related to the user's request:
-    1. The radius of the sphere has been successfully calculated as 91.41 cm.
-    2. The surface area has been calculated as approximately 105001.84 cm².
-    3. However, the volume of the sphere has not yet been calculated, and there is no record of writing the results into the file 'result.txt'.
-    Based on these details, the subsequent steps to complete are:
-    1. Calculate the volume of the sphere using the formula "(4/3) * pi * radius^3".
-    2. Write the results of the surface area and volume into a file called 'result.txt'.
-Step 2: The user request is to find the area and volume of a sphere with a specific radius and write the results into a file. 
-    According to the history, the radius and surface area have been calculated, but the volume calculation and file writing have not been completed. 
-    Therefore, the user request has not been fully and properly accomplished.
-Step 3: The unfinished parts of the user request are the calculation of the volume and writing the results to 'result.txt'. 
-    The abilities I possess include "calculator" for performing calculations and "write_file" for writing content to a file. Both abilities can fulfill the unfinished parts of the user request.
-Step 4: Since the user's request is not fully accomplished, and I have the ability to calculate the volume and write to a file, my next move is to calculate the volume of the sphere. 
-    I will use the "calculator" ability with the expression "(4/3) * 3.14159 * (91.41^3)" to compute the volume, as this aligns with the user's request to find the volume of the sphere.
-    After calculating the volume, I will then write both the surface area and volume results into 'result.txt' using the "write_file" ability.
-Step 5: This step is not applicable because the user request has not been fully accomplished, and I have the ability to continue progressing.
-Step 6: This step is not applicable because the user request has not been fully accomplished.
-
+[step1] In the provided history, events related to the user's request are listed chronologically:
+    1. Steve calculated the radius of the sphere using the expression "(3 * 174.9 / 15.9 * 2.77)", resulting in a radius of 91.41 cm.
+    2. Steve then calculated the surface area of the sphere using the formula "4 * 3.14159 * (91.41^2)", resulting in a surface area of 105001.841348316 cm².
+[step2] According to the history, the radius and surface area have been calculated, but the volume calculation and file writing have not been completed, therefore the user request has not been fully and properly accomplished.
+[step3] The unfinished parts of the user request are the calculation of the volume and writing the results to 'result.txt'. The abilities I possess include "calculator" for performing calculations and "write_file" for writing content to a file. 
+[step4] Since the user's request is not fully accomplished, and I have the ability to calculate the volume and write to a file, my next move is to use the "calculator" ability with the expression "(4/3) * 3.14159 * (91.41^3)" to compute the volume of the sphere.
+[step5] This step is not applicable because the user request has not been fully accomplished, and I have the ability to continue progressing.
+[step6] This step is not applicable because the user request has not been fully accomplished.
 """ + SEPARATOR + """
 args:{
   "{name_of_param}": "(4/3) * 3.14159 * (91.41^3)"
@@ -67,36 +54,38 @@ class NextMovePrompt(Prompt):
                             "<latest_progress> shows the latest progress of <user_request>.",
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
-                    "first_action": "List events from <history> and <latest_progress> "
-                                    "which are related to <user_request> (respectively and chronologically).",
-                    "second_action": "Extract and list all information related to <user_request> from <history> "
-                                     "formatted one by one respectively.",
+                    "action": "List events from <history> and <latest_progress> "
+                              "which could be related to <user_request> (respectively and chronologically).",
+                    # "second_action": "Extract and list all information related to <user_request> from <history> "
+                    #                  "formatted one by one respectively.",
                     "additional": "For all details mentioned in <history> about <user_request>, "
                                   "you should preserve them in full, "
                                   "especially specific information with accuracy requirements "
-                                  "such as numbers, dates, etc."
+                                  "such as datas, numbers, dates, names, etc.",
+                    "limitation_for_step1": "Make it brief, concise and accurate."
                 }, {
                     "step": 2,
                     "action": "Analyse whether the <user_request> has been fully and properly accomplished "
                               "according to your report in <step_1>, "
-                              "and provide your analysis process and basis."
+                              "and provide your analysis process and basis briefly.",
+                    "limitation_for_step2": "Make it brief, concise and accurate."
                 }, {
                     "step": 3,
                     "condition": "If the <user_request> has not been fully properly accomplished",
                     "action": "Analyse whether your <abilities> can complete the unfinished part of the <user_request>, "
-                              "and provide the basis according to your report in <step_1>."
+                              "and provide the basis briefly according to information provided in <step_1>."
                 }, {
                     "step": 4,
                     "condition": "If the <user_request> has not been fully properly accomplished and "
                                  "there is an ability in your <abilities> "
                                  "that can further advance the accomplishment of the <user_request> based on <history>.",
-                    "first_action": "Plan and explain your next move based on <history> "
+                    "first_action": "Plan and explain your next move briefly based on <history> "
                                     "for further advancing the <user_request>.",
                     "second_action": "Choose and provide the ability according to your next move"
                                      "(only one single ability can be chosen)",
                     "third_action": "After you have chosen the ability as next move, "
                                     "generate arguments for the ability(function) to achieve <next move>, "
-                                    "before you generate arguments, explain why you give these arguments.",
+                                    "before you generate arguments, explain why you give these arguments briefly.",
                 }, {
                     "step": 5,
                     "condition": "If the <user_request> has not been fully properly accomplished and "
@@ -110,7 +99,8 @@ class NextMovePrompt(Prompt):
                     "action": f'Provide a special ability called "{MISSION_COMPLETE}" (which is not a real ability).'
                 }
             ],
-            "be_aware_of_sequence_of_movements": 'Ensure that actions be performed in the proper order.',
+            "be_aware_of_sequence_of_movements": 'Ensure that actions be taken in the proper order '
+                                                 'according to <user_request>.',
             "output_format": "{step1_thought_process}\n{step2_thought_process}\n"
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"

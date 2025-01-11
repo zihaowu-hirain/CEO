@@ -26,6 +26,8 @@ class SelfIntroducePrompt(Prompt):
         prompt = json.dumps({
             "task": "Introduce yourself briefly based on the information provided. "
                     "Only tell what you exactly can do based on your abilities.",
+            "hint": "Your name is shown in <your_name>",
+            "your_name": agent_info_dict.get('name', None),
             "information": agent_info_dict,
             "output_format": "My name is <name>. What can I do: ..."
         }, ensure_ascii=False)

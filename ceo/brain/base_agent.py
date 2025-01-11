@@ -32,12 +32,12 @@ class BaseAgent:
             self._request, self._request_by_step = RequestResolverPrompt(request).invoke(self._model)
         for ability in abilities:
             self._abilities.append(Ability(ability))
+        if self._name is None or len(self._name) < 1:
+            self._name = self._generate_name()
         self._introduction = str()
         self.introduce()
         self.__prev_results = list()
         self.__schedule = list()
-        if self._name is None or len(self._name) < 1:
-            self._name = self._generate_name()
 
     @property
     def abilities(self) -> list[Ability]:
@@ -62,7 +62,8 @@ class BaseAgent:
         return self.__repr__()
 
     def _generate_name(self) -> str:
-        __tmp_bytes = f'{self.to_dict()}{time.time()}{random.uniform(0, 10 ** 3)}'.encode('utf-8')
+        __abilities_ls = [ability.to_dict() for ability in self.abilities]
+        __tmp_bytes = f'{__abilities_ls}{time.time()}{random.uniform(0, 10 ** 3)}'.encode('utf-8')
         __tmp_str = hashlib.md5(__tmp_bytes).hexdigest()
         __sample_str = ''.join(random.sample(__tmp_str, 6))
         return f'智能體{__sample_str}型號'
