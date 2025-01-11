@@ -92,7 +92,7 @@ class BaseAgent:
         self.introduce(update=True)
 
     def plan(self, _log: bool = True) -> list:
-        scheduling = SchedulerPrompt(query=self._query_by_step, abilities=self._abilities)
+        scheduling = SchedulerPrompt(request=self._query_by_step, abilities=self._abilities)
         self.__schedule = scheduling.invoke(self._model)
         if _log:
             log.debug(f'Agent: {self._name}; Schedule: {[_.name for _ in self.__schedule]}; Query: "{self._query}";')

@@ -103,7 +103,7 @@ class Agent(BaseAgent, MemoryAugment):
                     'query_by_step': self._query_by_step
                 }
                 next_move = NextMovePrompt(
-                    query=combined_query,
+                    request=combined_query,
                     abilities=self._abilities,
                     history=self.memory
                 ).invoke(self._model)

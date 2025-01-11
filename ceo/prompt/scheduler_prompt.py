@@ -12,34 +12,45 @@ END = '--END--'
 
 
 class SchedulerPrompt(Prompt):
-    def __init__(self, query: str, abilities: list[Ability], ext_context: str = ''):
+    def __init__(self, request: str, abilities: list[Ability], ext_context: str = ''):
         self.abilities = abilities
         prompt = dict()
         for ability in self.abilities:
-            prompt[ability.name] = ability.to_dict()
+            ability_dict = ability.to_dict()
+            if isinstance(ability_dict['description'], dict):
+                try:
+                    desc_dict = ability_dict['description']
+                    if isinstance(desc_dict, str):
+                        desc_dict = json.loads(desc_dict)
+                    if isinstance(desc_dict, dict):
+                        if 'parameters' in desc_dict.keys():
+                            del desc_dict['parameters']
+                        if 'returns' in desc_dict.keys():
+                            del desc_dict['returns']
+                        ability_dict['description'] = desc_dict
+                except json.JSONDecodeError:
+                    pass
+            del ability_dict['parameters_required']
+            prompt[ability.name] = ability_dict
         prompt = json.dumps({
             "precondition": "In <abilities> are the abilities you have. "
-                            f'And there is a <user_query>.',
+                            f'And there is a <user_request>.',
             "limitation": "You can only use abilities in <abilities>.",
-            "user_query": query,
-            "task": "What you need to do is to plan your workflow based on the <abilities> and <user_query>.",
-            "description": "<user_query> might contains many steps, "
+            "user_request": request,
+            "task": "What you need to do is to plan your workflow based on the <abilities> and <user_request>.",
+            "description": "<user_request> might contains many steps, "
                            "think carefully about every step and plan your workflow "
                            "based on your abilities in <abilities>.",
-            "hint_for_tool_usage": "<user_query> sometimes need to use one specific tool(s) more than once, "
-                                   "you need to estimate as accurately as possible "
-                                   "the number of times specific tools need to be used "
-                                   "to properly achieve the <user_query>!",
-            "hint_for_tool_choosing": "Sometimes some of the tools are irrelevant to <user_query>. "
-                                      "Make sure to choose tools properly and wisely.",
+            "hint_for_ability_choosing": "Some of the abilities may be irrelevant to <user_request>. "
+                                         "Make sure to choose abilities properly and wisely.",
             "abilities": prompt,
             "output_format": "{thinking_process}\n"
-                             "schedule:{schedule_as_a_list_of_tool_names}\n"
+                             "schedule:{schedule_as_a_list_of_ability_names}\n"
                              f"{END}",
-            "hint_1_for_output": 'firstly, output your thinking process step by step clear and organized. '
-                                 'secondly, outputs a list of names of tools, surrounded by "[ ]", split by ", ".',
-            "hint_2_for_output": 'You must strictly follow the format in <output_format>! '
-                                 'You should refer to example in <output_example>!',
+            "hint_for_output": 'firstly, output your thinking process step by step clear and organized. '
+                               'secondly, outputs a list of names of abilities, surrounded by "[ ]", split by ", ".',
+            "limitation_for_output": 'You must strictly follow the format in <output_format>!! '
+                                     'You should refer to example in <output_example>!!',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
                               "which requires checking a recipe or personal preferences to decide.\n"
                               "2.After determining the ingredients, "
@@ -51,10 +62,10 @@ class SchedulerPrompt(Prompt):
                               "schedule:"
                               "[go_to_market, payment_purchase, go_home, do_wash, do_cook, arrange_dished_on_table]\n"
                               f"{END}",
-            "hint_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
-                                    f'no more words are allowed after "{END}" pattern. '
-                                    f'The "{END}" pattern is absolutely important, do not forget to place it '
-                                    'in the end of your response.'
+            "limitation_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
+                                          f'no more words are allowed after "{END}" pattern. '
+                                          f'The "{END}" pattern is absolutely important, do not forget to place it '
+                                          'in the end of your response.'
         }, ensure_ascii=False)
         super().__init__(prompt, ext_context)
         log.debug(f'SchedulerPrompt: {self.prompt}')

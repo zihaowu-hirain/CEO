@@ -17,26 +17,26 @@ MISSION_COMPLETE = '-mission-complete-'
 MISSION_FAILED = '-mission-failed-'
 
 OUTPUT_EXAMPLE = """
-Step 1: In the provided history, events related to the user's query are listed chronologically:
+Step 1: In the provided history, events related to the user's request are listed chronologically:
     1. The user calculated the radius of the sphere using the expression "(3 * 174.9 / 15.9 * 2.77)", resulting in a radius of approximately 91.41 cm.
     2. The user then calculated the surface area of the sphere using the formula "4 * 3.14159 * (91.41^2)", resulting in a surface area of approximately 105001.841348316 cm².
-    From the history, I extract the following information related to the user's query:
+    From the history, I extract the following information related to the user's request:
     1. The radius of the sphere has been successfully calculated as 91.41 cm.
     2. The surface area has been calculated as approximately 105001.84 cm².
     3. However, the volume of the sphere has not yet been calculated, and there is no record of writing the results into the file 'result.txt'.
     Based on these details, the subsequent steps to complete are:
     1. Calculate the volume of the sphere using the formula "(4/3) * pi * radius^3".
     2. Write the results of the surface area and volume into a file called 'result.txt'.
-Step 2: The user query is to find the area and volume of a sphere with a specific radius and write the results into a file. 
+Step 2: The user request is to find the area and volume of a sphere with a specific radius and write the results into a file. 
     According to the history, the radius and surface area have been calculated, but the volume calculation and file writing have not been completed. 
-    Therefore, the user query has not been fully and properly accomplished.
-Step 3: The unfinished parts of the user query are the calculation of the volume and writing the results to 'result.txt'. 
-    The abilities I possess include "calculator" for performing calculations and "write_file" for writing content to a file. Both abilities can fulfill the unfinished parts of the user query.
-Step 4: Since the user's query is not fully accomplished, and I have the ability to calculate the volume and write to a file, my next move is to calculate the volume of the sphere. 
+    Therefore, the user request has not been fully and properly accomplished.
+Step 3: The unfinished parts of the user request are the calculation of the volume and writing the results to 'result.txt'. 
+    The abilities I possess include "calculator" for performing calculations and "write_file" for writing content to a file. Both abilities can fulfill the unfinished parts of the user request.
+Step 4: Since the user's request is not fully accomplished, and I have the ability to calculate the volume and write to a file, my next move is to calculate the volume of the sphere. 
     I will use the "calculator" ability with the expression "(4/3) * 3.14159 * (91.41^3)" to compute the volume, as this aligns with the user's request to find the volume of the sphere.
     After calculating the volume, I will then write both the surface area and volume results into 'result.txt' using the "write_file" ability.
-Step 5: This step is not applicable because the user query has not been fully accomplished, and I have the ability to continue progressing.
-Step 6: This step is not applicable because the user query has not been fully accomplished.
+Step 5: This step is not applicable because the user request has not been fully accomplished, and I have the ability to continue progressing.
+Step 6: This step is not applicable because the user request has not been fully accomplished.
 
 """ + SEPARATOR + """
 args:{
@@ -47,7 +47,7 @@ ability:[calculator]
 
 
 class NextMovePrompt(Prompt):
-    def __init__(self, query: str | dict,
+    def __init__(self, request: str | dict,
                  abilities: list[Ability],
                  history: OrderedDict | None = None,
                  ext_context: str = ''):
@@ -62,36 +62,36 @@ class NextMovePrompt(Prompt):
         else:
             latest_progress = history[list(history.keys())[-1]]
         prompt_dict = {
-            "precondition": "In <abilities> are abilities you have, and there is a <user_query>. "
+            "precondition": "In <abilities> are abilities you have, and there is a <user_request>. "
                             "<history> shows events happened before you, "
-                            "<latest_progress> shows the latest progress of <user_query>.",
+                            "<latest_progress> shows the latest progress of <user_request>.",
             "instructions_you_must_follow_step_by_step": [{
                     "step": 1,
                     "first_action": "List events from <history> and <latest_progress> "
-                                    "which are related to <user_query> (respectively and chronologically).",
-                    "second_action": "Extract and list all information related to <user_query> from <history> "
+                                    "which are related to <user_request> (respectively and chronologically).",
+                    "second_action": "Extract and list all information related to <user_request> from <history> "
                                      "formatted one by one respectively.",
-                    "additional": "For all details mentioned in <history> about <user_query>, "
+                    "additional": "For all details mentioned in <history> about <user_request>, "
                                   "you should preserve them in full, "
                                   "especially specific information with accuracy requirements "
                                   "such as numbers, dates, etc."
                 }, {
                     "step": 2,
-                    "action": "Analyse whether the <user_query> has been fully and properly accomplished "
+                    "action": "Analyse whether the <user_request> has been fully and properly accomplished "
                               "according to your report in <step_1>, "
                               "and provide your analysis process and basis."
                 }, {
                     "step": 3,
-                    "condition": "If the <user_query> has not been fully properly accomplished",
-                    "action": "Analyse whether your <abilities> can complete the unfinished part of the <user_query>, "
+                    "condition": "If the <user_request> has not been fully properly accomplished",
+                    "action": "Analyse whether your <abilities> can complete the unfinished part of the <user_request>, "
                               "and provide the basis according to your report in <step_1>."
                 }, {
                     "step": 4,
-                    "condition": "If the <user_query> has not been fully properly accomplished and "
+                    "condition": "If the <user_request> has not been fully properly accomplished and "
                                  "there is an ability in your <abilities> "
-                                 "that can further advance the accomplishment of the <user_query> based on <history>.",
+                                 "that can further advance the accomplishment of the <user_request> based on <history>.",
                     "first_action": "Plan and explain your next move based on <history> "
-                                    "for further advancing the <user_query>.",
+                                    "for further advancing the <user_request>.",
                     "second_action": "Choose and provide the ability according to your next move"
                                      "(only one single ability can be chosen)",
                     "third_action": "After you have chosen the ability as next move, "
@@ -99,14 +99,14 @@ class NextMovePrompt(Prompt):
                                     "before you generate arguments, explain why you give these arguments.",
                 }, {
                     "step": 5,
-                    "condition": "If the <user_query> has not been fully properly accomplished and "
+                    "condition": "If the <user_request> has not been fully properly accomplished and "
                                  "there is no ability in your <abilities> "
-                                 "that can further advance the accomplishment of the <user_query>",
+                                 "that can further advance the accomplishment of the <user_request>",
                     "action": f'Provide a special ability called "{MISSION_FAILED}" (which is not a real ability).'
                 }, {
                     "step": 6,
-                    "condition": "If the <user_query> has been fully and properly accomplished "
-                                 "according to <history> and <user_query>",
+                    "condition": "If the <user_request> has been fully and properly accomplished "
+                                 "according to <history> and <user_request>",
                     "action": f'Provide a special ability called "{MISSION_COMPLETE}" (which is not a real ability).'
                 }
             ],
@@ -137,7 +137,7 @@ class NextMovePrompt(Prompt):
             "output_example": OUTPUT_EXAMPLE,
             "hint_for_output": 'You must strictly follow the format in <output_format>! '
                                'You should refer to example in <output_example>!',
-            "user_query": query,
+            "user_request": request,
             "history": history,
             "latest_progress": latest_progress,
             "hint_for_latest_progress": "The <latest_progress> shows the previous move.",
