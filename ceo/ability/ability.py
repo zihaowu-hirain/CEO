@@ -1,6 +1,9 @@
+import asyncio
 import copy
 import inspect
 import json
+
+import nest_asyncio
 from typing_extensions import Callable
 
 
@@ -28,6 +31,12 @@ class Ability:
         return self.__repr__()
 
     def __call__(self, *args, **kwargs):
+        if inspect.iscoroutinefunction(self._function):
+            nest_asyncio.apply()
+            __loop = asyncio.new_event_loop()
+            __res = __loop.run_until_complete(self._function(*args, **kwargs))
+            __loop.close()
+            return __res
         return self._function(*args, **kwargs)
 
     def to_dict(self) -> dict:
