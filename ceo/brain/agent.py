@@ -30,7 +30,7 @@ log = logging.getLogger('ceo')
 
 class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
-                 brain: BaseChatModel, name: str,
+                 brain: BaseChatModel, name: str = '',
                  personality: Personality = Personality.PRUDENT,
                  request: str = '', memory: OrderedDict | None = None):
         BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, request=request)

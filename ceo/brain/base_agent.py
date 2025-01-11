@@ -1,5 +1,8 @@
+import hashlib
 import json
 import logging
+import random
+import time
 import warnings
 from typing import Callable
 
@@ -19,7 +22,7 @@ log = logging.getLogger('ceo')
 
 
 class BaseAgent:
-    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str, request: str = ''):
+    def __init__(self, abilities: list[Callable], brain: BaseChatModel, name: str = '', request: str = ''):
         self._abilities = list()
         self._act_count = 0
         self._name = name
@@ -33,6 +36,9 @@ class BaseAgent:
         self.introduce()
         self.__prev_results = list()
         self.__schedule = list()
+        if self._name is None or len(self._name) < 1:
+            __tmp_bytes = f'{self.to_dict()}{time.time()}{random.uniform(0, 10 ** 3)}'.encode('utf-8')
+            self._name = f'agent_{hashlib.md5(__tmp_bytes).hexdigest()}'
 
     @property
     def abilities(self) -> list[Ability]:
@@ -60,9 +66,9 @@ class BaseAgent:
         __model_dict = self._model.dict()
         model_name = __model_dict.get('model_name', __model_dict.get('_type', 'unknown'))
         return {
-            "name": self._name,
+            "name": self.name,
             "brain": model_name,
-            "abilities": [ability.to_dict() for ability in self._abilities]
+            "abilities": [ability.to_dict() for ability in self.abilities]
         }
 
     def introduce(self, update: bool = False) -> str:
