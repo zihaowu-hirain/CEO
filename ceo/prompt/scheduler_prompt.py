@@ -47,8 +47,9 @@ class SchedulerPrompt(Prompt):
             "output_format": "{thinking_process}\n"
                              "schedule:{schedule_as_a_list_of_ability_names}\n"
                              f"{END}",
-            "hint_for_output": 'firstly, output your thinking process step by step clear and organized. '
-                               'secondly, outputs a list of names of abilities, surrounded by "[ ]", split by ", ".',
+            "hint_for_output": 'Firstly, output your thinking process step by step clear and organized. '
+                               'Secondly, outputs a list of names of abilities, surrounded by "[ ]", split by ", ".',
+            "limitation_for_thinking_process": 'Your thinking process should be brief, concise, and short enough.',
             "limitation_for_output": 'You must strictly follow the format in <output_format>!! '
                                      'You should refer to example in <output_example>!!',
             "output_example": "1.First, I need to determine which ingredients to purchase, "
