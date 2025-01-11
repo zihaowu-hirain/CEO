@@ -17,10 +17,10 @@ MISSION_COMPLETE = '-mission-complete-'
 MISSION_FAILED = '-mission-failed-'
 
 OUTPUT_EXAMPLE = """
-Step 1: In the provided history, the events related to the user's query are as follows, listed chronologically:
+Step 1: In the provided history, events related to the user's query are listed chronologically:
     1. The user calculated the radius of the sphere using the expression "(3 * 174.9 / 15.9 * 2.77)", resulting in a radius of approximately 91.41 cm.
     2. The user then calculated the surface area of the sphere using the formula "4 * 3.14159 * (91.41^2)", resulting in a surface area of approximately 105001.841348316 cm².
-    From the history, we extract the following information related to the user's query:
+    From the history, I extract the following information related to the user's query:
     1. The radius of the sphere has been successfully calculated as 91.41 cm.
     2. The surface area has been calculated as approximately 105001.84 cm².
     3. However, the volume of the sphere has not yet been calculated, and there is no record of writing the results into the file 'result.txt'.
@@ -39,7 +39,7 @@ Step 5: This step is not applicable because the user query has not been fully ac
 Step 6: This step is not applicable because the user query has not been fully accomplished.
 
 """ + SEPARATOR + """
-params:{
+args:{
   "{name_of_param}": "(4/3) * 3.14159 * (91.41^3)"
 }
 ability:[calculator]
@@ -95,9 +95,8 @@ class NextMovePrompt(Prompt):
                     "second_action": "Choose and provide the ability according to your next move"
                                      "(only one single ability can be chosen)",
                     "third_action": "After you have chosen the ability as next move, "
-                                    "generate values of parameters for the ability(function) to achieve <next move>, "
-                                    "before you generate values of parameters, "
-                                    "explain why you give these values to params.",
+                                    "generate arguments for the ability(function) to achieve <next move>, "
+                                    "before you generate arguments, explain why you give these arguments.",
                 }, {
                     "step": 5,
                     "condition": "If the <user_query> has not been fully properly accomplished and "
@@ -116,21 +115,21 @@ class NextMovePrompt(Prompt):
                              "{step3_thought_process}\n{step4_thought_process}\n"
                              "{step5_thought_process}\n{step6_thought_process}\n"
                              f"{SEPARATOR}\n"
-                             'params:{'
+                             'args:{'
                              '"{name_of_param_1}":{value_for_param_1},'
                              '"{name_of_param_2}":{value_for_param_2},'
-                             '"{name_of_param_...}":{value_for_param_...}'
+                             '"{name_of_param_{n}}":{value_for_param_{n}}'
                              '}\n'
                              f'ability:[ability.name]\n{END}',
-            "hint_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be output.",
-            "hint_for_params_output_format": f'The "{SEPARATOR}" pattern should be after '
-                                             f'all the thought processes and before the <params and ability>.'
-                                             f'The params should be after the "{SEPARATOR}" pattern.'
-                                             'The params should be formatted as json.'
-                                             'The params only gives the params for the chosen one ability.'
-                                             'The ability should be after params.',
+            "limitation_for_thought_process_output": "Thought processes of all steps(from 1 to 6) should be provided.",
+            "limitation_for_args_output_format": f'The "{SEPARATOR}" pattern should be after '
+                                                 f'all the thought processes and before the <args and ability>.'
+                                                 f'The <args> should be after the "{SEPARATOR}" pattern.'
+                                                 'The <args> should be formatted as json.'
+                                                 'In <args> you only gives the arguments for the chosen one ability.'
+                                                 'The ability should be after <args>.',
             "hint_for_separation_pattern": f'The "{SEPARATOR}" pattern which separates <thought processes> and '
-                                           '<params and ability> is absolutely important, do not forget to place it.',
+                                           '<args and ability> is absolutely important, do not forget to place it.',
             "hint_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
                                     f'no more words are allowed after "{END}" pattern. '
                                     f'The "{END}" pattern is absolutely important, do not forget to place it '
@@ -145,10 +144,10 @@ class NextMovePrompt(Prompt):
             "abilities": abilities_dict,
             "limitation_1_for_ability_choosing": "Only one ability can be chosen.",
             "limitation_2_for_ability_choosing": "You can only use the abilities listed in <abilities>.",
-            "limitation_for_ability_output_format": 'The ability should be after the params. '
+            "limitation_for_ability_output_format": 'The ability should be after the args. '
                                                     'The ability name should be surrounded by "[ ]".',
-            "limitation_for_params": f'You must make sure the parameters you provide '
-                                     f'for <ability> are real and correct according to <abilities>!'
+            "limitation_for_args": f'You must make sure the parameter_names you provide '
+                                   f'for <args> are real and correct according to <abilities>!'
         }
         prompt = json.dumps(prompt_dict, ensure_ascii=False)
         super().__init__(prompt, ext_context)
@@ -175,9 +174,9 @@ class NextMovePrompt(Prompt):
             if (result.count(SEPARATOR) == 1
                     and result.count(END) == 1
                     and _accurate_action_str.count('ability:') == 1
-                    and _accurate_action_str.count('params:') == 1):
+                    and _accurate_action_str.count('args:') == 1):
                 result = _accurate_action_str
-                params = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
+                args = json.loads(result[result.find('{'):result.rfind('}') + 1].strip())
                 result = result[result.rfind('}') + 1:]
                 ability_name: str = result[result.find('['):result.rfind(']') + 1].strip()[1:-1]
                 _ability = None
@@ -189,7 +188,7 @@ class NextMovePrompt(Prompt):
                             break
                         _ability = ability
                 if _ability is not None:
-                    for _k in params.keys():
+                    for _k in args.keys():
                         if _k not in _ability.parameters.keys():
                             _wrong_param = True
                             _wrong_param_names.append(_k)
@@ -217,5 +216,5 @@ class NextMovePrompt(Prompt):
             return True
         for ability in self.abilities:
             if ability.name == ability_name:
-                return ability, params
+                return ability, args
         return False
