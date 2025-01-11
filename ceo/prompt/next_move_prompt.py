@@ -39,7 +39,23 @@ class NextMovePrompt(Prompt):
                  history: OrderedDict | None = None,
                  ext_context: str = ''):
         self.abilities = abilities
-        abilities_dict: dict = dict()
+        self.__ability_names = [MISSION_COMPLETE, MISSION_FAILED]
+        for ability in self.abilities:
+            self.__ability_names.append(ability.name)
+        abilities_dict: dict = {
+            MISSION_COMPLETE: {
+                'ability_name': MISSION_COMPLETE,
+                'description': 'To be chosen only when mission is completed.',
+                'parameters_required': '/',
+                'returns': '/'
+            },
+            MISSION_FAILED: {
+                'ability_name': MISSION_FAILED,
+                'description': 'To be chosen only when mission is failed.',
+                'parameters_required': '/',
+                'returns': '/'
+            }
+        }
         # noinspection PyUnusedLocal
         latest_progress = None
         for ability in self.abilities:
