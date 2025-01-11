@@ -21,7 +21,7 @@ class QueryResolverPrompt(Prompt):
             "hint_for_thinking": "Deduce and analyse the <user_query> step by step. "
                                  "Keep track of the steps' interdependence and orderliness.",
             "output_format": {
-                "step_{n}": "(Condition) {action_of_step_{n}}"
+                "step_{n}": "({condition_for_step_{n}}) {action_of_step_{n}}"
             },
             "hint_1_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible. "
                                  "Keep track of the steps' interdependence and orderliness.",
