@@ -32,8 +32,8 @@ class Agent(BaseAgent, MemoryAugment):
     def __init__(self, abilities: list[Callable],
                  brain: BaseChatModel, name: str,
                  personality: Personality = Personality.PRUDENT,
-                 query: str = '', memory: OrderedDict | None = None):
-        BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, query=query)
+                 request: str = '', memory: OrderedDict | None = None):
+        BaseAgent.__init__(self, abilities=abilities, brain=brain, name=name, request=request)
         MemoryAugment.__init__(self, memory=memory)
         self.__expected_step = 0
         if personality == Personality.PRUDENT:
@@ -71,18 +71,18 @@ class Agent(BaseAgent, MemoryAugment):
         return self
 
     @override
-    def assign(self, query: str):
-        BaseAgent.assign(self, query)
+    def assign(self, request: str):
+        BaseAgent.assign(self, request)
         return self.reposition()
 
     @override
-    def reassign(self, query: str):
-        return self.assign(query)
+    def reassign(self, request: str):
+        return self.assign(request)
 
     @override
-    def relay(self, query: str, query_by_step: str):
-        self._query = query
-        self._query_by_step = query_by_step
+    def relay(self, request: str, request_by_step: str):
+        self._request = request
+        self._request_by_step = request_by_step
         return self.reposition()
 
     @override
@@ -90,7 +90,7 @@ class Agent(BaseAgent, MemoryAugment):
         __start_time = time.perf_counter()
         if self.__expected_step < 1:
             self.estimate_step()
-        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Query: "{self._query}";')
+        log.debug(f'Agent: {self._name}; Expected steps: {self.__expected_step}; Request: "{self._request}";')
         stop = False
         while True:
             if self._act_count > self.__expected_step:
@@ -98,12 +98,12 @@ class Agent(BaseAgent, MemoryAugment):
                 self.penalize()
             next_move = False
             if not stop:
-                combined_query = {
-                    'raw_query': self._query,
-                    'query_by_step': self._query_by_step
+                combined_request = {
+                    'raw_request': self._request,
+                    'request_by_step': self._request_by_step
                 }
                 next_move = NextMovePrompt(
-                    request=combined_query,
+                    request=combined_request,
                     abilities=self._abilities,
                     history=self.memory
                 ).invoke(self._model)
@@ -111,15 +111,15 @@ class Agent(BaseAgent, MemoryAugment):
                     action, params = next_move
                     if action.name.startswith(AGENTIC_ABILITY_PREFIX):
                         params = {
-                            'query': self._query,
-                            'query_by_step': self._query_by_step,
+                            'request': self._request,
+                            'request_by_step': self._request_by_step,
                             'memory': self.memory
                         }
                     self.memorize(ExecutorPrompt(params=params, action=action).invoke(model=self._model))
                     self._act_count += 1
                     continue
             brief_conclusion, response = IntrospectionPrompt(
-                request=self._query,
+                request=self._request,
                 history=self.memory
             ).invoke(self._model)
             __time_used = time.perf_counter() - __start_time
@@ -137,11 +137,11 @@ class Agent(BaseAgent, MemoryAugment):
                 }
             }
 
-    def assign_with_memory(self, query: str, memory: OrderedDict):
-        return self.assign(query).bring_in_memory(memory)
+    def assign_with_memory(self, request: str, memory: OrderedDict):
+        return self.assign(request).bring_in_memory(memory)
 
     def estimate_step(self):
-        if self._query_by_step == '':
+        if self._request_by_step == '':
             self.__expected_step = 0
             return
         self.__expected_step = len(self.plan(_log=False))
