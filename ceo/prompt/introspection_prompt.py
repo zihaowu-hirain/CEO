@@ -9,36 +9,52 @@ from ceo.prompt.prompt import Prompt
 log = logging.getLogger('ceo.prompt')
 
 END = '--END--'
-START_SENTENCE = 'To assess whether the <query> has been fully achieved, I will outline the recorded actions from <history> and compare them to the <query>:'
+SUCCESS = '--SUCCESS--'
+FAILED = '--FAILED--'
+THOUGHT_PROCESS = '--THOUGHT-PROCESS--'
+CONCLUSION = '--CONCLUSION--'
 
-OUTPUT_EXAMPLE = START_SENTENCE + """
-1. Grocery shopping: The plan was to purchase ingredients such as vegetables, meat, and spices. The history shows that Alex successfully bought carrots, chicken breasts, and garlic from the supermarket.
-2. Cooking the meal: The dish required chopping the vegetables and sautéing them with the chicken. Alex followed this step and cooked the chicken with the carrots and garlic in a pan, ensuring everything was well-cooked.
-3. Plating the dish: The next step involved arranging the cooked meal beautifully on a plate. Alex skillfully plated the chicken and vegetables, making it visually appealing.
-4. Eating the meal: There is no record indicating that Alex sat down to eat the meal after plating it. 
-Conclusion: Based on the above assessment, the <query> has not been fully achieved. While shopping, cooking, and plating were completed, the final step of eating the meal has not been recorded.
-""" + END
+OUTPUT_EXAMPLE = THOUGHT_PROCESS + """
+(Start) [Grocery shopping]: I asked Alex to buy carrots and chicken breasts from the supermarket. """ + f'({SUCCESS})' + """
+(After: Grocery shopping) [Cooking the meal]: I cooked the chicken with the carrots and garlic in a pan. """ + f'({SUCCESS})' + """
+(After: Cooking the meal) [Plating the dish]: I asked Sara to plate the chicken and vegetables. """ + f'({SUCCESS})' + """
+(After: Plating the dish) [Eating the meal]: There is no record in <history> indicating that someone sat down to eat the meal. """ + f'({FAILED})' + """
+Based on above assessments, here is my conclusion:
+""" + CONCLUSION + ("\nYour request has not been fully achieved. "
+                    "I asked Alex to buy carrots and chicken breasts from the supermarket, "
+                    "I cooked the chicken with the carrots and garlic in a pan, "
+                    "Then I asked Sara to plate the chicken and vegetables, "
+                    "but the meal was not eaten by anyone.\n") + END
 
 
 class IntrospectionPrompt(Prompt):
-    def __init__(self, query: str, history: dict | list, ext_context: str = ''):
+    def __init__(self, request: str, history: dict | list, ext_context: str = ''):
         prompt = json.dumps({
-            "precondition": "Below in <history> are actions have been performed to achieve <query>. ",
-            "query": query,
-            "task": "Think step by step whether <query> has been fully achieved "
-                    "according to <history> and <query>. "
+            "precondition": "Below in <history> are actions have been performed to achieve <request>. ",
+            "request": request,
+            "task": "Think step by step whether <request> has been fully achieved "
+                    "according to <history> and <request>. "
                     "Then, provide the detailed results mentioned in <history> accurately. "
-                    "Finally, if the <query> has not been fully achieved, explain why failed?",
+                    "Finally, if the <request> has not been fully achieved, explain why failed?",
             "history": history,
             "output_datatype": "text",
-            "output_format": f'{START_SENTENCE}\n'
-                             '{recorded_actions_from_<history>}\n'
-                             '{conclusion}',
+            "output_format": f'{THOUGHT_PROCESS}\n'
+                             '({condition_for_action_1}) [{action_1_to_take}]: {record_of_action_1_from_history} ({success_or_failed})\n'
+                             '({condition_for_action_2}) [{action_2_to_take}]: {record_of_action_2_from_history} ({success_or_failed})\n'
+                             '({condition_for_action_{n}}) [{action_{n}_to_take}]: {record_of_action_{n}_from_history} ({success_or_failed})\n'
+                             'Based on above assessments, here is my conclusion:\n'
+                             f'{CONCLUSION}\n'
+                             '{conclusion}{results_of_actions}\n'
+                             f'{END}',
             "output_example": OUTPUT_EXAMPLE,
             "hint_1_for_output": 'You must strictly follow the format in <output_format>!! '
                                  'You should refer to example in <output_example>!!',
             "hint_2_for_output": "Provide thought process (briefly and concisely) before opinion and conclusion.",
             "hint_3_for_output": "Output should be concise, accurate, and short enough.",
+            "hint_for_thought_process_pattern": f'The "{THOUGHT_PROCESS}" pattern marks the start of your thought process, '
+                                                'do not forget to place it before your thought process.',
+            "hint_for_thought_conclusion_pattern": f'The "{CONCLUSION}" pattern marks the start of your conclusion, '
+                                                   'do not forget to place it before your conclusion.',
             "hint_for_end_pattern": f'The "{END}" pattern marks the end of your whole response, '
                                     f'no more words are allowed after "{END}" pattern. '
                                     f'The "{END}" pattern is absolutely important, do not forget to place it '
