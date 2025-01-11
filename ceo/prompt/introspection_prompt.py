@@ -4,6 +4,7 @@ from collections.abc import Iterator
 
 from langchain_core.language_models import BaseChatModel
 
+from ceo.exception.too_dumb_exception import TooDumbException
 from ceo.prompt.prompt import Prompt
 
 log = logging.getLogger('ceo.prompt')
@@ -47,10 +48,10 @@ class IntrospectionPrompt(Prompt):
                              '{conclusion}{results_of_actions}\n'
                              f'{END}',
             "output_example": OUTPUT_EXAMPLE,
-            "hint_1_for_output": 'You must strictly follow the format in <output_format>!! '
-                                 'You should refer to example in <output_example>!!',
-            "hint_2_for_output": "Provide thought process (briefly and concisely) before opinion and conclusion.",
-            "hint_3_for_output": "Output should be concise, accurate, and short enough.",
+            "limitation_1_for_output": 'You must strictly follow the format in <output_format>!! '
+                                       'You should refer to example in <output_example>!!',
+            "limitation_2_for_output": "Provide thought process (briefly and concisely) before conclusion.",
+            "limitation_3_for_output": "Output should be concise, accurate, and short enough.",
             "hint_for_thought_process_pattern": f'The "{THOUGHT_PROCESS}" pattern marks the start of your thought process, '
                                                 'do not forget to place it before your thought process.',
             "hint_for_thought_conclusion_pattern": f'The "{CONCLUSION}" pattern marks the start of your conclusion, '
@@ -63,9 +64,28 @@ class IntrospectionPrompt(Prompt):
         super().__init__(prompt, ext_context)
         log.debug(f'IntrospectionPrompt: {self.prompt}')
 
-    def invoke(self, model: BaseChatModel, stream: bool = False) -> str | Iterator:
+    def invoke(self, model: BaseChatModel, stream: bool = False, max_retry: int = 6) -> tuple[str, str] | Iterator:
         if stream:
             return model.stream(self.prompt)
-        resp = model.invoke(self.prompt).content
+        count: int = 0
+        exclamation = '!'
+        tmp_prompt = self.prompt
+        while True:
+            # noinspection DuplicatedCode
+            if count > 0:
+                if count <= max_retry:
+                    log.warning(f'IntrospectionPromptWarn: incorrectly formatted. Retry: {count}')
+                else:
+                    log.warning(f'IntrospectionPromptWarn: max retry exceeded.')
+                    raise TooDumbException(model)
+            count += 1
+            resp = model.invoke(tmp_prompt).content
+            log.debug(f"Introspection thought process: \n{resp}")
+            if resp.count(THOUGHT_PROCESS) == 1 and resp.count(CONCLUSION) == 1 and resp.count(END) == 1:
+                break
+            tmp_prompt = (f'{self.prompt}Attention_{count}: '
+                          f'You must strictly follow the format in <output_format>{count * 2 * exclamation} '
+                          f'You should refer to example in <output_example>{count * 2 * exclamation}')
         log.debug(f'IntrospectionResponse: {resp}')
-        return resp
+        _conclusion = resp[resp.rfind(CONCLUSION) + len(CONCLUSION):resp.rfind(END)].strip().strip('\n').strip('\r')
+        return _conclusion, resp
