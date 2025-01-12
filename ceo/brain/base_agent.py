@@ -1,4 +1,5 @@
 import hashlib
+import inspect
 import json
 import logging
 import random
@@ -30,14 +31,12 @@ class BaseAgent:
         self._request = self._request_by_step = str()
         if request is not None and request != '':
             self._request, self._request_by_step = RequestResolverPrompt(request).invoke(self._model)
-        for ability in abilities:
-            self._abilities.append(Ability(ability))
         if self._name is None or len(self._name) < 1:
             self._name = self._generate_name()
-        self._introduction = str()
-        self.introduce()
         self.__prev_results = list()
         self.__schedule = list()
+        self._introduction = str()
+        self.grant_abilities(abilities)
 
     @property
     def abilities(self) -> list[Ability]:
@@ -83,6 +82,9 @@ class BaseAgent:
         return self._introduction
 
     def grant_ability(self, ability: Callable, update_introduction: bool = True):
+        for _ability in self.abilities:
+            if inspect.getsource(ability) == inspect.getsource(_ability.function):
+                return
         self._abilities.append(Ability(ability))
         self.introduce(update_introduction)
 
