@@ -79,13 +79,16 @@ class BaseAgent:
     def introduce(self, update: bool = False) -> str:
         def get_your_info(*args, **kwargs) -> dict:
             """
-            Get your personal information.
-            The [__SystemAbility__get_your_info] ability can only be used once.
+            What does this ability do: To get your personal information.
+            In any case, the [__SystemAbility__get_your_info] ability can only be used once!!
             :return: All information of yourself.
             """
+            _info_dict = self.to_dict()
+            if 'brain' in _info_dict:
+                del _info_dict['brain']
             return {
                 'success': True,
-                'info': self.to_dict()
+                'info': _info_dict
             }
 
         get_your_info.__name__ = f'__SystemAbility__{get_your_info.__name__}'
