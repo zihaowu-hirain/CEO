@@ -77,6 +77,19 @@ class BaseAgent:
         }
 
     def introduce(self, update: bool = False) -> str:
+        def get_your_info(*args, **kwargs) -> dict:
+            """
+            Get your personal information.
+            The [__SystemAbility__get_your_info] ability can only be used once.
+            :return: All information of yourself.
+            """
+            return {
+                'success': True,
+                'info': self.to_dict()
+            }
+
+        get_your_info.__name__ = f'__SystemAbility__{get_your_info.__name__}'
+        self.grant_ability(get_your_info)
         if self._introduction == '' or update:
             self._introduction = SelfIntroducePrompt(agent=self).invoke(self._model)
         return self._introduction
