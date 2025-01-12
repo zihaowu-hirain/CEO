@@ -120,7 +120,8 @@ class Agent(BaseAgent, MemoryAugment):
                     continue
             brief_conclusion, response = IntrospectionPrompt(
                 request=self._request,
-                history=self.memory
+                history=self.memory,
+                self_info=self.introduction
             ).invoke(self._model)
             __time_used = time.perf_counter() - __start_time
             __step_count = self._act_count

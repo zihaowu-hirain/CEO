@@ -29,11 +29,13 @@ Based on above assessments, here is my conclusion:
 
 
 class IntrospectionPrompt(Prompt):
-    def __init__(self, request: str, history: dict | list, ext_context: str = ''):
+    def __init__(self, request: str, history: dict | list, self_info: str | dict, ext_context: str = ''):
         prompt = json.dumps({
             "precondition": "Below in <history> are actions have been performed to achieve <request>. ",
             "request": request,
-            "task": "Think step by step whether <request> has been fully achieved "
+            "your_identity": self_info,
+            "hint_for_your_identity": 'You can know your identity from <your_identity>.',
+            "task": "Think step by step concisely whether <request> has been fully achieved "
                     "according to <history> and <request>. "
                     "Then, provide the detailed results mentioned in <history> accurately. "
                     "Finally, if the <request> has not been fully achieved, explain why failed?",
@@ -52,6 +54,8 @@ class IntrospectionPrompt(Prompt):
                                        'You should refer to example in <output_example>!!',
             "limitation_2_for_output": "Provide thought process (briefly and concisely) before conclusion.",
             "limitation_3_for_output": "Output should be concise, accurate, and short enough.",
+            "limitation_for_conclusion": "In <conclusion> you must provide all the detailed results of all actions performed "
+                                         "to achieve the <request>.",
             "hint_for_thought_process_pattern": f'The "{THOUGHT_PROCESS}" pattern marks the start of your thought process, '
                                                 'do not forget to place it before your thought process.',
             "hint_for_thought_conclusion_pattern": f'The "{CONCLUSION}" pattern marks the start of your conclusion, '

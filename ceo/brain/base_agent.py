@@ -181,7 +181,8 @@ class BaseAgent:
             self.__step_quiet()
         brief_conclusion, response = IntrospectionPrompt(
             request=self._request,
-            history=self.__prev_results
+            history=self.__prev_results,
+            self_info=self.introduction
         ).invoke(self._model)
         log.debug(f'Agent: {self._name}; Conclusion: {brief_conclusion};')
         self.reposition()
