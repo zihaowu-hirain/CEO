@@ -75,3 +75,7 @@ class Ability:
     @property
     def returns(self) -> any:
         return self._returns
+
+    @property
+    def function(self) -> Callable:
+        return copy.deepcopy(self._function)
