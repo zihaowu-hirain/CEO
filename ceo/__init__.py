@@ -1,6 +1,10 @@
 import logging
 
-from .brain.lm import get_openai_model, get_dashscope_model
+from .brain.lm import (
+    get_openai_model,
+    get_dashscope_model,
+    get_deepseek_model
+)
 from .brain.agent import Agent
 from .ability import Ability, AgenticAbility
 from .util import ability, agentic
