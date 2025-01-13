@@ -10,7 +10,8 @@
 <h4 align="center">
     <p>
         <a href="https://github.com/vortezwohl/CEO-Agentic-AI-Framework/blob/main/README.md">English</a> |
-        <b>繁體中文</b>
+        <b>繁體中文</b> |
+        <a href="https://github.com/vortezwohl/CEO-Agentic-AI-Framework/blob/main/i18n/README_zh-hans.md">简体中文</a>
     </p>
 </h4>
 
