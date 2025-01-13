@@ -9,7 +9,7 @@ from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
 
-from ceo.ability.ability import Ability
+from ceo.ability.agentic_ability import Ability, PREFIX as AGENTIC_ABILITY_PREFIX
 from ceo.prompt import (
     SchedulerPrompt,
     AnalyserPrompt,
@@ -97,29 +97,58 @@ class BaseAgent:
             self._introduction = SelfIntroducePrompt(agent=self).invoke(self._model)
         return self._introduction
 
-    def grant_ability(self, ability: Callable, update_introduction: bool = True):
-        for _ability in self.abilities:
-            if inspect.getsource(ability) == inspect.getsource(_ability.function):
-                return
-        self._abilities.append(Ability(ability))
+    def grant_ability(self, ability: Callable | Ability, update_introduction: bool = True):
+        if isinstance(ability, Ability):
+            for _ability in self._abilities:
+                both_agentic = (_ability.name.startswith(AGENTIC_ABILITY_PREFIX)
+                                and ability.name.startswith(AGENTIC_ABILITY_PREFIX))
+                both_not_agentic = (not _ability.name.startswith(AGENTIC_ABILITY_PREFIX)
+                                    and not ability.name.startswith(AGENTIC_ABILITY_PREFIX))
+                if both_agentic:
+                    if ability.name == _ability.name:
+                        return
+                elif both_not_agentic:
+                    if inspect.getsource(ability.function) == inspect.getsource(_ability.function):
+                        return
+            self._abilities.append(ability)
+        else:
+            for _ability in self._abilities:
+                if not _ability.name.startswith(AGENTIC_ABILITY_PREFIX):
+                    if inspect.getsource(ability) == inspect.getsource(_ability.function):
+                        return
+            self._abilities.append(Ability(ability))
         self.introduce(update=update_introduction)
 
-    def grant_abilities(self, abilities: list[Callable]):
+    def grant_abilities(self, abilities: list[Callable | Ability]):
+        prev_size = len(self.abilities)
         for ability in abilities:
             self.grant_ability(ability, update_introduction=False)
-        self.introduce(update=True)
+        self.introduce(update=(prev_size != len(self.abilities)))
 
-    def deprive_ability(self, ability: Callable, update_introduction: bool = True):
-        ability = Ability(ability)
+    def deprive_ability(self, ability: Callable | Ability, update_introduction: bool = True):
+        removed = False
+        if not isinstance(ability, Ability):
+            ability = Ability(ability)
         for _ability in self._abilities:
-            if _ability.name == ability.name:
-                self._abilities.remove(_ability)
-        self.introduce(update=update_introduction)
+            both_agentic = (_ability.name.startswith(AGENTIC_ABILITY_PREFIX)
+                            and ability.name.startswith(AGENTIC_ABILITY_PREFIX))
+            both_not_agentic = (not _ability.name.startswith(AGENTIC_ABILITY_PREFIX)
+                            and not ability.name.startswith(AGENTIC_ABILITY_PREFIX))
+            if both_agentic:
+                if _ability.name == ability.name:
+                    self._abilities.remove(_ability)
+                    removed = True
+            elif both_not_agentic:
+                if inspect.getsource(_ability.function) == inspect.getsource(ability.function):
+                    self._abilities.remove(_ability)
+                    removed = True
+        self.introduce(update=(removed and update_introduction))
 
-    def deprive_abilities(self, abilities: list[Callable]):
+    def deprive_abilities(self, abilities: list[Callable | Ability]):
+        prev_size = len(self.abilities)
         for ability in abilities:
             self.deprive_ability(ability, update_introduction=False)
-        self.introduce(update=True)
+        self.introduce(update=(prev_size != len(self.abilities)))
 
     def plan(self, _log: bool = True) -> list:
         scheduling = SchedulerPrompt(request=self._request_by_step, abilities=self._abilities)

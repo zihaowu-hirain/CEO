@@ -82,4 +82,4 @@ class Ability:
 
     @property
     def function(self) -> Callable:
-        return copy.deepcopy(self._function)
+        return self._function
