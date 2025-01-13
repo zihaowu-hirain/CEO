@@ -31,6 +31,6 @@ if __name__ == '__main__':
     radius = '(10.01 * 10.36 * 3.33 / 2 * 16)'  # 2762.663904
     pi = 3.14159
     output_file = 'result.txt'
-    query = f"Here is a sphere with radius of {radius} cm and pi here is {pi}, find the area and volume respectively then write the results into a file called '{output_file}'."
-    result = ceo.assign(query).just_do_it()  # area = 95910378.2949379, volume = 88322713378.13666
+    request = f"Here is a sphere with radius of {radius} cm and pi here is {pi}, find the area and volume respectively then write the results into a file called '{output_file}'."
+    result = ceo.assign(request).just_do_it()  # area = 95910378.2949379, volume = 88322713378.13666
     print(result)

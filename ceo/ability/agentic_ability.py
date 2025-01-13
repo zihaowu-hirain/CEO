@@ -35,11 +35,21 @@ class AgenticAbility(Ability):
                         f"and then decide whether to initiates a conversation with {agent.name} "
                         "according to its abilities.",
                 "parameters": [{
-                    "query": {
-                        "name": "query",
+                    "request": {
+                        "name": "request",
                         "type": "str",
-                        "description": "A comprehensively, precisely and exactly instruction "
+                        "description": f"A brief instruction to be processed by {agent.name}."
+                    },
+                    "request_by_step": {
+                        "name": "request_by_step",
+                        "type": "str",
+                        "description": "A comprehensive, precise and exact instruction "
                                        f"to be processed by {agent.name}."
+                    },
+                    "memory": {
+                        "name": "memory",
+                        "type": "dict",
+                        "description": "/"
                     }
                 }],
                 "returns": {
@@ -52,10 +62,14 @@ class AgenticAbility(Ability):
         log.debug(f'Agent dispatcher generated. {self.__name__}: {self.__doc__}')
 
     @override
-    def __call__(self, query: str, query_by_step: str, memory: OrderedDict, *args, **kwargs) -> str:
-        self._agent.relay(query_by_step=query_by_step, query=query)
+    def __call__(self, request: str, request_by_step: str, memory: OrderedDict, *args, **kwargs) -> str:
+        self._agent.relay(request_by_step=request_by_step, request=request)
         self._agent.bring_in_memory(memory)
         result = self._agent.just_do_it()
         if isinstance(result, dict):
+            if 'conclusion' in result.keys():
+                del result['conclusion']
+            if 'misc' in result.keys():
+                del result['misc']
             return json.dumps(result, ensure_ascii=False)
         return result

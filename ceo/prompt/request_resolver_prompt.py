@@ -8,20 +8,20 @@ from ceo.prompt.prompt import Prompt
 log = logging.getLogger('ceo.prompt')
 
 
-class QueryResolverPrompt(Prompt):
-    def __init__(self, query: str, ext_context: str = ''):
+class RequestResolverPrompt(Prompt):
+    def __init__(self, request: str, ext_context: str = ''):
         prompt = json.dumps({
-            "precondition": 'There is a user query shown below at <user_query>',
-            "user_query": query,
-            "task": "What you need to do is to tell user's intention based on <user_query>.",
-            "additional_important": "For any details mentioned in <user_query>, you should preserve them in full, "
+            "precondition": 'There is a user request shown below at <user_request>',
+            "user_request": request,
+            "task": "What you need to do is to tell user's intention based on <user_request>.",
+            "additional_important": "For any details mentioned in <user_request>, you should preserve them in full, "
                                     "especially specific information with accuracy requirements "
                                     "such as all numbers occur, parameter, location, "
                                     "date/time, name, proper noun, entity, etc...",
-            "hint_for_thinking": "Deduce and analyse the <user_query> step by step. "
+            "hint_for_thinking": "Deduce and analyse the <user_request> step by step. "
                                  "Keep track of the steps' interdependence and orderliness.",
             "output_format": {
-                "step_{n}": "(Condition) {action_of_step_{n}}"
+                "step_{n}": "({condition_for_step_{n}}) {action_of_step_{n}}"
             },
             "hint_1_for_output": "Break user's intention(s) down into multiple minimum steps as granular as possible. "
                                  "Keep track of the steps' interdependence and orderliness.",
@@ -34,14 +34,14 @@ class QueryResolverPrompt(Prompt):
                 "step_...": "(After: found toys)..."
             }
         }, ensure_ascii=False)
-        self.__query = query
+        self.__request = request
         super().__init__(prompt, ext_context)
-        log.debug(f'QueryResolverPrompt: {self.prompt}')
+        log.debug(f'RequestResolverPrompt: {self.prompt}')
 
     def invoke(self, model: BaseChatModel) -> tuple[str, str]:
         _dont_do_anything = "Don't do anything."
-        if self.__query == '':
+        if self.__request == '':
             return _dont_do_anything, _dont_do_anything
-        user_query_by_step = model.invoke(self.prompt).content
-        log.debug(f'QueryResolverResponse: {user_query_by_step}')
-        return self.__query, user_query_by_step
+        user_request_by_step = model.invoke(self.prompt).content
+        log.debug(f'RequestResolverResponse: {user_request_by_step}')
+        return self.__request, user_request_by_step

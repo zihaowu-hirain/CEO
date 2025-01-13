@@ -8,10 +8,10 @@ from .enum import Personality
 
 __AUTHOR__ = '吴子豪 / Vortez Wohl'
 __EMAIL__ = 'vortez.wohl@gmail.com'
-__VERSION__ = '0.10.1-preview'
+__VERSION__ = '0.11.2-preview'
 
 logger = logging.getLogger('ceo')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(levelname)s] %(asctime)s %(name)s : %(message)s')
@@ -19,8 +19,8 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 logger = logging.getLogger('ceo.prompt')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 logger = logging.getLogger('ceo.ability')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 logger = logging.getLogger('ceo.agent')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)

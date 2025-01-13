@@ -19,7 +19,7 @@ class Prompt:
     @staticmethod
     def construct_prompt(prompt: str, ext_context: str) -> str:
         __now = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S.%f')
-        __hash = hashlib.md5(f'{prompt}{__now}{random.uniform(0, 10 ** 3)}'.encode()).hexdigest()
+        __hash = hashlib.md5(f'{prompt}{__now}{random.uniform(0, 10 ** 3)}'.encode('utf-8')).hexdigest()
         __misc = {
             "__current_timestamp": __now,
             "__prompt_id": __hash,
