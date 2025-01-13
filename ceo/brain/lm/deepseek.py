@@ -7,11 +7,11 @@ DEFAULT_DEEPSEEK = 'deepseek-chat'
 BASE_URL = "https://api.deepseek.com/v1"
 
 
-def get_lm(key: str = None, name: str = DEFAULT_DEEPSEEK, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P,
+def get_lm(key: str = None, model_name: str = DEFAULT_DEEPSEEK, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P,
            base_url: str = BASE_URL, stream: bool = False) -> BaseChatModel:
     return langchain_openai.ChatOpenAI(
         api_key=key,
-        model=name,
+        model=model_name,
         top_p=top_p,
         temperature=temp,
         streaming=stream,
