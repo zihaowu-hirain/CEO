@@ -7,6 +7,13 @@
     </p>
 </div>
 
+<h4 align="center">
+    <p>
+        <a href="https://github.com/vortezwohl/CEO-Agentic-AI-Framework/blob/main/README.md">English</a> |
+        <b>繁體中文</b>
+    </p>
+</h4>
+
 <h5></br></h5>
 
 ## 安裝
