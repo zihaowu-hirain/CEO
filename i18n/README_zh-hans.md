@@ -3,7 +3,7 @@
         <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="105">
     </p>
     <p style="font-weight: 200; font-size: 19px">
-        一個基於 <a href="https://arxiv.org/abs/2210.03629">ReAct</a> 範式的超輕量智能體框架，支援主流的 LLMs，比 <a href="https://github.com/openai/swarm">Swarm</a> 更强.
+        一个基于 <a href="https://arxiv.org/abs/2210.03629">ReAct</a> 范式的超轻量级智能体框架，支持主流 LLMs，比 <a href="https://github.com/openai/swarm">Swarm</a> 更强.
     </p>
 </div>
 
@@ -16,17 +16,17 @@
 
 <h5></br></h5>
 
-## 安裝
+## 安装
 
-- 從 [PYPI](https://pypi.org/project/ceo-py/)
+- 从 [PYPI](https://pypi.org/project/ceo-py/)
 
     ```shell
     pip install ceo-py
     ```
 
-- 從 [Github](https://github.com/vortezwohl/CEO/releases)
+- 从 [Github](https://github.com/vortezwohl/CEO/releases)
 
-    先下載 .whl 檔案，然後執行
+    先下载 .whl 文件，然后执行
 
     ```shell
     pip install ./ceo_py-x.x.x-py3-none-any.whl
@@ -34,7 +34,7 @@
 
 ## 引用
 
-如果您正在將 `CEO` 框架整合到您的研究中，請務必正確**引用**它，以聲明它對您工作的貢獻.
+如果您正在将 `CEO` 框架整合到您的研究中，请务必正确**引用**它，以声明它对您工作的贡献.
 
 ```latex
 @software {CEO,
@@ -47,44 +47,44 @@ date = {2024-10-25}
 }
 ```
 
-## 快速開始
+## 快速开始
 
-要開始構建您自己的智能體，請按照以下步驟執行。
+要开始搭建您自己的智能体，请按照以下步骤执行。
 
-1. 設置環境變數 `OPENAI_API_KEY`
+1. 设置环境变量 `DEEPSEEK_API_KEY`
 
     ```
     # .env
-    OPENAI_API_KEY=sk-...
+    DEEPSEEK_API_KEY=sk-...
     ```
 
-2. 從 `CEO` 引入 SDKs
+2. 从 `CEO` 引入 SDKs
 
-    - `Agent` 讓您實例化一個智能體
+    - `Agent` 让您实例化一个智能体。
 
-    - `Personality` 是一個列舉類，用於自訂智能體的個性：
+    - `Personality` 是一个枚举类，用于设定智能体的个性：
 
-        - `Personality.PRUDENT` 使智能體的行為更謹慎。
+        - `Personality.PRUDENT` 使智能体的行为更加谨慎。
 
-        - `Personality.INQUISITIVE` 鼓勵智能體更主動嘗試和探索。
+        - `Personality.INQUISITIVE` 鼓励智能体更主动尝试和探索。
 
-    - `get_openai_model` 給您一個 `BaseChatModel` 作為思考引擎。
+    - `get_deepseek_model` 给您一个 `BaseChatModel` 作为思维引擎。
 
-    - `@ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = '')` 是一個裝飾器，用來將函數聲明為一個 `Ability`.
+    - `@ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = '')` 是一个装饰器，用来将函数声明为一个 `Ability`.
 
-    - `@agentic(agent: Agent)` 是一個裝飾器，用來將函數聲明為一個  `AgenticAbility`.
+    - `@agentic(agent: Agent)` 是一个装饰器，用来将函数声明为一个  `AgenticAbility`.
 
     ```python
     from ceo import (
         Agent,
         Personality,
-        get_openai_model,
+        get_deepseek_model,
         ability,
         agentic
     )
     ```
 
-3. 聲明函數作為基本能力
+3. 声明函数作为基本能力
 
     ```python
     @ability
@@ -99,16 +99,16 @@ date = {2024-10-25}
         return f'{content} written to {filename}.'
     ```
 
-4. 實例化一個智能体
+4. 实例化一个智能体
 
-    您可以在實例化智能體時賦予能力。
+    您可以在实例化智能体的时候赋予其能力。
 
     ```python
-    model = get_openai_model()
+    model = get_deepseek_model()
     agent = Agent(abilities=[calculator, write_file], brain=model, name='CEO', personality=Personality.INQUISITIVE)
     ```
 
-    - 您也可以稍後賦予更多能力給智能體：
+    - 您也可以稍后赋予更多能力给智能体：
 
         ```python
         agent.grant_ability(calculator)
@@ -120,7 +120,7 @@ date = {2024-10-25}
         agent.grant_abilities([calculator])
         ```
 
-    - 剝奪能力：
+    - 剥夺能力：
 
         ```python
         agent.deprive_ability(calculator)
@@ -132,33 +132,33 @@ date = {2024-10-25}
         agent.deprive_abilities([calculator])
         ```
     
-    您可以使用方法 `change_personality(personality: Personality)` 更改智能體的個性。
+    您可以使用方法 `change_personality(personality: Personality)` 更改智能体的个性。
 
     ```python
     agent.change_personality(Personality.PRUDENT)
     ```
 
-5. 指定请求給您的智能體
+5. 指定请求给您的智能体
 
     ```python
     agent.assign("Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
     ```
 
-6. 將其餘工作交給您的智能體
+6. 将其余工作交给您的智能体
 
     ```python
     response = agent.just_do_it()
     print(response)
     ```
 
-> `ceo` 也支援多智能體協作場景，可用 `@agentic(agent: Agent)`, 宣告一個函數為智能體呼叫能力，然後賦予給一個智能體。[查看示例](#multi-agent)。
+> `ceo` 也支持多智能体协作场景，可用 `@agentic(agent: Agent)`, 声明一个函数为智能体呼叫能力，然后赋予给另一个智能体。[查看示例](#multi-agent)。
 
 
-## 範例
+## 范例
 
-- ### 複合任務
+- ### 复合任务
 
-    1. 計算一個球體的表面積和體積，並將結果寫入一個文檔。
+    1. 计算一个球体的表面积和体积，然后将结果写入文件。
 
         ```python
         import logging
@@ -166,7 +166,7 @@ date = {2024-10-25}
         from ceo import (
             Agent,
             Personality,
-            get_openai_model,
+            get_deepseek_model,
             ability
         )
         from sympy import simplify
@@ -174,15 +174,16 @@ date = {2024-10-25}
 
         load_dotenv()
         logging.getLogger('ceo').setLevel(logging.DEBUG)
+        model = get_deepseek_model()
 
 
-        @ability
+        @ability(model)
         def calculator(expr: str) -> float:
             # this function only accepts a single math expression
             return simplify(expr)
 
 
-        @ability
+        @ability(model)
         def write_file(filename: str, content: str) -> str:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
@@ -190,7 +191,7 @@ date = {2024-10-25}
 
 
         if __name__ == '__main__':
-            ceo = Agent(abilities=[calculator, write_file], brain=get_openai_model(), name='CEO', personality=Personality.INQUISITIVE)
+            ceo = Agent(abilities=[calculator, write_file], brain=model, name='CEO', personality=Personality.INQUISITIVE)
             radius = '(10.01 * 10.36 * 3.33 / 2 * 16)'  # 2762.663904
             pi = 3.14159
             output_file = 'result.txt'
@@ -216,9 +217,9 @@ date = {2024-10-25}
         {'success': True, 'conclusion': "Your request has been fully achieved. The calculations for the surface area and volume were performed correctly, and the results were successfully written to the file 'result.txt'.", 'raw_response': "--THOUGHT-PROCESS--  \n(Initial calculation) [Calculate radius]: The radius was calculated as (10.01 * 10.36 * 3.33 / 2 * 16) resulting in 2762.66390400000 cm. (--SUCCESS--)  \n(After: Calculate radius) [Calculate surface area]: The surface area was calculated using the formula '4 * π * r²', yielding 95910378.2949379 cm². (--SUCCESS--)  \n(After: Calculate surface area) [Calculate volume]: The volume was calculated using the formula '(4/3) * π * r³', resulting in 88322713378.1367 cm³. (--SUCCESS--)  \n(After: Calculate volume) [Write results to file]: The results were successfully written to 'result.txt' with the correct surface area and volume. (--SUCCESS--)  \n\nBased on above assessments, here is my conclusion:  \n--CONCLUSION--  \nYour request has been fully achieved. The calculations for the surface area and volume were performed correctly, and the results were successfully written to the file 'result.txt'.  \n--END--", 'misc': {'time_used': 59.79923509992659, 'step_count': 4}}
         ```
 
-- ### 多智能體協作
+- ### 多智能体协作
     
-    1. 請合適的智能體計算球體的表面積和體積，並將結果寫入一個文檔中。
+    1. 请合适的智能体计算球体的表面积和体积，将结果并写入文件。
   
         ```python
         import logging
@@ -228,23 +229,23 @@ date = {2024-10-25}
         from ceo import (
             Agent,
             Personality,
-            get_openai_model,
+            get_deepseek_model,
             agentic,
             ability
         )
 
         load_dotenv()
         logging.getLogger('ceo').setLevel(logging.DEBUG)
-        model = get_openai_model()
+        model = get_deepseek_model()
 
 
-        @ability
+        @ability(model)
         def calculator(expr: str) -> float:
             # this function only accepts a single math expression
             return simplify(expr)
 
 
-        @ability
+        @ability(model)
         def write_file(filename: str, content: str) -> str:
             with open(filename, 'w', encoding='utf-8') as f:
                 f.write(content)
@@ -275,7 +276,7 @@ date = {2024-10-25}
             print(result)
         ```
 
-        > 在多智能體協作的情境下，您可以為每個不同的智能體分配不同的個性。例如，在上述腳本中，Jack 的能力是進行計算。我希望他能多嘗試和探索，所以將 Jack 的個性設置為 `Personality.INQUISITIVE`。另一方面，Taylor 的能力是創建和寫入文檔。對於涉及與外部文檔系統交互的操作，我希望他能夠更加謹慎，所以將 Taylor 的個性設置為 `Personality.PRUDENT`。
+        > 在多智能体协作场景下，您可以为不同的智能体分配不同的个性。例如，在上述脚本中，Jack 的能力是执行计算。我希望他能多尝试和探索，所以將 Jack 的个性设置为 `Personality.INQUISITIVE`。另一方面，Taylor 的能力是创建和写入文件。对于涉及外部文件系统的操作，我希望他能够更加谨慎，所以将 Taylor 的个性设置为 `Personality.PRUDENT`。
 
         ```
         # result.txt
