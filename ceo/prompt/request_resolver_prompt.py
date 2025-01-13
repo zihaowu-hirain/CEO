@@ -27,6 +27,8 @@ class RequestResolverPrompt(Prompt):
                                  "Keep track of the steps' interdependence and orderliness.",
             "hint_2_for_output": 'You must strictly follow the format in <output_format>! '
                                  'You can refer to example in <output_example>!',
+            "limitation_1_for_output": 'Make your output brief, concise, accurate and short enough.',
+            "limitation_2_for_output": 'Thought process is not required.',
             "output_example": {
                 "step_1": "(Start) Open the door",
                 "step_2": "(After: door opened) Go into the room",

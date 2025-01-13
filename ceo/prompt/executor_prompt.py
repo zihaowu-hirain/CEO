@@ -59,6 +59,7 @@ class ExecutorPrompt(Prompt):
                 'returns': '{result_just_received}',
                 'summarization': '{summarization}'
             },
+            "output_datatype": "json",
             "output_example": json.dumps({
                 'ability': 'wechat_sender',
                 'choice': "{'msg': 'Bonjour'}",
@@ -66,7 +67,7 @@ class ExecutorPrompt(Prompt):
                 'summarization': "I used the wechat_sender ability to wrote a wechat message which says 'Bonjour', "
                                  "the result shows 'success' which indicates success of wechat message sending."
             }, ensure_ascii=False),
-            "hint_for_output": 'You must strictly follow the format in <output_format>!! '
+            "hint_for_output": 'You must strictly follow the json format in <output_format>!! '
                                'You can refer to example in <output_example>!!'
         }, ensure_ascii=False)
         if len(self.ext_context) > 0:
