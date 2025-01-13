@@ -107,12 +107,14 @@ class NextMovePrompt(Prompt):
                     "condition": "If the <user_request> has not been fully properly accomplished and "
                                  "there is no ability in your <abilities> "
                                  "that can further advance the accomplishment of the <user_request>",
-                    "action": f'Provide a special ability called "{MISSION_FAILED}" (which is not a real ability).'
+                    "action": f'Provide a special ability called "{MISSION_FAILED}" (which is not a real ability) '
+                              'with "args:{}".'
                 }, {
                     "step": 6,
                     "condition": "If the <user_request> has been fully and properly accomplished "
                                  "according to <history> and <user_request>",
-                    "action": f'Provide a special ability called "{MISSION_COMPLETE}" (which is not a real ability).'
+                    "action": f'Provide a special ability called "{MISSION_COMPLETE}" (which is not a real ability) '
+                              'with "args:{}".'
                 }
             ],
             "be_aware_of_sequence_of_movements": 'Ensure that actions be taken in the proper order '
