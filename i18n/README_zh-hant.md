@@ -3,37 +3,31 @@
         <img src="https://github.com/vortezwohl/CEO/releases/download/icon/ceo-icon-inv.png" alt="CEO" height="105">
     </p>
     <p style="font-weight: 200; font-size: 19px">
-        An ultra-lightweight agentic AI framework based on the <a href="https://arxiv.org/abs/2210.03629">ReAct</a> paradigm, supporting mainstream LLMs and is stronger than <a href="https://github.com/openai/swarm">Swarm</a>.
+        一個基於 <a href="https://arxiv.org/abs/2210.03629">ReAct</a> 範式的超輕量智能體框架，支援主流的 LLMs，比 <a href="https://github.com/openai/swarm">Swarm</a> 更强.
     </p>
 </div>
 
 <h5></br></h5>
 
-## Installation
+## 安裝
 
-- From [PYPI](https://pypi.org/project/ceo-py/)
+- 從 [PYPI](https://pypi.org/project/ceo-py/)
 
     ```shell
     pip install ceo-py
     ```
 
-- From [Github](https://github.com/vortezwohl/CEO/releases)
+- 從 [Github](https://github.com/vortezwohl/CEO/releases)
 
-    Download .whl first then run
+    先下載 .whl 檔案，然後執行
 
     ```shell
     pip install ./ceo_py-x.x.x-py3-none-any.whl
     ```
 
-## Citation
+## 引用
 
-If you are incorporating the `CEO` framework into your research, please remember to properly **cite** it to acknowledge its contribution to your work.
-
-Если вы интегрируете фреймворк `CEO` в своё исследование, пожалуйста, не забудьте правильно сослаться на него, указывая его вклад в вашу работу.
-
-もしあなたが研究に `CEO` フレームワークを組み入れているなら、その貢献を認めるために適切に引用することを忘れないでください.
-
-如果您正在將 `CEO` 框架整合到您的研究中，請記得正確引用它，以聲明它對您工作的貢獻.
+如果您正在將 `CEO` 框架整合到您的研究中，請務必正確**引用**它，以聲明它對您工作的貢獻.
 
 ```latex
 @software {CEO,
@@ -46,32 +40,32 @@ date = {2024-10-25}
 }
 ```
 
-## Quick Start
+## 快速開始
 
-To start building your own agent, follow the steps listed.
+要開始構建您自己的智能體，請按照以下步驟執行。
 
-1. set environmental variable `OPENAI_API_KEY`
+1. 設置環境變數 `OPENAI_API_KEY`
 
     ```
     # .env
     OPENAI_API_KEY=sk-...
     ```
 
-2. bring in SDKs from `CEO`
+2. 從 `CEO` 引入 SDKs
 
-    - `Agent` lets you instantiate an agent.
+    - `Agent` 讓您實例化一個智能體
 
-    - `Personality` is an enumeration class used for customizing personalities of agents.
+    - `Personality` 是一個列舉類，用於自訂智能體的個性：
 
-        - `Personality.PRUDENT` makes the agent's behavior more cautious.
+        - `Personality.PRUDENT` 使智能體的行為更謹慎。
 
-        - `Personality.INQUISITIVE` encourages the agent to be more proactive in trying and exploring.
+        - `Personality.INQUISITIVE` 鼓勵智能體更主動嘗試和探索。
 
-    - `get_openai_model` gives you a `BaseChatModel` as thought engine.
+    - `get_openai_model` 給您一個 `BaseChatModel` 作為思考引擎。
 
-    - `@ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = '')` is a decorator which lets you declare a function as an `Ability`.
+    - `@ability(brain: BaseChatModel, cache: bool = True, cache_dir: str = '')` 是一個裝飾器，用來將函數聲明為一個 `Ability`.
 
-    - `@agentic(agent: Agent)` is a decorator which lets you declare a function as an `AgenticAbility`.
+    - `@agentic(agent: Agent)` 是一個裝飾器，用來將函數聲明為一個  `AgenticAbility`.
 
     ```python
     from ceo import (
@@ -83,7 +77,7 @@ To start building your own agent, follow the steps listed.
     )
     ```
 
-3. declare functions as basic abilities
+3. 聲明函數作為基本能力
 
     ```python
     @ability
@@ -98,66 +92,66 @@ To start building your own agent, follow the steps listed.
         return f'{content} written to {filename}.'
     ```
 
-4. instantiate an agent
+4. 實例化一個智能体
 
-    You can grant abilities to agents while instantiating them.
+    您可以在實例化智能體時賦予能力。
 
     ```python
     model = get_openai_model()
     agent = Agent(abilities=[calculator, write_file], brain=model, name='CEO', personality=Personality.INQUISITIVE)
     ```
 
-    - You can also grant more abilities to agents later:
+    - 您也可以稍後賦予更多能力給智能體：
 
         ```python
         agent.grant_ability(calculator)
         ```
 
-        or
+        或
 
         ```python
         agent.grant_abilities([calculator])
         ```
 
-    - To deprive abilities:
+    - 剝奪能力：
 
         ```python
         agent.deprive_ability(calculator)
         ```
 
-        or
+        或
 
         ```python
         agent.deprive_abilities([calculator])
         ```
     
-    You can change an agent's personality using method `change_personality(personality: Personality)`
+    您可以使用方法 `change_personality(personality: Personality)` 更改智能體的個性。
 
     ```python
     agent.change_personality(Personality.PRUDENT)
     ```
 
-5. assign a request to your agent
+5. 指定请求給您的智能體
 
     ```python
     agent.assign("Here is a sphere with radius of (1 * 9.5 / 2 * 2) cm and pi here is 3.14159, find the area and volume respectively then write the results into a file called 'result.txt'.")
     ```
 
-6. leave the rest to your agent
+6. 將其餘工作交給您的智能體
 
     ```python
     response = agent.just_do_it()
     print(response)
     ```
 
-> `ceo` also supports multi-agent collaboration scenario, declare a function as agent calling ability with `@agentic(agent: Agent)`, then grant it to an agent. [See example](#multi-agent).
+> `ceo` 也支持多智能體協作場景，可用 `@agentic(agent: Agent)`, 宣告一個函數為智能體呼叫能力，然後賦予給一個智能體。[查看示例](#multi-agent)。
 
 
-## Examples
+## 範例
 
-- ### Compound Tasks
+- ### 複合任務
 
-    1. Find the surface area and volume of a sphere and write the results into a file.
+    1. 計算一個球體的表面積和體積，並將結果寫入一個文檔。
 
         ```python
         import logging
@@ -215,9 +209,9 @@ To start building your own agent, follow the steps listed.
         {'success': True, 'conclusion': "Your request has been fully achieved. The calculations for the surface area and volume were performed correctly, and the results were successfully written to the file 'result.txt'.", 'raw_response': "--THOUGHT-PROCESS--  \n(Initial calculation) [Calculate radius]: The radius was calculated as (10.01 * 10.36 * 3.33 / 2 * 16) resulting in 2762.66390400000 cm. (--SUCCESS--)  \n(After: Calculate radius) [Calculate surface area]: The surface area was calculated using the formula '4 * π * r²', yielding 95910378.2949379 cm². (--SUCCESS--)  \n(After: Calculate surface area) [Calculate volume]: The volume was calculated using the formula '(4/3) * π * r³', resulting in 88322713378.1367 cm³. (--SUCCESS--)  \n(After: Calculate volume) [Write results to file]: The results were successfully written to 'result.txt' with the correct surface area and volume. (--SUCCESS--)  \n\nBased on above assessments, here is my conclusion:  \n--CONCLUSION--  \nYour request has been fully achieved. The calculations for the surface area and volume were performed correctly, and the results were successfully written to the file 'result.txt'.  \n--END--", 'misc': {'time_used': 59.79923509992659, 'step_count': 4}}
         ```
 
-- ### Multi-agent
+- ### 多智能體協作
     
-    1. Ask the suitable agents to find the surface area and volume of a sphere and write the results into a file.
+    1. 請合適的智能體計算球體的表面積和體積，並將結果寫入一個文檔中。
   
         ```python
         import logging
@@ -274,7 +268,7 @@ To start building your own agent, follow the steps listed.
             print(result)
         ```
 
-        > In multi-agent collaboration scenario, you can assign different personalities to each distinct agent. For example, in the aforementioned script, Jack's capability is to perform calculations. I want him to try more and explore more, so Jack's personality is set to `Personality.INQUISITIVE`. On the other hand, Taylor's capability is to create and write files. For operations involving interaction with the external file system, I want him to be more cautious, so Taylor's personality is set to `Personality.PRUDENT`.
+        > 在多智能體協作的情境下，您可以為每個不同的智能體分配不同的個性。例如，在上述腳本中，Jack 的能力是進行計算。我希望他能多嘗試和探索，所以將 Jack 的個性設置為 `Personality.INQUISITIVE`. 。另一方面，Taylor 的能力是創建和寫入文檔。對於涉及與外部文檔系統交互的操作，我希望他能夠更加謹慎，所以將 Taylor 的個性設置為 `Personality.PRUDENT`.
 
         ```
         # result.txt
