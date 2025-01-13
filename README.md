@@ -40,7 +40,7 @@ If you are incorporating the `CEO` framework into your research, please remember
 
 もしあなたが研究に `CEO` フレームワークを組み入れているなら、その貢献を認めるために適切に引用することを忘れないでください.
 
-如果您正在將 `CEO` 框架整合到您的研究中，請記得正確引用它，以聲明它對您工作的貢獻.
+如果您正在將 `CEO` 框架整合到您的研究中，請務必正確引用它，以聲明它對您工作的貢獻.
 
 ```latex
 @software {CEO,
