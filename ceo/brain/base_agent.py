@@ -76,7 +76,7 @@ class BaseAgent:
             "abilities": [ability.to_dict() for ability in self.abilities]
         }
 
-    def introduce(self, update: bool = False) -> str:
+    def introduce(self, update: bool = True) -> str:
         def get_your_info(*args, **kwargs) -> dict:
             """
             What does this ability do: To get your personal information.
@@ -92,8 +92,8 @@ class BaseAgent:
             }
 
         get_your_info.__name__ = f'__SystemAbility__{get_your_info.__name__}'
-        self.grant_ability(get_your_info)
-        if self._introduction == '' or update:
+        self.grant_ability(get_your_info, update_introduction=False)
+        if update:
             self._introduction = SelfIntroducePrompt(agent=self).invoke(self._model)
         return self._introduction
 
@@ -102,7 +102,7 @@ class BaseAgent:
             if inspect.getsource(ability) == inspect.getsource(_ability.function):
                 return
         self._abilities.append(Ability(ability))
-        self.introduce(update_introduction)
+        self.introduce(update=update_introduction)
 
     def grant_abilities(self, abilities: list[Callable]):
         for ability in abilities:
@@ -114,7 +114,7 @@ class BaseAgent:
         for _ability in self._abilities:
             if _ability.name == ability.name:
                 self._abilities.remove(_ability)
-        self.introduce(update_introduction)
+        self.introduce(update=update_introduction)
 
     def deprive_abilities(self, abilities: list[Callable]):
         for ability in abilities:
