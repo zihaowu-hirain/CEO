@@ -8,8 +8,7 @@ DEFAULT_TOP_P = 1.00
 DEFAULT_QWEN = 'qwen-plus'
 
 
-def get_lm(key: str = None, model_name: str = DEFAULT_QWEN, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P,
-           base_url: str = None, stream: bool = False) -> BaseChatModel:
+def get_lm(key: str = None, model_name: str = DEFAULT_QWEN, temp: float = DEFAULT_TMP, top_p: float = DEFAULT_TOP_P, stream: bool = False) -> BaseChatModel:
     if key is None:
         key = os.getenv('DASHSCOPE_API_KEY', os.getenv('OPENAI_API_KEY', None))
     _kwargs = {
@@ -19,6 +18,4 @@ def get_lm(key: str = None, model_name: str = DEFAULT_QWEN, temp: float = DEFAUL
         'temperature': temp,
         'streaming': stream
     }
-    if base_url is not None:
-        _kwargs['base_url'] = base_url
     return langchain_community.chat_models.tongyi.ChatTongyi(**_kwargs)
