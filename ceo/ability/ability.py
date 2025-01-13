@@ -11,6 +11,10 @@ class Ability:
     def __init__(self, function: Callable):
         signature = inspect.signature(function)
         doc_str = inspect.getdoc(function)
+        if doc_str is None:
+            doc_str = json.dumps({
+                'src': inspect.getsource(function)
+            }, ensure_ascii=False)
         self._name: str = function.__name__
         self._description: str | dict = str()
         self._function: Callable = function
